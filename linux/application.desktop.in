@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Altynemel
+GenericName=Music Player
+Comment=Play audio files from a local music library
+Keywords=Music;Audio;Player;Library;Playlist;Queue;Songs;
+Categories=AudioVideo;Audio;Player;
+Exec=@BINARY_NAME@
+TryExec=@BINARY_NAME@
+Icon=@APPLICATION_ID@
+Terminal=false
+StartupNotify=true
+StartupWMClass=@APPLICATION_ID@
+SingleMainWindow=true
