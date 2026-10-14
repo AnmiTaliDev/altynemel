@@ -1,26 +1,23 @@
-Desktop music player that plays audio files from a local library folder.
+# Altynemel
 
-Primary target is Linux (GTK, Wayland and X11). macOS is not wired up yet.
+[![License: GPL-3.0-only](https://img.shields.io/badge/license-GPL--3.0--only-blue.svg)](LICENSE)
+[![Flutter](https://img.shields.io/badge/flutter-3.41-02569B.svg?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](#dependencies)
 
-## Features
+## About
 
-- Local library scanned in the background, grouped into tracks, albums and artists
-- Favorites, playlists, queue, shuffle and repeat
-- Gapless playback and crossfade through libmpv
-- Full screen Now playing view
-- Track context menu (right click, the menu key or Shift+F10)
-- Night, day and high contrast themes
-- Media keys and desktop media controls through MPRIS
+Altynemel is a desktop music player.
 
 ## Dependencies
 
+- Linux with Wayland or X11. macOS is not supported yet.
 - Flutter 3.41 (stable) with Linux desktop support
 - clang, cmake, ninja, pkg-config, GTK 3 development files
 - libmpv at runtime
 
 ## Build
 
-```
+```sh
 flutter pub get
 flutter run -d linux
 ```
@@ -57,7 +54,7 @@ If the portal is missing or the request is denied, the shortcuts are disabled an
 
 ## Tests
 
-```
+```sh
 flutter analyze
 flutter test
 ```
@@ -66,6 +63,6 @@ Token tests read the design token file from `../altynemel-design/tokens.json` an
 
 ## License
 
-GPL-3.0-only. See [LICENSE](LICENSE).
+GPL-3.0-only. See [LICENSE](LICENSE). Copyright (C) 2026 Altynemel authors.
 
 Third-party components and their licenses are listed in [NOTICE](NOTICE) and under Settings, About, About free software.

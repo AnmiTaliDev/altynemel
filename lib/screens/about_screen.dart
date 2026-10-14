@@ -74,6 +74,13 @@ class AboutScreen extends StatelessWidget {
         const SizedBox(height: space5),
         _fact(context, Strings.versionLabel, appVersion),
         _fact(context, Strings.licenseLabel, appLicense),
+        const SizedBox(height: space3),
+        Text(
+          appCopyright,
+          style: text.caption.copyWith(
+            color: AltynemelColors.of(context).inkMuted,
+          ),
+        ),
         const SizedBox(height: space5),
         Pressable(
           onPressed: onOpenFreeSoftware,

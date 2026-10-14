@@ -28,6 +28,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('0.1.0'), findsOneWidget);
     expect(find.text('GPL-3.0-only'), findsOneWidget);
+    expect(find.text('Copyright (C) 2026 Altynemel authors'), findsOneWidget);
     await tester.tap(find.bySemanticsLabel('About free software'));
     await tester.pumpAndSettle();
     expect(find.textContaining('GNU General Public License'), findsWidgets);
