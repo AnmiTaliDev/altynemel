@@ -96,4 +96,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('a single click on a track row plays it', (tester) async {
+    final lib = await pumpHome(tester);
+    await tester.tap(find.bySemanticsLabel('Tracks'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(TrackTableRow).at(2));
+    await tester.pumpAndSettle();
+    final row = tester.widget<TrackTableRow>(find.byType(TrackTableRow).at(2));
+    expect(lib.playback.current?.title, row.title);
+    expect(lib.playback.isPlaying, isTrue);
+  });
 }

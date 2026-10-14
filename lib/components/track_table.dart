@@ -165,8 +165,10 @@ class _TrackTableRowState extends State<TrackTableRow> {
               behavior: HitTestBehavior.translucent,
               onSecondaryTap: widget.onMore,
               child: Pressable(
-                onPressed: widget.onSelect,
-                onDoubleTap: unavailable ? null : widget.onPlay,
+                onPressed: () {
+                  widget.onSelect();
+                  if (!unavailable) widget.onPlay();
+                },
                 radius: radiusControl,
                 semanticLabel: _spokenLabel(),
                 selected: widget.isSelected,
