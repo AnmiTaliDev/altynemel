@@ -17,6 +17,7 @@ class AltynemelIconButton extends StatelessWidget {
     this.compact = false,
     this.filled = false,
     this.iconSize = 24,
+    this.hint,
   });
 
   final IconId icon;
@@ -26,12 +27,13 @@ class AltynemelIconButton extends StatelessWidget {
   final bool compact;
   final bool filled;
   final double iconSize;
+  final String? hint;
 
   @override
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final size = compact ? targetPointer : targetMin;
-    return Pressable(
+    final button = Pressable(
       onPressed: onPressed,
       radius: size / 2,
       semanticLabel: label,
@@ -80,5 +82,8 @@ class AltynemelIconButton extends StatelessWidget {
         );
       },
     );
+    final message = hint;
+    if (message == null) return button;
+    return Tooltip(message: message, excludeFromSemantics: true, child: button);
   }
 }

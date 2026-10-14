@@ -61,6 +61,7 @@ class Transport extends StatelessWidget {
         AltynemelIconButton(
           icon: IconId.prev,
           label: Strings.previousTrack,
+          hint: Strings.withShortcut(Strings.previousTrack, 'Ctrl+Left'),
           compact: compact,
           onPressed: onPrevious,
         ),
@@ -74,6 +75,7 @@ class Transport extends StatelessWidget {
         AltynemelIconButton(
           icon: IconId.next,
           label: Strings.nextTrack,
+          hint: Strings.withShortcut(Strings.nextTrack, 'Ctrl+Right'),
           compact: compact,
           onPressed: onNext,
         ),
@@ -107,7 +109,8 @@ class _PlayButton extends StatelessWidget {
     final accent = variant == TransportVariant.accent;
     final size = accent ? targetLg : targetMin;
     final iconSize = accent ? 28.0 : 22.0;
-    return Pressable(
+    final label = isPlaying ? Strings.pause : Strings.play;
+    final button = Pressable(
       onPressed: onPressed,
       radius: size / 2,
       semanticLabel: isPlaying ? Strings.pause : Strings.play,
@@ -144,6 +147,11 @@ class _PlayButton extends StatelessWidget {
                 ),
         );
       },
+    );
+    return Tooltip(
+      message: Strings.withShortcut(label, 'Space'),
+      excludeFromSemantics: true,
+      child: button,
     );
   }
 }

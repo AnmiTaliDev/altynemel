@@ -44,6 +44,12 @@ class _NextIntent extends Intent {
   const _NextIntent();
 }
 
+class _SeekIntent extends Intent {
+  const _SeekIntent(this.seconds);
+
+  final int seconds;
+}
+
 class _MuteIntent extends Intent {
   const _MuteIntent();
 }
@@ -286,6 +292,8 @@ class _HomeScreenState extends State<HomeScreen> {
             _PreviousIntent(),
         SingleActivator(LogicalKeyboardKey.arrowRight, control: true):
             _NextIntent(),
+        SingleActivator(LogicalKeyboardKey.arrowLeft): _SeekIntent(-5),
+        SingleActivator(LogicalKeyboardKey.arrowRight): _SeekIntent(5),
         SingleActivator(LogicalKeyboardKey.keyM): _MuteIntent(),
         SingleActivator(LogicalKeyboardKey.keyF, control: true):
             _FocusSearchIntent(),
@@ -303,6 +311,13 @@ class _HomeScreenState extends State<HomeScreen> {
           _NextIntent: _GuardedAction<_NextIntent>(
             enabled: () => !_textFieldFocused(),
             run: playback.next,
+          ),
+          _SeekIntent: CallbackAction<_SeekIntent>(
+            onInvoke: (intent) {
+              if (_controlFocused()) return null;
+              playback.seekBy(Duration(seconds: intent.seconds));
+              return null;
+            },
           ),
           _MuteIntent: _GuardedAction<_MuteIntent>(
             enabled: () => !_textFieldFocused(),

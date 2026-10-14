@@ -73,18 +73,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final text = AltynemelTextStyles.of(context);
     final error = widget.error;
     if (error != null) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AltynemelIcon(IconId.alert, size: 16, color: colors.alert),
-          const SizedBox(width: space1),
-          Flexible(
-            child: Text(
-              '${Strings.scanFailed}. $error',
-              style: text.caption.copyWith(color: colors.alert),
+      return Semantics(
+        liveRegion: true,
+        container: true,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AltynemelIcon(IconId.alert, size: 16, color: colors.alert),
+            const SizedBox(width: space1),
+            Flexible(
+              child: Text(
+                '${Strings.scanFailed}. $error',
+                style: text.caption.copyWith(color: colors.alert),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
     return const SizedBox.shrink();

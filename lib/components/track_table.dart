@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../format/time_format.dart';
 import '../strings.dart';
@@ -110,6 +111,18 @@ class _TrackTableRowState extends State<TrackTableRow> {
   bool _hovered = false;
   bool _hasFocus = false;
 
+  KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
+    if (event is KeyUpEvent) return KeyEventResult.ignored;
+    final direction = switch (event.logicalKey) {
+      LogicalKeyboardKey.arrowDown => TraversalDirection.down,
+      LogicalKeyboardKey.arrowUp => TraversalDirection.up,
+      _ => null,
+    };
+    if (direction == null) return KeyEventResult.ignored;
+    FocusManager.instance.primaryFocus?.focusInDirection(direction);
+    return KeyEventResult.handled;
+  }
+
   String _spokenLabel() {
     final parts = [
       widget.title,
@@ -136,6 +149,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
       child: Focus(
         canRequestFocus: false,
         skipTraversal: true,
+        onKeyEvent: _onKeyEvent,
         onFocusChange: (value) => setState(() => _hasFocus = value),
         child: Stack(
           children: [

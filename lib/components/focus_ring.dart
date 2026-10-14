@@ -16,29 +16,29 @@ class FocusRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!visible) return child;
     return Stack(
       clipBehavior: Clip.none,
       fit: StackFit.passthrough,
       children: [
         child,
-        Positioned(
-          left: -4,
-          top: -4,
-          right: -4,
-          bottom: -4,
-          child: IgnorePointer(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AltynemelColors.of(context).accent,
-                  width: 2,
+        if (visible)
+          Positioned(
+            left: -4,
+            top: -4,
+            right: -4,
+            bottom: -4,
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: AltynemelColors.of(context).accent,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(radius + 4),
                 ),
-                borderRadius: BorderRadius.circular(radius + 4),
               ),
             ),
           ),
-        ),
       ],
     );
   }

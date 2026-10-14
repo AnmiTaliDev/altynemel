@@ -61,7 +61,7 @@ class Sidebar extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border(
-            right: BorderSide(color: colors.line, width: borderWidth),
+            right: BorderSide(color: colors.surfaceEdge, width: borderWidth),
           ),
         ),
         child: SingleChildScrollView(

@@ -75,23 +75,27 @@ class PlayerBar extends StatelessWidget {
         CoverArt(size: 56, image: image, albumName: albumName),
         const SizedBox(width: space3),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (title == null)
-                Text(
-                  Strings.nothingPlaying,
-                  style: text.bodyStrong.copyWith(color: colors.inkMuted),
-                )
-              else ...[
-                Text(title!, style: text.bodyStrong),
-                Text(
-                  artist ?? '',
-                  style: text.caption.copyWith(color: colors.inkMuted),
-                ),
+          child: Semantics(
+            liveRegion: true,
+            container: true,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (title == null)
+                  Text(
+                    Strings.nothingPlaying,
+                    style: text.bodyStrong.copyWith(color: colors.inkMuted),
+                  )
+                else ...[
+                  Text(title!, style: text.bodyStrong),
+                  Text(
+                    artist ?? '',
+                    style: text.caption.copyWith(color: colors.inkMuted),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
         AltynemelIconButton(
@@ -209,7 +213,7 @@ class PlayerBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.surface,
           border: Border(
-            top: BorderSide(color: colors.line, width: borderWidth),
+            top: BorderSide(color: colors.surfaceEdge, width: borderWidth),
           ),
         ),
         child: LayoutBuilder(

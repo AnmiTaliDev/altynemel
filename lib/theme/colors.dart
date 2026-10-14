@@ -21,6 +21,9 @@ class AltynemelColors extends ThemeExtension<AltynemelColors> {
   final Color surfaceHigh;
   final Color line;
   final Color lineStrong;
+
+  Color get surfaceEdge =>
+      lineStrong == contrast.lineStrong ? lineStrong : line;
   final Color ink;
   final Color inkMuted;
   final Color inkDisabled;
