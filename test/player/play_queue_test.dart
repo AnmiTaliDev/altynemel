@@ -220,4 +220,47 @@ void main() {
     }, (id) => null);
     expect(restored.current, isNull);
   });
+
+  test('removeAt drops an upcoming track and keeps the current one', () {
+    final q = queue()..load(tracks(4), start: 1);
+    expect(q.removeAt(2), isTrue);
+    expect(ids(q.ordered), ['0', '1', '3']);
+    expect(q.current!.id, '1');
+    expect(q.advance(auto: false)!.id, '3');
+  });
+
+  test('removeAt before the current track moves the position back', () {
+    final q = queue()..load(tracks(4), start: 2);
+    expect(q.removeAt(0), isTrue);
+    expect(ids(q.ordered), ['1', '2', '3']);
+    expect(q.current!.id, '2');
+    expect(q.position, 1);
+  });
+
+  test('removeAt refuses the current track and bad positions', () {
+    final q = queue()..load(tracks(3), start: 1);
+    expect(q.removeAt(1), isFalse);
+    expect(q.removeAt(-1), isFalse);
+    expect(q.removeAt(3), isFalse);
+    expect(ids(q.ordered), ['0', '1', '2']);
+  });
+
+  test('removeAt removes only the chosen copy of a repeated track', () {
+    final list = tracks(2);
+    final q = queue()..load(list);
+    q.enqueue(list[0]);
+    expect(ids(q.ordered), ['0', '1', '0']);
+    expect(q.removeAt(2), isTrue);
+    expect(ids(q.ordered), ['0', '1']);
+  });
+
+  test('removeAt keeps a shuffled order consistent', () {
+    final q = queue(seed: 7)
+      ..setShuffle(true)
+      ..load(tracks(6));
+    final before = ids(q.ordered);
+    expect(q.removeAt(3), isTrue);
+    expect(ids(q.ordered), [...before]..removeAt(3));
+    expect(q.current!.id, before[0]);
+  });
 }

@@ -25,7 +25,7 @@ Widget _library(
     selectedTrackId: null,
     onSelectTrack: (_) {},
     onPlayTrack: (_) {},
-    onTrackMore: (_) {},
+    onTrackMore: (_, _) {},
     onOpenAlbum: (_) {},
     onOpenArtist: (_) {},
     onOpenSettings: onOpenSettings ?? () {},
@@ -75,7 +75,7 @@ void main() {
         selectedTrackId: null,
         onSelectTrack: (_) {},
         onPlayTrack: (_) {},
-        onTrackMore: (_) {},
+        onTrackMore: (_, _, _) {},
       ),
     );
     expect(find.text('Next up'), findsOneWidget);
@@ -92,7 +92,7 @@ void main() {
         selectedTrackId: null,
         onSelectTrack: (_) {},
         onPlayTrack: (_) {},
-        onTrackMore: (_) {},
+        onTrackMore: (_, _, _) {},
       ),
     );
     expect(find.text('The queue is empty'), findsOneWidget);

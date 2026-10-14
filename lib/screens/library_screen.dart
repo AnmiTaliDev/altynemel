@@ -12,6 +12,7 @@ import '../components/icon_data.dart';
 import '../library/album.dart';
 import '../library/artist.dart';
 import '../library/cover_image.dart';
+import '../library/grouping.dart';
 import '../library/track.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
@@ -52,7 +53,7 @@ class LibraryScreen extends StatefulWidget {
   final String? selectedTrackId;
   final ValueChanged<Track> onSelectTrack;
   final ValueChanged<Track> onPlayTrack;
-  final ValueChanged<Track> onTrackMore;
+  final void Function(Track track, Rect anchor) onTrackMore;
   final ValueChanged<Album> onOpenAlbum;
   final ValueChanged<Artist> onOpenArtist;
   final VoidCallback onOpenSettings;
@@ -262,6 +263,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 title: track.title,
                 artist: track.artist,
                 album: track.album,
+                albumId: track.album == null ? null : albumKey(track),
                 image: coverImage(track.coverPath, width: 80),
                 duration: track.duration,
                 showAlbum: showAlbum,
@@ -270,7 +272,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 isSelected: track.id == widget.selectedTrackId,
                 onSelect: () => widget.onSelectTrack(track),
                 onPlay: () => widget.onPlayTrack(track),
-                onMore: () => widget.onTrackMore(track),
+                onMore: (anchor) => widget.onTrackMore(track, anchor),
               );
             },
           ),

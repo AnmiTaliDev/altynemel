@@ -157,6 +157,19 @@ class PlayQueue {
     if (_position < 0) _position = 0;
   }
 
+  bool removeAt(int position) {
+    if (position < 0 || position >= _order.length) return false;
+    if (position == _position) return false;
+    _pendingOrder = null;
+    final index = _order.removeAt(position);
+    _items.removeAt(index);
+    for (var i = 0; i < _order.length; i++) {
+      if (_order[i] > index) _order[i]--;
+    }
+    if (position < _position) _position--;
+    return true;
+  }
+
   Map<String, Object?> toJson() {
     return {
       'ids': [for (final t in _items) t.id],

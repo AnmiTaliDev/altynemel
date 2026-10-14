@@ -6,6 +6,7 @@ import '../components/icon_data.dart';
 import '../components/track_table.dart';
 import '../format/time_format.dart';
 import '../library/cover_image.dart';
+import '../library/grouping.dart';
 import '../library/track.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
@@ -43,7 +44,7 @@ class PlaylistScreen extends StatelessWidget {
   final VoidCallback onPlayPause;
   final ValueChanged<Track> onSelectTrack;
   final ValueChanged<Track> onPlayTrack;
-  final ValueChanged<Track> onTrackMore;
+  final void Function(Track track, Rect anchor) onTrackMore;
   final String? emptyTitle;
   final String? emptyHint;
   final String kind;
@@ -168,6 +169,9 @@ class PlaylistScreen extends StatelessWidget {
                 title: track.title,
                 artist: track.artist,
                 album: track.album,
+                albumId: track.album == null || kind == Strings.albumKind
+                    ? null
+                    : albumKey(track),
                 image: coverImage(track.coverPath, width: 80),
                 duration: track.duration,
                 showAlbum: showAlbum,
@@ -176,7 +180,7 @@ class PlaylistScreen extends StatelessWidget {
                 isSelected: track.id == selectedTrackId,
                 onSelect: () => onSelectTrack(track),
                 onPlay: () => onPlayTrack(track),
-                onMore: () => onTrackMore(track),
+                onMore: (anchor) => onTrackMore(track, anchor),
               );
             },
           ),

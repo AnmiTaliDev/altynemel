@@ -280,4 +280,17 @@ void main() {
     await controller.enqueue(tracks[2]);
     expect(controller.queueTracks.length, 4);
   });
+
+  test('removing from the queue skips the track and notifies', () async {
+    build([5, 5, 5]);
+    await controller.playTracks(tracks, 0);
+    var notified = 0;
+    controller.addListener(() => notified++);
+    await controller.removeFromQueue(1);
+    expect(controller.queueTracks.map((t) => t.id), ['0', '2']);
+    expect(controller.current!.id, '0');
+    expect(notified, greaterThan(0));
+    await controller.removeFromQueue(0);
+    expect(controller.queueTracks.map((t) => t.id), ['0', '2']);
+  });
 }

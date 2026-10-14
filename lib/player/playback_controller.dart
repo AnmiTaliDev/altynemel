@@ -462,6 +462,13 @@ class PlaybackController extends ChangeNotifier {
     _save();
   }
 
+  Future<void> removeFromQueue(int position) async {
+    if (!_queue.removeAt(position)) return;
+    notifyListeners();
+    await _refreshNext();
+    _save();
+  }
+
   Future<void> restore(Track? Function(String id) resolve) async {
     final saved = _persistence?.load();
     if (saved == null) return;

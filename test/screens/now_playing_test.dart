@@ -106,7 +106,7 @@ void main() {
             onVolume: (_) {},
             onQueue: () {},
             onCollapse: () {},
-            onMore: () {},
+            onMore: (_) {},
           ),
         ),
       ),

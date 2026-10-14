@@ -13,6 +13,7 @@ import '../integration/window_scope.dart';
 import '../components/player_bar.dart';
 import '../components/sidebar.dart';
 import '../library/cover_image.dart';
+import '../library/album_link_scope.dart';
 import '../library/artist_link_scope.dart';
 import '../library/grouping.dart';
 import '../library/library_controller.dart';
@@ -227,16 +228,25 @@ class _HomeScreenState extends State<HomeScreen> {
         tracks.indexWhere((t) => t.id == track.id),
         title: title,
       ),
-      onTrackMore: (track) => _showMenu(track, fromPlaylistId: menuPlaylistId),
+      onTrackMore: (track, anchor) =>
+          _showMenu(track, anchor, fromPlaylistId: menuPlaylistId),
     );
   }
 
-  Future<void> _showMenu(Track track, {String? fromPlaylistId}) {
+  Future<void> _showMenu(
+    Track track,
+    Rect anchor, {
+    String? fromPlaylistId,
+    int? queuePosition,
+  }) {
     return showTrackMenu(
       context,
       track,
+      anchor: anchor,
       fromPlaylistId: fromPlaylistId,
+      queuePosition: queuePosition,
       onOpenArtist: _openArtist,
+      onOpenAlbum: _openAlbum,
       splitArtistNames: AppSettingsScope.of(context).splitArtists,
     );
   }
@@ -249,6 +259,16 @@ class _HomeScreenState extends State<HomeScreen> {
     _settingsPage = null;
     _libraryTab = LibraryTab.artists;
     _artistId = name;
+  });
+
+  void _openAlbum(String id) => setState(() {
+    _nowPlayingOpen = false;
+    _destination = SidebarDestination.library;
+    _playlistId = null;
+    _artistId = null;
+    _settingsPage = null;
+    _libraryTab = LibraryTab.albums;
+    _albumId = id;
   });
 
   void _closeDetail() => setState(() {
@@ -364,7 +384,7 @@ class _HomeScreenState extends State<HomeScreen> {
             tracks.indexWhere((t) => t.id == track.id),
             title: Strings.library,
           ),
-          onTrackMore: (track) => _showMenu(track),
+          onTrackMore: (track, anchor) => _showMenu(track, anchor),
           onOpenAlbum: (album) => setState(() => _albumId = album.id),
           onOpenArtist: (artist) => setState(() => _artistId = artist.id),
           onOpenSettings: () =>
@@ -384,7 +404,8 @@ class _HomeScreenState extends State<HomeScreen> {
             );
             playback.jumpTo(index);
           },
-          onTrackMore: (track) => _showMenu(track),
+          onTrackMore: (track, position, anchor) =>
+              _showMenu(track, anchor, queuePosition: position),
         );
       case SidebarDestination.settings:
         return switch (_settingsPage) {
@@ -430,209 +451,220 @@ class _HomeScreenState extends State<HomeScreen> {
     return ArtistLinkScope(
       onOpen: _openArtist,
       split: settings.splitArtists,
-      child: Shortcuts(
-        shortcuts: const {
-          SingleActivator(LogicalKeyboardKey.space): _PlayPauseIntent(),
-          SingleActivator(LogicalKeyboardKey.arrowLeft, control: true):
-              _PreviousIntent(),
-          SingleActivator(LogicalKeyboardKey.arrowRight, control: true):
-              _NextIntent(),
-          SingleActivator(LogicalKeyboardKey.arrowLeft): _SeekIntent(-5),
-          SingleActivator(LogicalKeyboardKey.arrowRight): _SeekIntent(5),
-          SingleActivator(LogicalKeyboardKey.escape): _CollapseIntent(),
-          SingleActivator(LogicalKeyboardKey.keyM): _MuteIntent(),
-          SingleActivator(LogicalKeyboardKey.keyF, control: true):
-              _FocusSearchIntent(),
-        },
-        child: Actions(
-          actions: {
-            _PlayPauseIntent: _GuardedAction<_PlayPauseIntent>(
-              enabled: () => !_controlFocused(),
-              run: playback.toggle,
-            ),
-            _PreviousIntent: _GuardedAction<_PreviousIntent>(
-              enabled: () => !_textFieldFocused(),
-              run: playback.previous,
-            ),
-            _NextIntent: _GuardedAction<_NextIntent>(
-              enabled: () => !_textFieldFocused(),
-              run: playback.next,
-            ),
-            _SeekIntent: CallbackAction<_SeekIntent>(
-              onInvoke: (intent) {
-                if (_controlFocused()) return null;
-                playback.seekBy(Duration(seconds: intent.seconds));
-                return null;
-              },
-            ),
-            _MuteIntent: _GuardedAction<_MuteIntent>(
-              enabled: () => !_textFieldFocused(),
-              run: playback.toggleMute,
-            ),
-            _CollapseIntent: _GuardedAction<_CollapseIntent>(
-              enabled: () => _nowPlayingOpen,
-              run: () => setState(() => _nowPlayingOpen = false),
-            ),
-            _FocusSearchIntent: _GuardedAction<_FocusSearchIntent>(
-              enabled: () => true,
-              run: _searchFocus.requestFocus,
-            ),
+      child: AlbumLinkScope(
+        onOpen: _openAlbum,
+        child: Shortcuts(
+          shortcuts: const {
+            SingleActivator(LogicalKeyboardKey.space): _PlayPauseIntent(),
+            SingleActivator(LogicalKeyboardKey.arrowLeft, control: true):
+                _PreviousIntent(),
+            SingleActivator(LogicalKeyboardKey.arrowRight, control: true):
+                _NextIntent(),
+            SingleActivator(LogicalKeyboardKey.arrowLeft): _SeekIntent(-5),
+            SingleActivator(LogicalKeyboardKey.arrowRight): _SeekIntent(5),
+            SingleActivator(LogicalKeyboardKey.escape): _CollapseIntent(),
+            SingleActivator(LogicalKeyboardKey.keyM): _MuteIntent(),
+            SingleActivator(LogicalKeyboardKey.keyF, control: true):
+                _FocusSearchIntent(),
           },
-          child: Focus(
-            autofocus: true,
-            child: DropTarget(
-              onDragDone: (details) => _dropped(details, settings),
-              child: ListenableBuilder(
-                listenable: Listenable.merge([library, playback]),
-                builder: (context, _) {
-                  final current = playback.current;
-                  final titleBar = window == null
-                      ? null
-                      : ValueListenableBuilder<bool>(
-                          valueListenable: window.maximized,
-                          builder: (context, maximized, _) => WindowBar(
-                            maximized: maximized,
-                            onMinimize: window.minimize,
-                            onToggleMaximize: window.toggleMaximize,
-                            onClose: window.close,
-                          ),
-                        );
-                  if (_nowPlayingOpen && current != null) {
-                    final full = ColoredBox(
-                      color: AltynemelColors.of(context).ground,
-                      child: Column(
-                        children: [
-                          ?titleBar,
-                          Expanded(
-                            child: ValueListenableBuilder<Duration>(
-                              valueListenable: playback.position,
-                              builder: (context, position, _) {
-                                final liked = library.isLiked(current.id);
-                                return NowPlayingScreen(
-                                  title: current.title,
-                                  artist: current.artist,
-                                  album: current.album,
-                                  image: coverImage(
-                                    current.coverPath,
-                                    width: 640,
-                                  ),
-                                  liked: liked,
-                                  onToggleLike: () =>
-                                      library.setLiked(current.id, !liked),
-                                  isPlaying: playback.isPlaying,
-                                  shuffle: playback.shuffle,
-                                  repeat: playback.repeat,
-                                  onShuffle: () =>
-                                      playback.setShuffle(!playback.shuffle),
-                                  onPrevious: playback.previous,
-                                  onPlayPause: playback.toggle,
-                                  onNext: playback.next,
-                                  onRepeat: () => playback.setRepeat(
-                                    _nextRepeat(playback.repeat),
-                                  ),
-                                  position: position,
-                                  duration: playback.duration,
-                                  onSeek: playback.seek,
-                                  volume: playback.volume,
-                                  volumeStep: settings.volumeStep,
-                                  onVolume: playback.setVolume,
-                                  onQueue: () => setState(() {
-                                    _nowPlayingOpen = false;
-                                    _destination = SidebarDestination.queue;
-                                    _playlistId = null;
-                                    _albumId = null;
-                                    _artistId = null;
-                                    _settingsPage = null;
-                                  }),
-                                  onCollapse: () =>
-                                      setState(() => _nowPlayingOpen = false),
-                                  onMore: () => _showMenu(current),
-                                );
-                              },
+          child: Actions(
+            actions: {
+              _PlayPauseIntent: _GuardedAction<_PlayPauseIntent>(
+                enabled: () => !_controlFocused(),
+                run: playback.toggle,
+              ),
+              _PreviousIntent: _GuardedAction<_PreviousIntent>(
+                enabled: () => !_textFieldFocused(),
+                run: playback.previous,
+              ),
+              _NextIntent: _GuardedAction<_NextIntent>(
+                enabled: () => !_textFieldFocused(),
+                run: playback.next,
+              ),
+              _SeekIntent: CallbackAction<_SeekIntent>(
+                onInvoke: (intent) {
+                  if (_controlFocused()) return null;
+                  playback.seekBy(Duration(seconds: intent.seconds));
+                  return null;
+                },
+              ),
+              _MuteIntent: _GuardedAction<_MuteIntent>(
+                enabled: () => !_textFieldFocused(),
+                run: playback.toggleMute,
+              ),
+              _CollapseIntent: _GuardedAction<_CollapseIntent>(
+                enabled: () => _nowPlayingOpen,
+                run: () => setState(() => _nowPlayingOpen = false),
+              ),
+              _FocusSearchIntent: _GuardedAction<_FocusSearchIntent>(
+                enabled: () => true,
+                run: _searchFocus.requestFocus,
+              ),
+            },
+            child: Focus(
+              autofocus: true,
+              child: DropTarget(
+                onDragDone: (details) => _dropped(details, settings),
+                child: ListenableBuilder(
+                  listenable: Listenable.merge([library, playback]),
+                  builder: (context, _) {
+                    final current = playback.current;
+                    final titleBar = window == null
+                        ? null
+                        : ValueListenableBuilder<bool>(
+                            valueListenable: window.maximized,
+                            builder: (context, maximized, _) => WindowBar(
+                              maximized: maximized,
+                              onMinimize: window.minimize,
+                              onToggleMaximize: window.toggleMaximize,
+                              onClose: window.close,
                             ),
-                          ),
-                        ],
+                          );
+                    if (_nowPlayingOpen && current != null) {
+                      final full = ColoredBox(
+                        color: AltynemelColors.of(context).ground,
+                        child: Column(
+                          children: [
+                            ?titleBar,
+                            Expanded(
+                              child: ValueListenableBuilder<Duration>(
+                                valueListenable: playback.position,
+                                builder: (context, position, _) {
+                                  final liked = library.isLiked(current.id);
+                                  return NowPlayingScreen(
+                                    title: current.title,
+                                    artist: current.artist,
+                                    album: current.album,
+                                    albumId: current.album == null
+                                        ? null
+                                        : albumKey(current),
+                                    image: coverImage(
+                                      current.coverPath,
+                                      width: 640,
+                                    ),
+                                    liked: liked,
+                                    onToggleLike: () =>
+                                        library.setLiked(current.id, !liked),
+                                    isPlaying: playback.isPlaying,
+                                    shuffle: playback.shuffle,
+                                    repeat: playback.repeat,
+                                    onShuffle: () =>
+                                        playback.setShuffle(!playback.shuffle),
+                                    onPrevious: playback.previous,
+                                    onPlayPause: playback.toggle,
+                                    onNext: playback.next,
+                                    onRepeat: () => playback.setRepeat(
+                                      _nextRepeat(playback.repeat),
+                                    ),
+                                    position: position,
+                                    duration: playback.duration,
+                                    onSeek: playback.seek,
+                                    volume: playback.volume,
+                                    volumeStep: settings.volumeStep,
+                                    onVolume: playback.setVolume,
+                                    onQueue: () => setState(() {
+                                      _nowPlayingOpen = false;
+                                      _destination = SidebarDestination.queue;
+                                      _playlistId = null;
+                                      _albumId = null;
+                                      _artistId = null;
+                                      _settingsPage = null;
+                                    }),
+                                    onCollapse: () =>
+                                        setState(() => _nowPlayingOpen = false),
+                                    onMore: (anchor) =>
+                                        _showMenu(current, anchor),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (window == null) return full;
+                      return DragToResizeArea(resizeEdgeSize: 6, child: full);
+                    }
+                    final shell = AppShell(
+                      titleBar: titleBar,
+                      sidebar: Sidebar(
+                        dragArea: window == null
+                            ? null
+                            : (child) => DragToMoveArea(child: child),
+                        destination: _playlistId == null ? _destination : null,
+                        onDestination: (value) => setState(() {
+                          _destination = value;
+                          _playlistId = null;
+                          _albumId = null;
+                          _artistId = null;
+                          _settingsPage = null;
+                        }),
+                        playlists: playlists,
+                        selectedPlaylistId: _playlistId,
+                        onPlaylist: (id) => setState(() {
+                          _playlistId = id;
+                          _albumId = null;
+                          _artistId = null;
+                          _settingsPage = null;
+                        }),
+                        searchController: _search,
+                        searchFocusNode: _searchFocus,
+                        onSearchChanged: _onSearch,
+                      ),
+                      body: _body(library, playback, settings),
+                      playerBar: ValueListenableBuilder<Duration>(
+                        valueListenable: playback.position,
+                        builder: (context, position, _) {
+                          return PlayerBar(
+                            title: current?.title,
+                            artist: current?.artist,
+                            image: coverImage(current?.coverPath, width: 112),
+                            albumName: current?.album,
+                            liked:
+                                current != null && library.isLiked(current.id),
+                            onToggleLike: current == null
+                                ? null
+                                : () => library.setLiked(
+                                    current.id,
+                                    !library.isLiked(current.id),
+                                  ),
+                            isPlaying: playback.isPlaying,
+                            shuffle: playback.shuffle,
+                            repeat: playback.repeat,
+                            onShuffle: () =>
+                                playback.setShuffle(!playback.shuffle),
+                            onPrevious: current == null
+                                ? null
+                                : playback.previous,
+                            onPlayPause: current == null
+                                ? null
+                                : playback.toggle,
+                            onNext: current == null ? null : playback.next,
+                            onRepeat: () => playback.setRepeat(
+                              _nextRepeat(playback.repeat),
+                            ),
+                            position: position,
+                            duration: playback.duration,
+                            onSeek: current == null ? null : playback.seek,
+                            volume: playback.volume,
+                            volumeStep: settings.volumeStep,
+                            onVolume: playback.setVolume,
+                            onOpenNowPlaying: () =>
+                                setState(() => _nowPlayingOpen = true),
+                            onQueue: () => setState(() {
+                              _destination = SidebarDestination.queue;
+                              _playlistId = null;
+                              _albumId = null;
+                              _artistId = null;
+                              _settingsPage = null;
+                            }),
+                          );
+                        },
                       ),
                     );
-                    if (window == null) return full;
-                    return DragToResizeArea(resizeEdgeSize: 6, child: full);
-                  }
-                  final shell = AppShell(
-                    titleBar: titleBar,
-                    sidebar: Sidebar(
-                      dragArea: window == null
-                          ? null
-                          : (child) => DragToMoveArea(child: child),
-                      destination: _playlistId == null ? _destination : null,
-                      onDestination: (value) => setState(() {
-                        _destination = value;
-                        _playlistId = null;
-                        _albumId = null;
-                        _artistId = null;
-                        _settingsPage = null;
-                      }),
-                      playlists: playlists,
-                      selectedPlaylistId: _playlistId,
-                      onPlaylist: (id) => setState(() {
-                        _playlistId = id;
-                        _albumId = null;
-                        _artistId = null;
-                        _settingsPage = null;
-                      }),
-                      searchController: _search,
-                      searchFocusNode: _searchFocus,
-                      onSearchChanged: _onSearch,
-                    ),
-                    body: _body(library, playback, settings),
-                    playerBar: ValueListenableBuilder<Duration>(
-                      valueListenable: playback.position,
-                      builder: (context, position, _) {
-                        return PlayerBar(
-                          title: current?.title,
-                          artist: current?.artist,
-                          image: coverImage(current?.coverPath, width: 112),
-                          albumName: current?.album,
-                          liked: current != null && library.isLiked(current.id),
-                          onToggleLike: current == null
-                              ? null
-                              : () => library.setLiked(
-                                  current.id,
-                                  !library.isLiked(current.id),
-                                ),
-                          isPlaying: playback.isPlaying,
-                          shuffle: playback.shuffle,
-                          repeat: playback.repeat,
-                          onShuffle: () =>
-                              playback.setShuffle(!playback.shuffle),
-                          onPrevious: current == null
-                              ? null
-                              : playback.previous,
-                          onPlayPause: current == null ? null : playback.toggle,
-                          onNext: current == null ? null : playback.next,
-                          onRepeat: () =>
-                              playback.setRepeat(_nextRepeat(playback.repeat)),
-                          position: position,
-                          duration: playback.duration,
-                          onSeek: current == null ? null : playback.seek,
-                          volume: playback.volume,
-                          volumeStep: settings.volumeStep,
-                          onVolume: playback.setVolume,
-                          onOpenNowPlaying: () =>
-                              setState(() => _nowPlayingOpen = true),
-                          onQueue: () => setState(() {
-                            _destination = SidebarDestination.queue;
-                            _playlistId = null;
-                            _albumId = null;
-                            _artistId = null;
-                            _settingsPage = null;
-                          }),
-                        );
-                      },
-                    ),
-                  );
-                  if (window == null) return shell;
-                  return DragToResizeArea(resizeEdgeSize: 6, child: shell);
-                },
+                    if (window == null) return shell;
+                    return DragToResizeArea(resizeEdgeSize: 6, child: shell);
+                  },
+                ),
               ),
             ),
           ),

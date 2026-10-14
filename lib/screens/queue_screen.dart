@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../components/screen_header.dart';
 import '../components/track_table.dart';
 import '../library/cover_image.dart';
+import '../library/grouping.dart';
 import '../library/track.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
@@ -29,7 +30,7 @@ class QueueScreen extends StatelessWidget {
   final String? selectedTrackId;
   final ValueChanged<Track> onSelectTrack;
   final ValueChanged<Track> onPlayTrack;
-  final ValueChanged<Track> onTrackMore;
+  final void Function(Track track, int position, Rect anchor) onTrackMore;
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +54,13 @@ class QueueScreen extends StatelessWidget {
     final upcoming = current == null
         ? tracks
         : tracks.sublist((current + 1).clamp(0, tracks.length));
-    Widget row(Track track, int number, bool isCurrent) {
+    Widget row(Track track, int position, bool isCurrent) {
       return TrackTableRow(
-        number: number,
+        number: position + 1,
         title: track.title,
         artist: track.artist,
         album: track.album,
+        albumId: track.album == null ? null : albumKey(track),
         image: coverImage(track.coverPath, width: 80),
         duration: track.duration,
         showAlbum: showAlbum,
@@ -67,7 +69,7 @@ class QueueScreen extends StatelessWidget {
         isSelected: track.id == selectedTrackId,
         onSelect: () => onSelectTrack(track),
         onPlay: () => onPlayTrack(track),
-        onMore: () => onTrackMore(track),
+        onMore: (anchor) => onTrackMore(track, position, anchor),
       );
     }
 
@@ -89,7 +91,7 @@ class QueueScreen extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(space6, space2, space6, 0),
             sliver: SliverToBoxAdapter(
-              child: row(tracks[current], current + 1, true),
+              child: row(tracks[current], current, true),
             ),
           ),
         if (upcoming.isNotEmpty) ...[
@@ -116,7 +118,7 @@ class QueueScreen extends StatelessWidget {
               itemCount: upcoming.length,
               itemBuilder: (context, index) {
                 final offset = current == null ? 0 : current + 1;
-                return row(upcoming[index], offset + index + 1, false);
+                return row(upcoming[index], offset + index, false);
               },
             ),
           ),

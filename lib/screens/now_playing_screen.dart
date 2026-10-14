@@ -2,11 +2,13 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../components/album_text.dart';
 import '../components/artist_text.dart';
 import '../components/cover_art.dart';
 import '../components/icon.dart';
 import '../components/icon_button.dart';
 import '../components/icon_data.dart';
+import '../components/menu.dart';
 import '../components/progress_bar.dart';
 import '../components/time_label.dart';
 import '../components/transport.dart';
@@ -45,11 +47,13 @@ class NowPlayingScreen extends StatelessWidget {
     this.volumeStep = 5,
     this.image,
     this.album,
+    this.albumId,
   });
 
   final String title;
   final String artist;
   final String? album;
+  final String? albumId;
   final ImageProvider? image;
   final bool liked;
   final VoidCallback onToggleLike;
@@ -69,7 +73,7 @@ class NowPlayingScreen extends StatelessWidget {
   final ValueChanged<int> onVolume;
   final VoidCallback onQueue;
   final VoidCallback onCollapse;
-  final VoidCallback onMore;
+  final ValueChanged<Rect> onMore;
 
   Widget _top(BuildContext context) {
     final colors = AltynemelColors.of(context);
@@ -89,10 +93,12 @@ class NowPlayingScreen extends StatelessWidget {
             style: text.label.copyWith(color: colors.inkMuted),
           ),
         ),
-        AltynemelIconButton(
-          icon: IconId.more,
-          label: Strings.moreAbout(title),
-          onPressed: onMore,
+        Builder(
+          builder: (context) => AltynemelIconButton(
+            icon: IconId.more,
+            label: Strings.moreAbout(title),
+            onPressed: () => onMore(anchorRect(context)),
+          ),
         ),
       ],
     );
@@ -116,7 +122,11 @@ class NowPlayingScreen extends StatelessWidget {
         ArtistText(artist, style: text.bodyLg),
         if (album != null) ...[
           const SizedBox(height: space1),
-          Text(album!, style: text.caption.copyWith(color: colors.inkMuted)),
+          AlbumText(
+            album!,
+            albumId: albumId,
+            style: text.caption.copyWith(color: colors.inkMuted),
+          ),
         ],
         const SizedBox(height: space5),
         ProgressBar(

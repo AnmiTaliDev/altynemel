@@ -30,7 +30,7 @@ void main() {
         selectedTrackId: null,
         onSelectTrack: (_) {},
         onPlayTrack: (_) {},
-        onTrackMore: (_) {},
+        onTrackMore: (_, _) {},
         onOpenAlbum: (_) {},
         onOpenArtist: (_) {},
         onOpenSettings: () {},

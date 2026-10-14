@@ -15,8 +15,11 @@ import '../strings.dart';
 Future<void> showTrackMenu(
   BuildContext context,
   Track track, {
+  required Rect anchor,
   String? fromPlaylistId,
+  int? queuePosition,
   ValueChanged<String>? onOpenArtist,
+  ValueChanged<String>? onOpenAlbum,
   bool splitArtistNames = true,
 }) {
   return showGeneralDialog<void>(
@@ -27,11 +30,14 @@ Future<void> showTrackMenu(
     transitionDuration: Duration.zero,
     pageBuilder: (dialogContext, _, _) => Material(
       type: MaterialType.transparency,
-      child: Center(
+      child: CustomSingleChildLayout(
+        delegate: MenuLayout(anchor),
         child: _TrackMenu(
           track: track,
           fromPlaylistId: fromPlaylistId,
+          queuePosition: queuePosition,
           onOpenArtist: onOpenArtist,
+          onOpenAlbum: onOpenAlbum,
           splitArtistNames: splitArtistNames,
           library: LibraryScope.of(context),
           playback: PlaybackScope.of(context),
@@ -49,12 +55,16 @@ class _TrackMenu extends StatefulWidget {
     required this.library,
     required this.playback,
     this.fromPlaylistId,
+    this.queuePosition,
     this.onOpenArtist,
+    this.onOpenAlbum,
     this.splitArtistNames = true,
   });
 
   final String? fromPlaylistId;
+  final int? queuePosition;
   final ValueChanged<String>? onOpenArtist;
+  final ValueChanged<String>? onOpenAlbum;
   final bool splitArtistNames;
   final Track track;
   final LibraryController library;
@@ -108,6 +118,11 @@ class _TrackMenuState extends State<_TrackMenu> {
     return splitArtists(widget.track.artist, enabled: widget.splitArtistNames);
   }
 
+  String? get _albumName {
+    final album = widget.track.album?.trim();
+    return album == null || album.isEmpty ? null : album;
+  }
+
   bool get _canShowFolder =>
       widget.track.path != null && (Platform.isLinux || Platform.isMacOS);
 
@@ -158,6 +173,21 @@ class _TrackMenuState extends State<_TrackMenu> {
                 label: Strings.goToArtist(name),
                 icon: IconId.library,
                 onPressed: () => _run(() => widget.onOpenArtist!(name)),
+              ),
+            if (widget.onOpenAlbum != null && _albumName != null)
+              MenuItem(
+                label: Strings.goToAlbum(_albumName!),
+                icon: IconId.library,
+                onPressed: () =>
+                    _run(() => widget.onOpenAlbum!(albumKey(track))),
+              ),
+            if (widget.queuePosition != null &&
+                widget.queuePosition != playback.queuePosition)
+              MenuItem(
+                label: Strings.removeFromQueue,
+                icon: IconId.close,
+                onPressed: () =>
+                    _run(() => playback.removeFromQueue(widget.queuePosition!)),
               ),
             if (widget.fromPlaylistId != null)
               MenuItem(

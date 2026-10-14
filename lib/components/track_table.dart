@@ -7,11 +7,13 @@ import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
+import 'album_text.dart';
 import 'artist_text.dart';
 import 'cover_art.dart';
 import 'icon.dart';
 import 'icon_button.dart';
 import 'icon_data.dart';
+import 'menu.dart';
 import 'pressable.dart';
 import 'time_label.dart';
 import 'track_row.dart';
@@ -82,6 +84,7 @@ class TrackTableRow extends StatefulWidget {
     required this.onMore,
     required this.showAlbum,
     this.album,
+    this.albumId,
     this.image,
     this.isCurrent = false,
     this.isPlaying = false,
@@ -93,6 +96,7 @@ class TrackTableRow extends StatefulWidget {
   final String title;
   final String artist;
   final String? album;
+  final String? albumId;
   final Duration duration;
   final ImageProvider? image;
   final bool isCurrent;
@@ -102,7 +106,7 @@ class TrackTableRow extends StatefulWidget {
   final TrackAvailability availability;
   final VoidCallback onSelect;
   final VoidCallback onPlay;
-  final VoidCallback onMore;
+  final ValueChanged<Rect> onMore;
 
   @override
   State<TrackTableRow> createState() => _TrackTableRowState();
@@ -111,6 +115,9 @@ class TrackTableRow extends StatefulWidget {
 class _TrackTableRowState extends State<TrackTableRow> {
   bool _hovered = false;
   bool _hasFocus = false;
+  final GlobalKey _moreKey = GlobalKey();
+
+  Rect _moreRect() => anchorRect(_moreKey.currentContext!);
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyUpEvent) return KeyEventResult.ignored;
@@ -119,7 +126,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
         HardwareKeyboard.instance.isShiftPressed;
     if (event is KeyDownEvent &&
         (shiftMenu || event.logicalKey == LogicalKeyboardKey.contextMenu)) {
-      widget.onMore();
+      widget.onMore(_moreRect());
       return KeyEventResult.handled;
     }
     final direction = switch (event.logicalKey) {
@@ -164,7 +171,8 @@ class _TrackTableRowState extends State<TrackTableRow> {
           children: [
             GestureDetector(
               behavior: HitTestBehavior.translucent,
-              onSecondaryTap: widget.onMore,
+              onSecondaryTapUp: (details) =>
+                  widget.onMore(details.globalPosition & Size.zero),
               child: Pressable(
                 onPressed: () {
                   widget.onSelect();
@@ -278,8 +286,9 @@ class _TrackTableRowState extends State<TrackTableRow> {
                               const SizedBox(width: space4),
                               Expanded(
                                 flex: 3,
-                                child: Text(
+                                child: AlbumText(
                                   widget.album ?? '',
+                                  albumId: widget.albumId,
                                   style: text.body.copyWith(
                                     color: colors.inkMuted,
                                   ),
@@ -311,11 +320,14 @@ class _TrackTableRowState extends State<TrackTableRow> {
                 child: Opacity(
                   opacity: showMore ? 1 : 0,
                   alwaysIncludeSemantics: true,
-                  child: AltynemelIconButton(
-                    icon: IconId.more,
-                    label: Strings.moreAbout(widget.title),
-                    compact: true,
-                    onPressed: widget.onMore,
+                  child: KeyedSubtree(
+                    key: _moreKey,
+                    child: AltynemelIconButton(
+                      icon: IconId.more,
+                      label: Strings.moreAbout(widget.title),
+                      compact: true,
+                      onPressed: () => widget.onMore(_moreRect()),
+                    ),
                   ),
                 ),
               ),

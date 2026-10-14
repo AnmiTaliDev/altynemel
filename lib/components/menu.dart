@@ -8,6 +8,48 @@ import 'icon.dart';
 import 'icon_data.dart';
 import 'pressable.dart';
 
+Rect anchorRect(BuildContext context) {
+  final box = context.findRenderObject()! as RenderBox;
+  return box.localToGlobal(Offset.zero) & box.size;
+}
+
+class MenuLayout extends SingleChildLayoutDelegate {
+  const MenuLayout(this.anchor);
+
+  final Rect anchor;
+
+  static const double gap = space2;
+
+  @override
+  BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
+    return BoxConstraints.loose(
+      Size(constraints.maxWidth - 2 * gap, constraints.maxHeight - 2 * gap),
+    );
+  }
+
+  @override
+  Offset getPositionForChild(Size size, Size childSize) {
+    final left = anchor.isEmpty ? anchor.left : anchor.right - childSize.width;
+    final maxX = size.width - childSize.width - gap;
+    final x = left.clamp(gap, maxX < gap ? gap : maxX).toDouble();
+    final below = anchor.bottom + space1;
+    final above = anchor.top - space1 - childSize.height;
+    final double y;
+    if (below + childSize.height <= size.height - gap) {
+      y = below;
+    } else if (above >= gap) {
+      y = above;
+    } else {
+      final maxY = size.height - childSize.height - gap;
+      y = maxY < gap ? gap : maxY;
+    }
+    return Offset(x, y);
+  }
+
+  @override
+  bool shouldRelayout(MenuLayout oldDelegate) => anchor != oldDelegate.anchor;
+}
+
 class MenuPanel extends StatelessWidget {
   const MenuPanel({
     super.key,
