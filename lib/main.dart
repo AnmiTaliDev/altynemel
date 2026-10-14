@@ -6,7 +6,7 @@ import 'package:media_kit/media_kit.dart';
 
 import 'app.dart';
 import 'integration/global_shortcuts.dart';
-import 'integration/media_session.dart';
+import 'integration/mpris.dart';
 import 'integration/window_service.dart';
 import 'library/library_controller.dart';
 import 'player/playback_controller.dart';
@@ -34,7 +34,6 @@ Future<void> main() async {
     persistence: PlaybackPersistence(database),
   );
   await playback.restore(library.trackById);
-  if (mediaSessionSupported) await initMediaSession(playback);
   if (Platform.isLinux) {
     unawaited(GlobalShortcuts(actions: shortcutActions(playback)).start());
   }
@@ -46,6 +45,15 @@ Future<void> main() async {
       },
     );
     await window.init();
+  }
+  if (Platform.isLinux && window != null) {
+    unawaited(
+      MprisService(
+        playback: playback,
+        onRaise: window.raise,
+        onQuit: window.close,
+      ).start(),
+    );
   }
   runApp(
     AltynemelApp(

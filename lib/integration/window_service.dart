@@ -32,6 +32,12 @@ class WindowService with WindowListener {
 
   Future<void> minimize() => windowManager.minimize();
 
+  Future<void> raise() async {
+    if (await windowManager.isMinimized()) await windowManager.restore();
+    await windowManager.show();
+    await windowManager.focus();
+  }
+
   Future<void> toggleMaximize() async {
     if (await windowManager.isMaximized()) {
       await windowManager.unmaximize();

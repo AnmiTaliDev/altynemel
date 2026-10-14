@@ -49,7 +49,6 @@ If the portal is missing or the request is denied, the shortcuts are disabled an
 
 - The window is undecorated and draws its own title bar. Moving and resizing depend on the compositor.
 - Centering the window on start has no effect on Wayland.
-- Media controls report no cover art and offer no Raise or Quit action.
 - Show in folder uses `xdg-open` and needs a desktop file manager.
 
 ## Tests
