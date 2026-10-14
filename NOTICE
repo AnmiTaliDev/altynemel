@@ -1,0 +1,32 @@
+Altynemel
+
+Altynemel is free software licensed under the GNU General Public License,
+version 3 only. The full text is in the LICENSE file.
+
+Altynemel uses the following components that are not part of its source
+code. Dart and Flutter packages are listed separately with their own license
+texts, which are collected when the application is built.
+
+Onest (typeface)
+  License: SIL Open Font License 1.1
+  The license text is in assets/fonts/OFL.txt.
+
+mpv and libmpv (audio playback, provided by the system)
+  License: GPL-2.0-or-later or LGPL-2.1-or-later, depending on how the
+  installed build was configured.
+  https://mpv.io
+
+FFmpeg libraries (decoding, used by mpv)
+  License: LGPL-2.1-or-later or GPL-2.0-or-later, depending on the build.
+  https://ffmpeg.org
+
+SQLite (library index, bundled by the sqlite3 package)
+  License: public domain.
+  https://sqlite.org/copyright.html
+
+GTK 3 (window system integration on Linux)
+  License: LGPL-2.1-or-later.
+  https://www.gtk.org
+
+This notice is informational. The license texts of the components above
+apply as distributed by their authors.

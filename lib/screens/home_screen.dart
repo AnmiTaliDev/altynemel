@@ -23,6 +23,7 @@ import '../player/repeat_setting.dart';
 import '../settings/app_settings.dart';
 import '../settings/app_settings_scope.dart';
 import '../strings.dart';
+import 'about_screen.dart';
 import 'library_screen.dart';
 import 'playlist_screen.dart';
 import 'queue_screen.dart';
@@ -75,6 +76,8 @@ class _GuardedAction<T extends Intent> extends Action<T> {
   }
 }
 
+enum _SettingsPage { about, freeSoftware }
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.initialDestination});
 
@@ -92,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _playlistId;
   String? _albumId;
   String? _artistId;
+  _SettingsPage? _settingsPage;
   String _query = '';
   String? _selected;
 
@@ -152,6 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (value.trim().isNotEmpty) {
         _albumId = null;
         _artistId = null;
+        _settingsPage = null;
       }
     });
   }
@@ -317,10 +322,22 @@ class _HomeScreenState extends State<HomeScreen> {
           onTrackMore: (track) => showTrackMenu(context, track),
         );
       case SidebarDestination.settings:
-        return SettingsScreen(
-          settings: settings,
-          onChooseFolder: () => _chooseFolder(settings),
-        );
+        return switch (_settingsPage) {
+          _SettingsPage.about => AboutScreen(
+            onBack: () => setState(() => _settingsPage = null),
+            onOpenFreeSoftware: () =>
+                setState(() => _settingsPage = _SettingsPage.freeSoftware),
+          ),
+          _SettingsPage.freeSoftware => FreeSoftwareScreen(
+            onBack: () => setState(() => _settingsPage = _SettingsPage.about),
+          ),
+          null => SettingsScreen(
+            settings: settings,
+            onChooseFolder: () => _chooseFolder(settings),
+            onOpenAbout: () =>
+                setState(() => _settingsPage = _SettingsPage.about),
+          ),
+        };
       case SidebarDestination.nowPlaying:
         return _playlistBody(
           playback,
@@ -418,6 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _playlistId = null;
                       _albumId = null;
                       _artistId = null;
+                      _settingsPage = null;
                     }),
                     playlists: playlists,
                     selectedPlaylistId: _playlistId,
@@ -425,6 +443,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _playlistId = id;
                       _albumId = null;
                       _artistId = null;
+                      _settingsPage = null;
                     }),
                     searchController: _search,
                     searchFocusNode: _searchFocus,
@@ -466,6 +485,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _playlistId = null;
                           _albumId = null;
                           _artistId = null;
+                          _settingsPage = null;
                         }),
                       );
                     },

@@ -27,6 +27,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - LICENSE
+    - NOTICE
+    - assets/fonts/OFL.txt
   fonts:
     - family: Onest
       fonts:

@@ -42,6 +42,22 @@ class Strings {
   static const columnTitle = 'Title';
   static const columnAlbum = 'Album';
   static const columnTime = 'Time';
+  static const about = 'About';
+  static const aboutApp = 'About Altynemel';
+  static const aboutText =
+      'Altynemel is a desktop music player for audio files from a local folder.';
+  static const aboutFreeSoftware = 'About free software';
+  static const aboutFreeSoftwareHint =
+      'Licenses of Altynemel and of the software it uses.';
+  static const freeSoftwareIntro =
+      'Altynemel is free software. You may use, study, share and change it under the terms of the GNU General Public License, version 3 only. It comes with no warranty.';
+  static const fontName = 'Onest';
+  static const versionLabel = 'Version';
+  static const licenseLabel = 'License';
+  static const loadingLicenses = 'Loading licenses';
+  static const licensesFailed = 'Licenses could not be loaded.';
+  static String licenseCount(int count) =>
+      count == 1 ? '1 component' : '$count components';
   static const albumKind = 'Album';
   static const artistKind = 'Artist';
   static const albums = 'Albums';
