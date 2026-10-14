@@ -24,6 +24,7 @@ import '../settings/app_settings.dart';
 import '../settings/app_settings_scope.dart';
 import '../strings.dart';
 import 'about_screen.dart';
+import 'confirm_dialog.dart';
 import 'library_screen.dart';
 import 'playlist_screen.dart';
 import 'queue_screen.dart';
@@ -96,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _albumId;
   String? _artistId;
   _SettingsPage? _settingsPage;
+  LibraryTab _libraryTab = LibraryTab.albums;
   String _query = '';
   String? _selected;
 
@@ -184,6 +186,9 @@ class _HomeScreenState extends State<HomeScreen> {
     String kind = Strings.playlist,
     ImageProvider? image,
     String? albumName,
+    VoidCallback? onBack,
+    VoidCallback? onDelete,
+    String? menuPlaylistId,
   }) {
     final current = playback.current;
     final playingHere =
@@ -199,6 +204,8 @@ class _HomeScreenState extends State<HomeScreen> {
       kind: kind,
       image: image,
       albumName: albumName,
+      onBack: onBack,
+      onDelete: onDelete,
       onPlayPause: () {
         if (playingHere) {
           playback.toggle();
@@ -212,8 +219,33 @@ class _HomeScreenState extends State<HomeScreen> {
         tracks.indexWhere((t) => t.id == track.id),
         title: title,
       ),
-      onTrackMore: (track) => showTrackMenu(context, track),
+      onTrackMore: (track) =>
+          showTrackMenu(context, track, fromPlaylistId: menuPlaylistId),
     );
+  }
+
+  void _closeDetail() => setState(() {
+    _albumId = null;
+    _artistId = null;
+  });
+
+  Future<void> _deletePlaylist(
+    LibraryController library,
+    String playlistId,
+  ) async {
+    final name = _titleOf(library, playlistId);
+    final confirmed = await confirmAction(
+      context,
+      title: Strings.deletePlaylistQuestion(name),
+      hint: Strings.deletePlaylistHint,
+      confirmLabel: Strings.deletePlaylist,
+    );
+    if (!confirmed || !mounted) return;
+    library.deletePlaylist(playlistId);
+    setState(() {
+      _playlistId = null;
+      _destination = SidebarDestination.library;
+    });
   }
 
   Widget? _detailBody(
@@ -236,6 +268,7 @@ class _HomeScreenState extends State<HomeScreen> {
           kind: Strings.albumKind,
           image: coverImage(album.coverPath, width: 320),
           albumName: album.title,
+          onBack: _closeDetail,
         );
       }
     }
@@ -255,6 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
           artistId,
           tracks,
           kind: Strings.artistKind,
+          onBack: _closeDetail,
         );
       }
     }
@@ -277,6 +311,8 @@ class _HomeScreenState extends State<HomeScreen> {
         _tracksOf(library, playlistId),
         emptyTitle: isLiked ? Strings.likedEmpty : null,
         emptyHint: isLiked ? Strings.likedEmptyHint : null,
+        menuPlaylistId: isLiked ? null : playlistId,
+        onDelete: isLiked ? null : () => _deletePlaylist(library, playlistId),
       );
     }
     switch (_destination) {
@@ -292,6 +328,8 @@ class _HomeScreenState extends State<HomeScreen> {
           error: library.error,
           currentTrackId: playback.current?.id,
           isPlaying: playback.isPlaying,
+          initialTab: _libraryTab,
+          onTabChanged: (tab) => _libraryTab = tab,
           selectedTrackId: _selected,
           onSelectTrack: _select,
           onPlayTrack: (track) => playback.playTracks(

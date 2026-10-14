@@ -8,6 +8,7 @@ import 'cover_art.dart';
 import 'pressable.dart';
 
 const double mediaTileCover = 160;
+const double mediaTileWidth = mediaTileCover + 2 * space2;
 
 class MediaTile extends StatelessWidget {
   const MediaTile({
@@ -30,7 +31,7 @@ class MediaTile extends StatelessWidget {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     return SizedBox(
-      width: mediaTileCover + 2 * space2,
+      width: mediaTileWidth,
       child: Pressable(
         onPressed: onPressed,
         radius: radiusControl,

@@ -162,6 +162,17 @@ class LibraryController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeFromPlaylist(String playlistId, String trackId) {
+    _database.removeFromPlaylist(playlistId, trackId);
+    notifyListeners();
+  }
+
+  void deletePlaylist(String playlistId) {
+    _database.deletePlaylist(playlistId);
+    _playlists = _database.playlists();
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _disposed = true;

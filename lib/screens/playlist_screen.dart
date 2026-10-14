@@ -31,6 +31,8 @@ class PlaylistScreen extends StatelessWidget {
     this.kind = Strings.playlist,
     this.image,
     this.albumName,
+    this.onBack,
+    this.onDelete,
   });
 
   final String title;
@@ -47,6 +49,8 @@ class PlaylistScreen extends StatelessWidget {
   final String kind;
   final ImageProvider? image;
   final String? albumName;
+  final VoidCallback? onBack;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -65,41 +69,67 @@ class PlaylistScreen extends StatelessWidget {
           sliver: SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(bottom: space5),
-              child: Wrap(
-                spacing: space5,
-                runSpacing: space5,
-                crossAxisAlignment: WrapCrossAlignment.end,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CoverArt(size: 160, image: image, albumName: albumName),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  if (onBack != null) ...[
+                    AltynemelButton(
+                      label: Strings.back,
+                      kind: ButtonKind.text,
+                      onPressed: onBack,
+                    ),
+                    const SizedBox(height: space3),
+                  ],
+                  Wrap(
+                    spacing: space5,
+                    runSpacing: space5,
+                    crossAxisAlignment: WrapCrossAlignment.end,
                     children: [
-                      Text(
-                        kind,
-                        style: text.label.copyWith(color: colors.inkMuted),
-                      ),
-                      const SizedBox(height: space2),
-                      Semantics(
-                        header: true,
-                        child: Text(title, style: text.displayLg),
-                      ),
-                      const SizedBox(height: space2),
-                      Text(
-                        summary,
-                        style: text.caption.copyWith(color: colors.inkMuted),
-                      ),
-                      const SizedBox(height: space4),
-                      AltynemelButton(
-                        label: playingFromHere && isPlaying
-                            ? Strings.pause
-                            : Strings.play,
-                        kind: ButtonKind.primary,
-                        icon: playingFromHere && isPlaying
-                            ? IconId.pause
-                            : IconId.play,
-                        filledIcon: !(playingFromHere && isPlaying),
-                        onPressed: tracks.isEmpty ? null : onPlayPause,
+                      CoverArt(size: 160, image: image, albumName: albumName),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            kind,
+                            style: text.label.copyWith(color: colors.inkMuted),
+                          ),
+                          const SizedBox(height: space2),
+                          Semantics(
+                            header: true,
+                            child: Text(title, style: text.displayLg),
+                          ),
+                          const SizedBox(height: space2),
+                          Text(
+                            summary,
+                            style: text.caption.copyWith(
+                              color: colors.inkMuted,
+                            ),
+                          ),
+                          const SizedBox(height: space4),
+                          Wrap(
+                            spacing: space3,
+                            runSpacing: space3,
+                            children: [
+                              AltynemelButton(
+                                label: playingFromHere && isPlaying
+                                    ? Strings.pause
+                                    : Strings.play,
+                                kind: ButtonKind.primary,
+                                icon: playingFromHere && isPlaying
+                                    ? IconId.pause
+                                    : IconId.play,
+                                filledIcon: !(playingFromHere && isPlaying),
+                                onPressed: tracks.isEmpty ? null : onPlayPause,
+                              ),
+                              if (onDelete != null)
+                                AltynemelButton(
+                                  label: Strings.deletePlaylist,
+                                  onPressed: onDelete,
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),

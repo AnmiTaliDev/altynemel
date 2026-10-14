@@ -11,7 +11,11 @@ import '../player/playback_controller.dart';
 import '../player/playback_scope.dart';
 import '../strings.dart';
 
-Future<void> showTrackMenu(BuildContext context, Track track) {
+Future<void> showTrackMenu(
+  BuildContext context,
+  Track track, {
+  String? fromPlaylistId,
+}) {
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -23,6 +27,7 @@ Future<void> showTrackMenu(BuildContext context, Track track) {
       child: Center(
         child: _TrackMenu(
           track: track,
+          fromPlaylistId: fromPlaylistId,
           library: LibraryScope.of(context),
           playback: PlaybackScope.of(context),
         ),
@@ -38,8 +43,10 @@ class _TrackMenu extends StatefulWidget {
     required this.track,
     required this.library,
     required this.playback,
+    this.fromPlaylistId,
   });
 
+  final String? fromPlaylistId;
   final Track track;
   final LibraryController library;
   final PlaybackController playback;
@@ -130,6 +137,17 @@ class _TrackMenuState extends State<_TrackMenu> {
               icon: IconId.library,
               onPressed: () => setState(() => _page = _Page.playlists),
             ),
+            if (widget.fromPlaylistId != null)
+              MenuItem(
+                label: Strings.removeFromPlaylist,
+                icon: IconId.close,
+                onPressed: () => _run(
+                  () => library.removeFromPlaylist(
+                    widget.fromPlaylistId!,
+                    track.id,
+                  ),
+                ),
+              ),
             if (_canShowFolder)
               MenuItem(
                 label: Strings.showInFolder,

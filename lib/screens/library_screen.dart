@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../components/button.dart';
@@ -39,6 +41,7 @@ class LibraryScreen extends StatefulWidget {
     this.scanning = false,
     this.error,
     this.initialTab = LibraryTab.albums,
+    this.onTabChanged,
   });
 
   final List<Album> albums;
@@ -57,6 +60,7 @@ class LibraryScreen extends StatefulWidget {
   final bool scanning;
   final String? error;
   final LibraryTab initialTab;
+  final ValueChanged<LibraryTab>? onTabChanged;
 
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
@@ -150,7 +154,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 PillTabs<LibraryTab>(
                   semanticLabel: Strings.libraryViews,
                   selected: _tab,
-                  onSelected: (value) => setState(() => _tab = value),
+                  onSelected: (value) {
+                    setState(() => _tab = value);
+                    widget.onTabChanged?.call(value);
+                  },
                   options: const [
                     PillOption(value: LibraryTab.albums, label: Strings.albums),
                     PillOption(
@@ -165,35 +172,32 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
         ),
         switch (_tab) {
-          LibraryTab.albums => _tiles([
-            for (final album in widget.albums)
-              MediaTile(
-                title: album.title,
-                subtitle: album.artist,
-                image: coverImage(album.coverPath),
-                semanticLabel: Strings.albumTile(album.title, album.artist),
-                onPressed: () => widget.onOpenAlbum(album),
-              ),
-          ]),
-          LibraryTab.artists => _tiles([
-            for (final artist in widget.artists)
-              MediaTile(
-                title: artist.name,
-                subtitle: Strings.tracksOf(artist.trackCount),
-                semanticLabel: Strings.artistTile(
-                  artist.name,
-                  artist.trackCount,
-                ),
-                onPressed: () => widget.onOpenArtist(artist),
-              ),
-          ]),
+          LibraryTab.albums => _tiles(widget.albums.length, (index) {
+            final album = widget.albums[index];
+            return MediaTile(
+              title: album.title,
+              subtitle: album.artist,
+              image: coverImage(album.coverPath),
+              semanticLabel: Strings.albumTile(album.title, album.artist),
+              onPressed: () => widget.onOpenAlbum(album),
+            );
+          }),
+          LibraryTab.artists => _tiles(widget.artists.length, (index) {
+            final artist = widget.artists[index];
+            return MediaTile(
+              title: artist.name,
+              subtitle: Strings.tracksOf(artist.trackCount),
+              semanticLabel: Strings.artistTile(artist.name, artist.trackCount),
+              onPressed: () => widget.onOpenArtist(artist),
+            );
+          }),
           LibraryTab.tracks => _trackList(showAlbum),
         },
       ],
     );
   }
 
-  Widget _tiles(List<Widget> children) {
+  Widget _tiles(int count, Widget Function(int index) build) {
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
         space6 - space2,
@@ -201,8 +205,34 @@ class _LibraryScreenState extends State<LibraryScreen> {
         space6 - space2,
         space6,
       ),
-      sliver: SliverToBoxAdapter(
-        child: Wrap(spacing: space2, runSpacing: space2, children: children),
+      sliver: SliverLayoutBuilder(
+        builder: (context, constraints) {
+          final columns = math.max(
+            1,
+            ((constraints.crossAxisExtent + space2) / (mediaTileWidth + space2))
+                .floor(),
+          );
+          return SliverList.builder(
+            itemCount: (count / columns).ceil(),
+            itemBuilder: (context, row) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: space2),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var column = 0; column < columns; column++) ...[
+                      if (column > 0) const SizedBox(width: space2),
+                      if (row * columns + column < count)
+                        build(row * columns + column)
+                      else
+                        const SizedBox(width: mediaTileWidth),
+                    ],
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

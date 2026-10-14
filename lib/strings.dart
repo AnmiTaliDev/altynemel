@@ -58,6 +58,11 @@ class Strings {
   static const licensesFailed = 'Licenses could not be loaded.';
   static String licenseCount(int count) =>
       count == 1 ? '1 component' : '$count components';
+  static const deletePlaylist = 'Delete playlist';
+  static const removeFromPlaylist = 'Remove from playlist';
+  static const cancel = 'Cancel';
+  static const deletePlaylistHint = 'The tracks stay in your library.';
+  static String deletePlaylistQuestion(String name) => 'Delete $name?';
   static const albumKind = 'Album';
   static const artistKind = 'Artist';
   static const albums = 'Albums';

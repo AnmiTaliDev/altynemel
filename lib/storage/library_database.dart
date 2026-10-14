@@ -216,6 +216,13 @@ class LibraryDatabase {
     );
   }
 
+  void removeFromPlaylist(String playlistId, String trackId) {
+    _db.execute(
+      'DELETE FROM playlist_tracks WHERE playlist_id = ? AND track_id = ?',
+      [int.parse(playlistId), int.parse(trackId)],
+    );
+  }
+
   List<String> playlistTrackIds(String playlistId) {
     final rows = _db.select(
       'SELECT track_id FROM playlist_tracks WHERE playlist_id = ? ORDER BY position',
