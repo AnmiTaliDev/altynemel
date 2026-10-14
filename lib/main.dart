@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
 import 'app.dart';
+import 'integration/global_shortcuts.dart';
 import 'integration/media_session.dart';
 import 'integration/window_service.dart';
 import 'library/library_controller.dart';
@@ -33,6 +35,9 @@ Future<void> main() async {
   );
   await playback.restore(library.trackById);
   if (mediaSessionSupported) await initMediaSession(playback);
+  if (Platform.isLinux) {
+    unawaited(GlobalShortcuts(actions: shortcutActions(playback)).start());
+  }
   WindowService? window;
   if (Platform.isLinux || Platform.isMacOS) {
     window = WindowService(

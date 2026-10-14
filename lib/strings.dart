@@ -4,6 +4,7 @@ class Strings {
   static const pause = 'Pause';
   static const previousTrack = 'Previous track';
   static const nextTrack = 'Next track';
+  static const playPauseShortcut = 'Play or pause';
   static const shuffle = 'Shuffle';
   static const repeat = 'Repeat';
   static const repeatAll = 'Repeat all';
