@@ -16,6 +16,7 @@ class Strings {
   static const nowPlaying = 'Now playing';
   static const library = 'Library';
   static const queue = 'Queue';
+  static const settings = 'Settings';
   static const volume = 'Volume';
   static const seek = 'Seek';
   static const coverUnavailable = 'Cover art unavailable';
@@ -28,6 +29,50 @@ class Strings {
   static const columnTitle = 'Title';
   static const columnAlbum = 'Album';
   static const columnTime = 'Time';
+  static const albums = 'Albums';
+  static const artists = 'Artists';
+  static const tracks = 'Tracks';
+  static const libraryViews = 'Library view';
+  static const libraryEmpty = 'No music yet';
+  static const libraryEmptyHint =
+      'Choose a library folder in Settings to add music.';
+  static const openSettings = 'Open settings';
+  static const queueEmpty = 'The queue is empty';
+  static const queueEmptyHint = 'Play a track from the library to fill it.';
+  static const nextUp = 'Next up';
+  static const appearance = 'Appearance';
+  static const playback = 'Playback';
+  static const theme = 'Theme';
+  static const themeHint = 'Follow the system or pick one theme.';
+  static const themeSystem = 'System';
+  static const themeNight = 'Night';
+  static const themeDay = 'Day';
+  static const themeContrast = 'Contrast';
+  static const reduceMotion = 'Reduce motion';
+  static const reduceMotionHint = 'Replace transitions with instant changes.';
+  static const gapless = 'Gapless playback';
+  static const gaplessHint = 'Play consecutive tracks without a pause.';
+  static const crossfade = 'Crossfade';
+  static const crossfadeHint = 'Blend the end of a track into the next one.';
+  static const volumeStep = 'Volume step';
+  static const volumeStepHint = 'Change per key press, in percent.';
+  static const libraryFolder = 'Library folder';
+  static const libraryFolderNone = 'No folder chosen.';
+  static const chooseFolder = 'Choose folder';
+  static const unavailableInBuild = 'Unavailable in this build.';
+  static const rescan = 'Rescan';
+  static const rescanHint = 'How often the folder is checked for changes.';
+  static const minutes5 = '5 minutes';
+  static const minutes15 = '15 minutes';
+  static const hour1 = '1 hour';
+  static const splitArtists = 'Split artists';
+  static const splitArtistsHint =
+      'Treat commas, semicolons and feat. as separators.';
+  static const albumOrder = 'Album order';
+  static const albumOrderHint = 'How tracks inside an album are sorted.';
+  static const orderDiscTrack = 'Disc and track';
+  static const orderFileName = 'File name';
+  static const selected = 'Selected';
 
   static String coverOf(String album) => 'Cover art: $album';
   static String moreAbout(String title) => 'More about $title';
@@ -36,4 +81,8 @@ class Strings {
   static String songsIn(String playlist) => 'Songs in $playlist';
   static String percent(int value) => '$value percent';
   static String songCount(int count) => count == 1 ? '1 song' : '$count songs';
+  static String tracksOf(int count) => count == 1 ? '1 track' : '$count tracks';
+  static String albumTile(String title, String artist) => '$title, $artist';
+  static String artistTile(String name, int count) =>
+      '$name, ${tracksOf(count)}';
 }

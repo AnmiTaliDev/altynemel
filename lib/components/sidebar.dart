@@ -10,7 +10,7 @@ import 'icon_data.dart';
 import 'pressable.dart';
 import 'search_field.dart';
 
-enum SidebarDestination { nowPlaying, library, queue }
+enum SidebarDestination { nowPlaying, library, queue, settings }
 
 class SidebarPlaylist {
   const SidebarPlaylist({required this.id, required this.name});
@@ -115,6 +115,12 @@ class Sidebar extends StatelessWidget {
                   current: playlist.id == selectedPlaylistId,
                   onPressed: () => onPlaylist(playlist.id),
                 ),
+              const SizedBox(height: space5),
+              _NavItem(
+                label: Strings.settings,
+                current: destination == SidebarDestination.settings,
+                onPressed: () => onDestination(SidebarDestination.settings),
+              ),
             ],
           ),
         ),

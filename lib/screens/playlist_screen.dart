@@ -10,8 +10,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
-
-const double albumColumnHiddenBelow = 720;
+import 'album_column.dart';
 
 class PlaylistScreen extends StatelessWidget {
   const PlaylistScreen({
