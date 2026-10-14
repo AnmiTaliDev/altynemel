@@ -40,6 +40,7 @@ class PlayerBar extends StatelessWidget {
     required this.volume,
     required this.onVolume,
     required this.onQueue,
+    this.volumeStep = 5,
     this.image,
     this.albumName,
   });
@@ -64,6 +65,7 @@ class PlayerBar extends StatelessWidget {
   final int volume;
   final ValueChanged<int>? onVolume;
   final VoidCallback? onQueue;
+  final int volumeStep;
 
   Widget _track(BuildContext context) {
     final colors = AltynemelColors.of(context);
@@ -174,7 +176,7 @@ class PlayerBar extends StatelessWidget {
             child: ProgressBar(
               value: volume.toDouble(),
               max: 100,
-              step: 5,
+              step: volumeStep.toDouble(),
               height: targetPointer,
               gapColor: colors.surface,
               semanticLabel: Strings.volume,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'library/library_controller.dart';
 import 'library/library_scope.dart';
+import 'player/playback_controller.dart';
+import 'player/playback_scope.dart';
 import 'screens/home_screen.dart';
 import 'settings/app_settings.dart';
 import 'settings/app_settings_scope.dart';
@@ -13,10 +15,12 @@ class AltynemelApp extends StatefulWidget {
     super.key,
     required this.settings,
     required this.library,
+    required this.playback,
   });
 
   final AppSettings settings;
   final LibraryController library;
+  final PlaybackController playback;
 
   @override
   State<AltynemelApp> createState() => _AltynemelAppState();
@@ -40,35 +44,38 @@ class _AltynemelAppState extends State<AltynemelApp> {
       settings: _settings,
       child: LibraryScope(
         library: widget.library,
-        child: ListenableBuilder(
-          listenable: _settings,
-          builder: (context, _) {
-            final fixed = _fixedTheme();
-            final light = buildTheme(fixed ?? AltynemelThemeId.day);
-            final dark = buildTheme(fixed ?? AltynemelThemeId.night);
-            return MaterialApp(
-              title: Strings.appName,
-              debugShowCheckedModeBanner: false,
-              theme: light,
-              darkTheme: dark,
-              themeMode: switch (fixed) {
-                null => ThemeMode.system,
-                AltynemelThemeId.day => ThemeMode.light,
-                _ => ThemeMode.dark,
-              },
-              builder: (context, child) {
-                final media = MediaQuery.of(context);
-                return MediaQuery(
-                  data: media.copyWith(
-                    disableAnimations:
-                        media.disableAnimations || _settings.reduceMotion,
-                  ),
-                  child: child!,
-                );
-              },
-              home: const Scaffold(body: HomeScreen()),
-            );
-          },
+        child: PlaybackScope(
+          playback: widget.playback,
+          child: ListenableBuilder(
+            listenable: _settings,
+            builder: (context, _) {
+              final fixed = _fixedTheme();
+              final light = buildTheme(fixed ?? AltynemelThemeId.day);
+              final dark = buildTheme(fixed ?? AltynemelThemeId.night);
+              return MaterialApp(
+                title: Strings.appName,
+                debugShowCheckedModeBanner: false,
+                theme: light,
+                darkTheme: dark,
+                themeMode: switch (fixed) {
+                  null => ThemeMode.system,
+                  AltynemelThemeId.day => ThemeMode.light,
+                  _ => ThemeMode.dark,
+                },
+                builder: (context, child) {
+                  final media = MediaQuery.of(context);
+                  return MediaQuery(
+                    data: media.copyWith(
+                      disableAnimations:
+                          media.disableAnimations || _settings.reduceMotion,
+                    ),
+                    child: child!,
+                  );
+                },
+                home: const Scaffold(body: HomeScreen()),
+              );
+            },
+          ),
         ),
       ),
     );

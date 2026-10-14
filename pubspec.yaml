@@ -12,6 +12,8 @@ dependencies:
   file_selector: ^1.1.0
   flutter:
     sdk: flutter
+  media_kit: ^1.2.6
+  media_kit_libs_linux: ^1.2.1
   sqlite3: ^3.5.2
 
 dev_dependencies:

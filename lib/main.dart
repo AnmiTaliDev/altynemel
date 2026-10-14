@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'app.dart';
+import 'package:media_kit/media_kit.dart';
+
 import 'library/library_controller.dart';
+import 'player/playback_controller.dart';
+import 'player/playback_persistence.dart';
 import 'settings/app_settings.dart';
 import 'settings/settings_persistence.dart';
 import 'storage/app_directories.dart';
@@ -9,6 +13,7 @@ import 'storage/library_database.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  MediaKit.ensureInitialized();
   final directory = appDataDirectory();
   final database = LibraryDatabase.open('${directory.path}/library.db');
   final settings = AppSettings();
@@ -19,5 +24,12 @@ void main() {
     settings: settings,
     coversDirectory: '${directory.path}/covers',
   )..start();
-  runApp(AltynemelApp(settings: settings, library: library));
+  final playback = PlaybackController(
+    settings: settings,
+    persistence: PlaybackPersistence(database),
+  );
+  playback.restore(library.trackById);
+  runApp(
+    AltynemelApp(settings: settings, library: library, playback: playback),
+  );
 }

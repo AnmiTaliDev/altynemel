@@ -4,6 +4,10 @@ import 'package:altynemel/app.dart';
 import 'package:altynemel/library/library_controller.dart';
 import 'package:altynemel/library/library_scope.dart';
 import 'package:altynemel/library/scanner.dart';
+import 'package:altynemel/player/playback_controller.dart';
+import 'package:altynemel/player/playback_scope.dart';
+import 'package:media_kit/media_kit.dart' hide Track;
+import 'fake_player.dart';
 import 'package:altynemel/settings/app_settings.dart';
 import 'package:altynemel/settings/app_settings_scope.dart';
 import 'package:altynemel/storage/library_database.dart';
@@ -64,6 +68,11 @@ class TestLibrary {
       final playlistId = database.createPlaylist(sharedPlaylistName);
       database.addToPlaylist(playlistId, database.tracks().first.id);
     }
+    playback = PlaybackController(
+      settings: settings,
+      fileExists: (_) => true,
+      playerFactory: () => Player(platformPlayer: FakePlatformPlayer()),
+    );
     library = LibraryController(
       database: database,
       settings: settings,
@@ -74,8 +83,10 @@ class TestLibrary {
   final LibraryDatabase database = LibraryDatabase.inMemory();
   final AppSettings settings = AppSettings();
   late final LibraryController library;
+  late final PlaybackController playback;
 
   void dispose() {
+    playback.dispose();
     library.dispose();
     settings.dispose();
     database.close();
@@ -86,14 +97,18 @@ class TestLibrary {
       settings: settings,
       child: LibraryScope(
         library: library,
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: buildTheme(theme),
-          home: Scaffold(body: home),
+        child: PlaybackScope(
+          playback: playback,
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: buildTheme(theme),
+            home: Scaffold(body: home),
+          ),
         ),
       ),
     );
   }
 
-  Widget app() => AltynemelApp(settings: settings, library: library);
+  Widget app() =>
+      AltynemelApp(settings: settings, library: library, playback: playback);
 }

@@ -74,6 +74,7 @@ class Strings {
   static const orderFileName = 'File name';
   static const selected = 'Selected';
   static const nothingPlaying = 'Nothing playing';
+  static const nothingPlayingHint = 'Play a track to see its list here.';
   static const scanning = 'Scanning library';
   static const folderUnavailable = 'The library folder is not available.';
   static const scanFailed = 'Scan failed';
