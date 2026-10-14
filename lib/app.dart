@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'integration/window_scope.dart';
+import 'integration/window_service.dart';
 import 'library/library_controller.dart';
 import 'library/library_scope.dart';
 import 'player/playback_controller.dart';
@@ -16,11 +18,13 @@ class AltynemelApp extends StatefulWidget {
     required this.settings,
     required this.library,
     required this.playback,
+    this.window,
   });
 
   final AppSettings settings;
   final LibraryController library;
   final PlaybackController playback;
+  final WindowService? window;
 
   @override
   State<AltynemelApp> createState() => _AltynemelAppState();
@@ -72,7 +76,14 @@ class _AltynemelAppState extends State<AltynemelApp> {
                     child: child!,
                   );
                 },
-                home: const Scaffold(body: HomeScreen()),
+                home: Scaffold(
+                  body: widget.window == null
+                      ? const HomeScreen()
+                      : WindowScope(
+                          service: widget.window!,
+                          child: const HomeScreen(),
+                        ),
+                ),
               );
             },
           ),

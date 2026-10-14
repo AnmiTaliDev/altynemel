@@ -478,6 +478,8 @@ class PlaybackController extends ChangeNotifier {
     );
   }
 
+  void persist() => _save();
+
   void _save() {
     final persistence = _persistence;
     if (persistence == null || _disposed) return;

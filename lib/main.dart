@@ -1,8 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import 'app.dart';
+import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
+import 'app.dart';
+import 'integration/media_session.dart';
+import 'integration/window_service.dart';
 import 'library/library_controller.dart';
 import 'player/playback_controller.dart';
 import 'player/playback_persistence.dart';
@@ -11,7 +14,7 @@ import 'settings/settings_persistence.dart';
 import 'storage/app_directories.dart';
 import 'storage/library_database.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   final directory = appDataDirectory();
@@ -28,8 +31,23 @@ void main() {
     settings: settings,
     persistence: PlaybackPersistence(database),
   );
-  playback.restore(library.trackById);
+  await playback.restore(library.trackById);
+  if (mediaSessionSupported) await initMediaSession(playback);
+  WindowService? window;
+  if (Platform.isLinux || Platform.isMacOS) {
+    window = WindowService(
+      onClosing: () async {
+        playback.persist();
+      },
+    );
+    await window.init();
+  }
   runApp(
-    AltynemelApp(settings: settings, library: library, playback: playback),
+    AltynemelApp(
+      settings: settings,
+      library: library,
+      playback: playback,
+      window: window,
+    ),
   );
 }

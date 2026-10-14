@@ -21,6 +21,9 @@ enum IconId {
   down,
   alert,
   playing,
+  minimize,
+  maximize,
+  restore,
 }
 
 class IconShape {
@@ -59,6 +62,9 @@ const iconShapes = <IconId, IconShape>{
   IconId.down: IconShape('M6 9.5l6 6 6-6'),
   IconId.alert: IconShape('M12 9v4.5M12 17h.01M12 3.8l9 15.7H3z'),
   IconId.playing: IconShape('M7 19v-9M12 19V5M17 19v-6', strokeWidth: 2.2),
+  IconId.minimize: IconShape('M6 12h12'),
+  IconId.maximize: IconShape('M7 7h10v10H7z'),
+  IconId.restore: IconShape('M9 9V7h8v8h-2M7 9h8v8H7z'),
 };
 
 final _paths = <IconId, Path>{};

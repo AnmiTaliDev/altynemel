@@ -9,11 +9,13 @@ class AppShell extends StatelessWidget {
     required this.sidebar,
     required this.body,
     required this.playerBar,
+    this.titleBar,
   });
 
   final Widget sidebar;
   final Widget body;
   final Widget playerBar;
+  final Widget? titleBar;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,14 @@ class AppShell extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(width: sidebarWidth, child: sidebar),
-                Expanded(child: body),
+                Expanded(
+                  child: Column(
+                    children: [
+                      ?titleBar,
+                      Expanded(child: body),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),

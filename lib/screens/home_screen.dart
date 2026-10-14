@@ -5,7 +5,11 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:window_manager/window_manager.dart';
+
 import '../components/app_shell.dart';
+import '../components/window_bar.dart';
+import '../integration/window_scope.dart';
 import '../components/player_bar.dart';
 import '../components/sidebar.dart';
 import '../library/cover_image.dart';
@@ -269,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final library = LibraryScope.of(context);
     final playback = PlaybackScope.of(context);
     final settings = AppSettingsScope.of(context);
+    final window = WindowScope.maybeOf(context);
     final playlists = [
       const SidebarPlaylist(id: likedContext, name: Strings.liked),
       for (final p in library.playlists)
@@ -316,8 +321,22 @@ class _HomeScreenState extends State<HomeScreen> {
               listenable: Listenable.merge([library, playback]),
               builder: (context, _) {
                 final current = playback.current;
-                return AppShell(
+                final shell = AppShell(
+                  titleBar: window == null
+                      ? null
+                      : ValueListenableBuilder<bool>(
+                          valueListenable: window.maximized,
+                          builder: (context, maximized, _) => WindowBar(
+                            maximized: maximized,
+                            onMinimize: window.minimize,
+                            onToggleMaximize: window.toggleMaximize,
+                            onClose: window.close,
+                          ),
+                        ),
                   sidebar: Sidebar(
+                    dragArea: window == null
+                        ? null
+                        : (child) => DragToMoveArea(child: child),
                     destination: _playlistId == null ? _destination : null,
                     onDestination: (value) => setState(() {
                       _destination = value;
@@ -369,6 +388,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 );
+                if (window == null) return shell;
+                return DragToResizeArea(resizeEdgeSize: 6, child: shell);
               },
             ),
           ),

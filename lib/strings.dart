@@ -73,6 +73,10 @@ class Strings {
   static const orderDiscTrack = 'Disc and track';
   static const orderFileName = 'File name';
   static const selected = 'Selected';
+  static const minimize = 'Minimize';
+  static const maximize = 'Maximize';
+  static const restore = 'Restore';
+  static const closeWindow = 'Close';
   static const nothingPlaying = 'Nothing playing';
   static const nothingPlayingHint = 'Play a track to see its list here.';
   static const scanning = 'Scanning library';

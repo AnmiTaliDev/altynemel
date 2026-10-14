@@ -30,6 +30,7 @@ class Sidebar extends StatelessWidget {
     this.searchController,
     this.searchFocusNode,
     this.onSearchChanged,
+    this.dragArea,
   });
 
   final SidebarDestination? destination;
@@ -40,6 +41,9 @@ class Sidebar extends StatelessWidget {
   final TextEditingController? searchController;
   final FocusNode? searchFocusNode;
   final ValueChanged<String>? onSearchChanged;
+  final Widget Function(Widget child)? dragArea;
+
+  Widget _wrapDrag(Widget child) => dragArea == null ? child : dragArea!(child);
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +72,13 @@ class Sidebar extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: space3),
-                child: Semantics(
-                  header: true,
-                  child: Text(Strings.appName, style: brand),
+              _wrapDrag(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: space3),
+                  child: Semantics(
+                    header: true,
+                    child: Text(Strings.appName, style: brand),
+                  ),
                 ),
               ),
               const SizedBox(height: space5),

@@ -12,7 +12,7 @@ void main() {
   test('every icon path stays on the 24 px grid', () {
     for (final id in IconId.values) {
       final bounds = iconPath(id).getBounds();
-      expect(bounds.isEmpty && id != IconId.more, isFalse, reason: id.name);
+      expect(bounds.width == 0 && bounds.height == 0, isFalse, reason: id.name);
       expect(bounds.left, greaterThanOrEqualTo(0), reason: id.name);
       expect(bounds.top, greaterThanOrEqualTo(0), reason: id.name);
       expect(bounds.right, lessThanOrEqualTo(24), reason: id.name);
