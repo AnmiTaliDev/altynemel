@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'demo/demo_screen.dart';
 import 'theme/themes.dart';
 
 class AltynemelApp extends StatelessWidget {
@@ -13,7 +14,7 @@ class AltynemelApp extends StatelessWidget {
       theme: buildTheme(AltynemelThemeId.day),
       darkTheme: buildTheme(AltynemelThemeId.night),
       themeMode: ThemeMode.system,
-      home: const Scaffold(body: SizedBox.shrink()),
+      home: const Scaffold(body: DemoScreen()),
     );
   }
 }
