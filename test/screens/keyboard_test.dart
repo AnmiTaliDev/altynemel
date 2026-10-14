@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:altynemel/components/pressable.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
 
@@ -37,7 +38,7 @@ void main() {
     final rows = find.byType(TrackTableRow);
     expect(rows, findsAtLeastNWidgets(2));
     final first = find.descendant(
-      of: rows.at(0),
+      of: find.descendant(of: rows.at(0), matching: find.byType(Pressable)),
       matching: find.byType(GestureDetector),
     );
     Focus.of(tester.element(first.first)).requestFocus();

@@ -27,6 +27,7 @@ import 'library_screen.dart';
 import 'playlist_screen.dart';
 import 'queue_screen.dart';
 import 'settings_screen.dart';
+import 'track_menu.dart';
 
 const String likedContext = 'liked';
 
@@ -194,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
         tracks.indexWhere((t) => t.id == track.id),
         title: title,
       ),
-      onTrackMore: (_) {},
+      onTrackMore: (track) => showTrackMenu(context, track),
     );
   }
 
@@ -234,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
             tracks.indexWhere((t) => t.id == track.id),
             title: Strings.library,
           ),
-          onTrackMore: (_) {},
+          onTrackMore: (track) => showTrackMenu(context, track),
           onOpenAlbum: (_) {},
           onOpenArtist: (_) {},
           onOpenSettings: () =>
@@ -254,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> {
             );
             playback.jumpTo(index);
           },
-          onTrackMore: (_) {},
+          onTrackMore: (track) => showTrackMenu(context, track),
         );
       case SidebarDestination.settings:
         return SettingsScreen(

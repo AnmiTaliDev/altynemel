@@ -5,6 +5,17 @@ class Strings {
   static const previousTrack = 'Previous track';
   static const nextTrack = 'Next track';
   static const playPauseShortcut = 'Play or pause';
+  static const playNext = 'Play next';
+  static const addToQueue = 'Add to queue';
+  static const addToPlaylist = 'Add to playlist';
+  static const newPlaylist = 'New playlist';
+  static const playlistName = 'Playlist name';
+  static const createPlaylist = 'Create';
+  static const showInFolder = 'Show in folder';
+  static const closeMenu = 'Close menu';
+  static const back = 'Back';
+  static const noPlaylists = 'No playlists yet';
+  static String menuFor(String title) => 'Actions for $title';
   static String withShortcut(String label, String keys) => '$label ($keys)';
   static const shuffle = 'Shuffle';
   static const repeat = 'Repeat';

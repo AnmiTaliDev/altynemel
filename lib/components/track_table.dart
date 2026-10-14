@@ -113,6 +113,14 @@ class _TrackTableRowState extends State<TrackTableRow> {
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     if (event is KeyUpEvent) return KeyEventResult.ignored;
+    final shiftMenu =
+        event.logicalKey == LogicalKeyboardKey.f10 &&
+        HardwareKeyboard.instance.isShiftPressed;
+    if (event is KeyDownEvent &&
+        (shiftMenu || event.logicalKey == LogicalKeyboardKey.contextMenu)) {
+      widget.onMore();
+      return KeyEventResult.handled;
+    }
     final direction = switch (event.logicalKey) {
       LogicalKeyboardKey.arrowDown => TraversalDirection.down,
       LogicalKeyboardKey.arrowUp => TraversalDirection.up,
@@ -153,140 +161,144 @@ class _TrackTableRowState extends State<TrackTableRow> {
         onFocusChange: (value) => setState(() => _hasFocus = value),
         child: Stack(
           children: [
-            Pressable(
-              onPressed: widget.onSelect,
-              onDoubleTap: unavailable ? null : widget.onPlay,
-              radius: radiusControl,
-              semanticLabel: _spokenLabel(),
-              selected: widget.isSelected,
-              builder: (context, state) {
-                final Color background;
-                if (widget.isCurrent) {
-                  background = colors.surface;
-                } else if (widget.isSelected || state.hovered) {
-                  background = colors.surfaceHigh;
-                } else {
-                  background = Colors.transparent;
-                }
-                return Container(
-                  constraints: const BoxConstraints(minHeight: 56),
-                  padding: const EdgeInsets.symmetric(horizontal: space3),
-                  decoration: BoxDecoration(
-                    color: background,
-                    borderRadius: borderRadiusControl,
-                  ),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.centerLeft,
-                    children: [
-                      if (widget.isCurrent)
-                        Positioned(
-                          left: -space3,
-                          top: space3,
-                          bottom: space3,
-                          width: 4,
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: colors.accent,
-                              borderRadius: borderRadiusPill,
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onSecondaryTap: widget.onMore,
+              child: Pressable(
+                onPressed: widget.onSelect,
+                onDoubleTap: unavailable ? null : widget.onPlay,
+                radius: radiusControl,
+                semanticLabel: _spokenLabel(),
+                selected: widget.isSelected,
+                builder: (context, state) {
+                  final Color background;
+                  if (widget.isCurrent) {
+                    background = colors.surface;
+                  } else if (widget.isSelected || state.hovered) {
+                    background = colors.surfaceHigh;
+                  } else {
+                    background = Colors.transparent;
+                  }
+                  return Container(
+                    constraints: const BoxConstraints(minHeight: 56),
+                    padding: const EdgeInsets.symmetric(horizontal: space3),
+                    decoration: BoxDecoration(
+                      color: background,
+                      borderRadius: borderRadiusControl,
+                    ),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      alignment: Alignment.centerLeft,
+                      children: [
+                        if (widget.isCurrent)
+                          Positioned(
+                            left: -space3,
+                            top: space3,
+                            bottom: space3,
+                            width: 4,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: colors.accent,
+                                borderRadius: borderRadiusPill,
+                              ),
                             ),
                           ),
-                        ),
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: _numberColumn,
-                            child: Center(
-                              child: widget.isCurrent && widget.isPlaying
-                                  ? AltynemelIcon(
-                                      IconId.playing,
-                                      size: 20,
-                                      color: colors.ink,
-                                    )
-                                  : Text(
-                                      '${widget.number}',
-                                      style: text.time.copyWith(
-                                        color: widget.isCurrent
-                                            ? colors.ink
-                                            : colors.inkMuted,
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: _numberColumn,
+                              child: Center(
+                                child: widget.isCurrent && widget.isPlaying
+                                    ? AltynemelIcon(
+                                        IconId.playing,
+                                        size: 20,
+                                        color: colors.ink,
+                                      )
+                                    : Text(
+                                        '${widget.number}',
+                                        style: text.time.copyWith(
+                                          color: widget.isCurrent
+                                              ? colors.ink
+                                              : colors.inkMuted,
+                                        ),
                                       ),
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(width: space4),
-                          Expanded(
-                            flex: 4,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: space2,
-                              ),
-                              child: Row(
-                                children: [
-                                  CoverArt(size: 40, image: widget.image),
-                                  const SizedBox(width: space3),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          widget.title,
-                                          style: text.bodyStrong.copyWith(
-                                            color: unavailable
-                                                ? colors.inkDisabled
-                                                : colors.ink,
-                                          ),
-                                        ),
-                                        Wrap(
-                                          spacing: space2,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.center,
-                                          children: [
-                                            Text(
-                                              widget.artist,
-                                              style: text.caption.copyWith(
-                                                color: colors.inkMuted,
-                                              ),
-                                            ),
-                                            AvailabilityFlag(
-                                              widget.availability,
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
                               ),
                             ),
-                          ),
-                          if (widget.showAlbum) ...[
                             const SizedBox(width: space4),
                             Expanded(
-                              flex: 3,
-                              child: Text(
-                                widget.album ?? '',
-                                style: text.body.copyWith(
-                                  color: colors.inkMuted,
+                              flex: 4,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: space2,
+                                ),
+                                child: Row(
+                                  children: [
+                                    CoverArt(size: 40, image: widget.image),
+                                    const SizedBox(width: space3),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            widget.title,
+                                            style: text.bodyStrong.copyWith(
+                                              color: unavailable
+                                                  ? colors.inkDisabled
+                                                  : colors.ink,
+                                            ),
+                                          ),
+                                          Wrap(
+                                            spacing: space2,
+                                            crossAxisAlignment:
+                                                WrapCrossAlignment.center,
+                                            children: [
+                                              Text(
+                                                widget.artist,
+                                                style: text.caption.copyWith(
+                                                  color: colors.inkMuted,
+                                                ),
+                                              ),
+                                              AvailabilityFlag(
+                                                widget.availability,
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ],
-                          const SizedBox(width: space4),
-                          SizedBox(
-                            width: _timeColumn,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: TimeLabel(widget.duration),
+                            if (widget.showAlbum) ...[
+                              const SizedBox(width: space4),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  widget.album ?? '',
+                                  style: text.body.copyWith(
+                                    color: colors.inkMuted,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(width: space4),
+                            SizedBox(
+                              width: _timeColumn,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: TimeLabel(widget.duration),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: space4 + targetPointer),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
+                            const SizedBox(width: space4 + targetPointer),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
             Positioned(
               right: space3,
