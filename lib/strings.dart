@@ -42,6 +42,8 @@ class Strings {
   static const columnTitle = 'Title';
   static const columnAlbum = 'Album';
   static const columnTime = 'Time';
+  static const albumKind = 'Album';
+  static const artistKind = 'Artist';
   static const albums = 'Albums';
   static const artists = 'Artists';
   static const tracks = 'Tracks';

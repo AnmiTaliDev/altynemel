@@ -307,6 +307,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
               child: Center(
                 child: Opacity(
                   opacity: showMore ? 1 : 0,
+                  alwaysIncludeSemantics: true,
                   child: AltynemelIconButton(
                     icon: IconId.more,
                     label: Strings.moreAbout(widget.title),

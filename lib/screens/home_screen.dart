@@ -90,6 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late SidebarDestination? _destination =
       widget.initialDestination ?? SidebarDestination.library;
   String? _playlistId;
+  String? _albumId;
+  String? _artistId;
   String _query = '';
   String? _selected;
 
@@ -147,6 +149,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _destination = SidebarDestination.library;
         _playlistId = null;
       }
+      if (value.trim().isNotEmpty) {
+        _albumId = null;
+        _artistId = null;
+      }
     });
   }
 
@@ -170,6 +176,9 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Track> tracks, {
     String? emptyTitle,
     String? emptyHint,
+    String kind = Strings.playlist,
+    ImageProvider? image,
+    String? albumName,
   }) {
     final current = playback.current;
     final playingHere =
@@ -182,6 +191,9 @@ class _HomeScreenState extends State<HomeScreen> {
       selectedTrackId: _selected,
       emptyTitle: emptyTitle,
       emptyHint: emptyHint,
+      kind: kind,
+      image: image,
+      albumName: albumName,
       onPlayPause: () {
         if (playingHere) {
           playback.toggle();
@@ -199,11 +211,58 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget? _detailBody(
+    LibraryController library,
+    PlaybackController playback,
+    AppSettings settings,
+  ) {
+    final albumId = _albumId;
+    if (albumId != null && _playlistId == null) {
+      for (final album in library.albums) {
+        if (album.id != albumId) continue;
+        final tracks = [
+          for (final t in library.tracks)
+            if (albumKey(t) == albumId) t,
+        ];
+        return _playlistBody(
+          playback,
+          album.title,
+          tracks,
+          kind: Strings.albumKind,
+          image: coverImage(album.coverPath, width: 320),
+          albumName: album.title,
+        );
+      }
+    }
+    final artistId = _artistId;
+    if (artistId != null && _playlistId == null) {
+      final tracks = [
+        for (final t in library.tracks)
+          if (splitArtists(
+            t.artist,
+            enabled: settings.splitArtists,
+          ).contains(artistId))
+            t,
+      ];
+      if (tracks.isNotEmpty) {
+        return _playlistBody(
+          playback,
+          artistId,
+          tracks,
+          kind: Strings.artistKind,
+        );
+      }
+    }
+    return null;
+  }
+
   Widget _body(
     LibraryController library,
     PlaybackController playback,
     AppSettings settings,
   ) {
+    final detail = _detailBody(library, playback, settings);
+    if (detail != null) return detail;
     final playlistId = _playlistId;
     if (playlistId != null) {
       final isLiked = playlistId == likedContext;
@@ -236,8 +295,8 @@ class _HomeScreenState extends State<HomeScreen> {
             title: Strings.library,
           ),
           onTrackMore: (track) => showTrackMenu(context, track),
-          onOpenAlbum: (_) {},
-          onOpenArtist: (_) {},
+          onOpenAlbum: (album) => setState(() => _albumId = album.id),
+          onOpenArtist: (artist) => setState(() => _artistId = artist.id),
           onOpenSettings: () =>
               setState(() => _destination = SidebarDestination.settings),
         );
@@ -357,10 +416,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     onDestination: (value) => setState(() {
                       _destination = value;
                       _playlistId = null;
+                      _albumId = null;
+                      _artistId = null;
                     }),
                     playlists: playlists,
                     selectedPlaylistId: _playlistId,
-                    onPlaylist: (id) => setState(() => _playlistId = id),
+                    onPlaylist: (id) => setState(() {
+                      _playlistId = id;
+                      _albumId = null;
+                      _artistId = null;
+                    }),
                     searchController: _search,
                     searchFocusNode: _searchFocus,
                     onSearchChanged: _onSearch,
@@ -399,6 +464,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         onQueue: () => setState(() {
                           _destination = SidebarDestination.queue;
                           _playlistId = null;
+                          _albumId = null;
+                          _artistId = null;
                         }),
                       );
                     },

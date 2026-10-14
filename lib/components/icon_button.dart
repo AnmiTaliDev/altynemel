@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/text_styles.dart';
 import 'icon.dart';
 import 'icon_data.dart';
 import 'pressable.dart';
@@ -18,6 +19,7 @@ class AltynemelIconButton extends StatelessWidget {
     this.filled = false,
     this.iconSize = 24,
     this.hint,
+    this.badge,
   });
 
   final IconId icon;
@@ -28,6 +30,7 @@ class AltynemelIconButton extends StatelessWidget {
   final bool filled;
   final double iconSize;
   final String? hint;
+  final String? badge;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +68,18 @@ class AltynemelIconButton extends StatelessWidget {
                 color: foreground,
                 filled: filled,
               ),
-              if (pressed == true)
+              if (badge != null)
+                Positioned(
+                  right: compact ? 2 : 6,
+                  bottom: compact ? 0 : 3,
+                  child: Text(
+                    badge!,
+                    style: AltynemelTextStyles.of(
+                      context,
+                    ).label.copyWith(color: foreground),
+                  ),
+                ),
+              if (pressed == true && badge == null)
                 Positioned(
                   bottom: compact ? 3 : 6,
                   child: Container(

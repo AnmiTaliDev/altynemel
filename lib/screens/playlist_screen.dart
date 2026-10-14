@@ -28,6 +28,9 @@ class PlaylistScreen extends StatelessWidget {
     required this.onTrackMore,
     this.emptyTitle,
     this.emptyHint,
+    this.kind = Strings.playlist,
+    this.image,
+    this.albumName,
   });
 
   final String title;
@@ -41,6 +44,9 @@ class PlaylistScreen extends StatelessWidget {
   final ValueChanged<Track> onTrackMore;
   final String? emptyTitle;
   final String? emptyHint;
+  final String kind;
+  final ImageProvider? image;
+  final String? albumName;
 
   @override
   Widget build(BuildContext context) {
@@ -64,13 +70,13 @@ class PlaylistScreen extends StatelessWidget {
                 runSpacing: space5,
                 crossAxisAlignment: WrapCrossAlignment.end,
                 children: [
-                  const CoverArt(size: 160),
+                  CoverArt(size: 160, image: image, albumName: albumName),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        Strings.playlist,
+                        kind,
                         style: text.label.copyWith(color: colors.inkMuted),
                       ),
                       const SizedBox(height: space2),

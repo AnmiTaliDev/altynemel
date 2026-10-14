@@ -81,4 +81,17 @@ void main() {
     await tester.tap(find.bySemanticsLabel('Play'));
     expect(taps, 1);
   });
+
+  testWidgets('repeat one shows a badge, repeat all does not', (tester) async {
+    await pumpThemed(
+      tester,
+      _transport(isPlaying: false, repeat: RepeatSetting.one),
+    );
+    expect(find.text('1'), findsOneWidget);
+    await pumpThemed(
+      tester,
+      _transport(isPlaying: false, repeat: RepeatSetting.all),
+    );
+    expect(find.text('1'), findsNothing);
+  });
 }

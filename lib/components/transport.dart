@@ -84,6 +84,7 @@ class Transport extends StatelessWidget {
           icon: IconId.repeat,
           label: repeatLabel,
           pressed: repeat != RepeatSetting.off,
+          badge: repeat == RepeatSetting.one ? '1' : null,
           compact: compact,
           onPressed: onRepeat,
         ),
