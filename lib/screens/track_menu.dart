@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../components/menu.dart';
 import '../components/icon_data.dart';
+import '../library/grouping.dart';
 import '../library/library_controller.dart';
 import '../library/library_scope.dart';
 import '../library/track.dart';
@@ -15,6 +16,8 @@ Future<void> showTrackMenu(
   BuildContext context,
   Track track, {
   String? fromPlaylistId,
+  ValueChanged<String>? onOpenArtist,
+  bool splitArtistNames = true,
 }) {
   return showGeneralDialog<void>(
     context: context,
@@ -28,6 +31,8 @@ Future<void> showTrackMenu(
         child: _TrackMenu(
           track: track,
           fromPlaylistId: fromPlaylistId,
+          onOpenArtist: onOpenArtist,
+          splitArtistNames: splitArtistNames,
           library: LibraryScope.of(context),
           playback: PlaybackScope.of(context),
         ),
@@ -44,9 +49,13 @@ class _TrackMenu extends StatefulWidget {
     required this.library,
     required this.playback,
     this.fromPlaylistId,
+    this.onOpenArtist,
+    this.splitArtistNames = true,
   });
 
   final String? fromPlaylistId;
+  final ValueChanged<String>? onOpenArtist;
+  final bool splitArtistNames;
   final Track track;
   final LibraryController library;
   final PlaybackController playback;
@@ -90,6 +99,13 @@ class _TrackMenuState extends State<_TrackMenu> {
     final id = widget.library.createPlaylist(name);
     widget.library.addToPlaylist(id, widget.track.id);
     _close();
+  }
+
+  List<String> get _artistNames {
+    if (widget.onOpenArtist == null || widget.track.artist.trim().isEmpty) {
+      return const [];
+    }
+    return splitArtists(widget.track.artist, enabled: widget.splitArtistNames);
   }
 
   bool get _canShowFolder =>
@@ -137,6 +153,12 @@ class _TrackMenuState extends State<_TrackMenu> {
               icon: IconId.library,
               onPressed: () => setState(() => _page = _Page.playlists),
             ),
+            for (final name in _artistNames)
+              MenuItem(
+                label: Strings.goToArtist(name),
+                icon: IconId.library,
+                onPressed: () => _run(() => widget.onOpenArtist!(name)),
+              ),
             if (widget.fromPlaylistId != null)
               MenuItem(
                 label: Strings.removeFromPlaylist,

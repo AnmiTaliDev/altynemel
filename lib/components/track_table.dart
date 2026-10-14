@@ -7,6 +7,7 @@ import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
+import 'artist_text.dart';
 import 'cover_art.dart';
 import 'icon.dart';
 import 'icon_button.dart';
@@ -255,7 +256,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
                                             crossAxisAlignment:
                                                 WrapCrossAlignment.center,
                                             children: [
-                                              Text(
+                                              ArtistText(
                                                 widget.artist,
                                                 style: text.caption.copyWith(
                                                   color: colors.inkMuted,

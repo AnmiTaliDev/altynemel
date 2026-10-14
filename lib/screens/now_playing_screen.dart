@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../components/artist_text.dart';
 import '../components/cover_art.dart';
 import '../components/icon.dart';
 import '../components/icon_button.dart';
@@ -112,7 +113,7 @@ class NowPlayingScreen extends StatelessWidget {
           child: Text(title, style: text.displayXl),
         ),
         const SizedBox(height: space2),
-        Text(artist, style: text.bodyLg),
+        ArtistText(artist, style: text.bodyLg),
         if (album != null) ...[
           const SizedBox(height: space1),
           Text(album!, style: text.caption.copyWith(color: colors.inkMuted)),

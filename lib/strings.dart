@@ -63,6 +63,7 @@ class Strings {
   static const cancel = 'Cancel';
   static const deletePlaylistHint = 'The tracks stay in your library.';
   static String deletePlaylistQuestion(String name) => 'Delete $name?';
+  static String goToArtist(String name) => 'Go to $name';
   static const collapse = 'Collapse';
   static const openNowPlaying = 'Open now playing';
   static const albumKind = 'Album';

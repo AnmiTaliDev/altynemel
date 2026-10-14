@@ -9,6 +9,7 @@ import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
+import 'artist_text.dart';
 import 'cover_art.dart';
 import 'icon.dart';
 import 'icon_button.dart';
@@ -92,7 +93,7 @@ class PlayerBar extends StatelessWidget {
                   )
                 else ...[
                   Text(title!, style: text.bodyStrong),
-                  Text(
+                  ArtistText(
                     artist ?? '',
                     style: text.caption.copyWith(color: colors.inkMuted),
                   ),
