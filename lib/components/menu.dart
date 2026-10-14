@@ -32,7 +32,7 @@ class MenuPanel extends StatelessWidget {
       label: semanticLabel,
       child: Container(
         width: 288,
-        padding: const EdgeInsets.all(space2),
+        padding: const EdgeInsets.all(space3),
         decoration: BoxDecoration(
           color: colors.surface,
           borderRadius: borderRadiusControl,
@@ -47,16 +47,19 @@ class MenuPanel extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     space3,
-                    space2,
+                    space1,
                     space3,
-                    space2,
+                    space3,
                   ),
                   child: Text(
                     title!,
                     style: text.caption.copyWith(color: colors.inkMuted),
                   ),
                 ),
-              ...children,
+              for (var i = 0; i < children.length; i++) ...[
+                if (i > 0) const SizedBox(height: space2),
+                children[i],
+              ],
             ],
           ),
         ),
