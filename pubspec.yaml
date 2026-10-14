@@ -7,8 +7,12 @@ environment:
   sdk: ^3.11.4
 
 dependencies:
+  audio_metadata_reader: ^1.8.1
+  desktop_drop: ^0.8.4
+  file_selector: ^1.1.0
   flutter:
     sdk: flutter
+  sqlite3: ^3.5.2
 
 dev_dependencies:
   flutter_test:

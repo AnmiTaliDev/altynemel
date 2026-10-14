@@ -73,6 +73,17 @@ class Strings {
   static const orderDiscTrack = 'Disc and track';
   static const orderFileName = 'File name';
   static const selected = 'Selected';
+  static const nothingPlaying = 'Nothing playing';
+  static const scanning = 'Scanning library';
+  static const folderUnavailable = 'The library folder is not available.';
+  static const scanFailed = 'Scan failed';
+  static const liked = 'Liked';
+  static const likedEmpty = 'No liked tracks yet';
+  static const likedEmptyHint =
+      'Use the heart in the player bar to like a track.';
+  static const noResults = 'No matches';
+  static const noResultsHint = 'Try another search.';
+  static const dropFolderHint = 'You can also drop a folder onto the window.';
 
   static String coverOf(String album) => 'Cover art: $album';
   static String moreAbout(String title) => 'More about $title';

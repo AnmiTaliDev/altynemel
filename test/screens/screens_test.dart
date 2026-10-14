@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:altynemel/app.dart';
-import 'package:altynemel/demo/demo_data.dart';
 import 'package:altynemel/screens/library_screen.dart';
 import 'package:altynemel/screens/queue_screen.dart';
 import 'package:altynemel/screens/settings_screen.dart';
@@ -10,12 +8,18 @@ import 'package:altynemel/settings/app_settings.dart';
 import 'package:altynemel/theme/colors.dart';
 
 import '../support/pump.dart';
+import '../support/test_library.dart';
 
-Widget _library({bool empty = false, VoidCallback? onOpenSettings}) {
+Widget _library(
+  TestLibrary lib, {
+  bool empty = false,
+  VoidCallback? onOpenSettings,
+}) {
   return LibraryScreen(
-    albums: empty ? const [] : demoAlbums,
-    artists: empty ? const [] : demoArtists,
-    tracks: empty ? const [] : demoLibraryTracks,
+    albums: empty ? const [] : lib.library.albums,
+    artists: empty ? const [] : lib.library.artists,
+    tracks: empty ? const [] : lib.library.tracks,
+    libraryEmpty: empty,
     currentTrackId: null,
     isPlaying: false,
     selectedTrackId: null,
@@ -32,7 +36,9 @@ void main() {
   testWidgets('library switches between albums, artists and tracks', (
     tester,
   ) async {
-    await pumpThemed(tester, _library());
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
+    await pumpThemed(tester, _library(lib));
     expect(find.bySemanticsLabel('Сарыарқа, Құрманғазы'), findsOneWidget);
     await tester.tap(find.bySemanticsLabel('Artists'));
     await tester.pump();
@@ -43,10 +49,12 @@ void main() {
   });
 
   testWidgets('empty library points to settings', (tester) async {
+    final lib = TestLibrary(empty: true);
+    addTearDown(lib.dispose);
     var opened = 0;
     await pumpThemed(
       tester,
-      _library(empty: true, onOpenSettings: () => opened++),
+      _library(lib, empty: true, onOpenSettings: () => opened++),
     );
     expect(find.text('No music yet'), findsOneWidget);
     await tester.tap(find.bySemanticsLabel('Open settings'));
@@ -56,10 +64,12 @@ void main() {
   testWidgets('queue lists the current track and the next ones', (
     tester,
   ) async {
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
     await pumpThemed(
       tester,
       QueueScreen(
-        tracks: demoLibraryTracks,
+        tracks: lib.library.tracks,
         currentIndex: 0,
         isPlaying: true,
         selectedTrackId: null,
@@ -91,58 +101,75 @@ void main() {
   testWidgets('choosing a theme in settings changes the app theme', (
     tester,
   ) async {
-    final settings = AppSettings();
-    addTearDown(settings.dispose);
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
     tester.view.physicalSize = const Size(1100, 700);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(AltynemelApp(settings: settings));
+    await tester.pumpWidget(lib.app());
     await tester.tap(find.bySemanticsLabel('Settings').first);
     await tester.pumpAndSettle();
     await tester.tap(find.bySemanticsLabel('Contrast'));
     await tester.pumpAndSettle();
-    expect(settings.theme, ThemeChoice.contrast);
+    expect(lib.settings.theme, ThemeChoice.contrast);
     final context = tester.element(find.byType(Scaffold).first);
     expect(AltynemelColors.of(context), AltynemelColors.contrast);
   });
 
   testWidgets('reduce motion setting disables animations', (tester) async {
-    final settings = AppSettings();
-    addTearDown(settings.dispose);
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
     tester.view.physicalSize = const Size(1100, 700);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
-    await tester.pumpWidget(AltynemelApp(settings: settings));
-    final before = MediaQuery.disableAnimationsOf(
-      tester.element(find.byType(Scaffold).first),
+    await tester.pumpWidget(lib.app());
+    expect(
+      MediaQuery.disableAnimationsOf(
+        tester.element(find.byType(Scaffold).first),
+      ),
+      isFalse,
     );
-    expect(before, isFalse);
-    settings.setReduceMotion(true);
+    lib.settings.setReduceMotion(true);
     await tester.pump();
-    final after = MediaQuery.disableAnimationsOf(
-      tester.element(find.byType(Scaffold).first),
+    expect(
+      MediaQuery.disableAnimationsOf(
+        tester.element(find.byType(Scaffold).first),
+      ),
+      isTrue,
     );
-    expect(after, isTrue);
   });
 
-  testWidgets(
-    'folder button is disabled with a reason when no picker is wired',
-    (tester) async {
-      tester.view.physicalSize = const Size(1100, 700);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(AltynemelApp(settings: AppSettings()));
-      await tester.tap(find.bySemanticsLabel('Settings').first);
-      await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Unavailable in this build.'),
-        200,
-        scrollable: find.descendant(
-          of: find.byType(SettingsScreen),
-          matching: find.byType(Scrollable),
-        ),
-      );
-      expect(find.text('Unavailable in this build.'), findsOneWidget);
-    },
-  );
+  testWidgets('settings screen without a picker shows the reason', (
+    tester,
+  ) async {
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
+    tester.view.physicalSize = const Size(1100, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(lib.wrap(SettingsScreen(settings: lib.settings)));
+    await tester.scrollUntilVisible(
+      find.text('Unavailable in this build.'),
+      200,
+    );
+    expect(find.text('Unavailable in this build.'), findsOneWidget);
+  });
+
+  testWidgets('search filters the library and switches to it', (tester) async {
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
+    tester.view.physicalSize = const Size(1100, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(lib.app());
+    await tester.tap(find.bySemanticsLabel('Settings').first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), 'ødeg');
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Stille, Bjørk Ødegård'), findsOneWidget);
+    expect(find.bySemanticsLabel('Сарыарқа, Құрманғазы'), findsNothing);
+    await tester.enterText(find.byType(TextField), 'zzz');
+    await tester.pumpAndSettle();
+    expect(find.text('No matches'), findsOneWidget);
+  });
 }

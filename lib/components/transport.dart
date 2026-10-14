@@ -112,10 +112,15 @@ class _PlayButton extends StatelessWidget {
       radius: size / 2,
       semanticLabel: isPlaying ? Strings.pause : Strings.play,
       builder: (context, state) {
-        final foreground = accent ? colors.onAccent : colors.ground;
-        final background = accent
-            ? colors.accent
-            : (state.hovered ? colors.inkMuted : colors.ink);
+        final enabled = state.enabled;
+        final foreground = !enabled
+            ? colors.inkDisabled
+            : (accent ? colors.onAccent : colors.ground);
+        final background = !enabled
+            ? colors.line
+            : (accent
+                  ? colors.accent
+                  : (state.hovered ? colors.inkMuted : colors.ink));
         return Container(
           width: size,
           height: size,

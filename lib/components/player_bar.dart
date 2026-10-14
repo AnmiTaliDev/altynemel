@@ -44,8 +44,8 @@ class PlayerBar extends StatelessWidget {
     this.albumName,
   });
 
-  final String title;
-  final String artist;
+  final String? title;
+  final String? artist;
   final ImageProvider? image;
   final String? albumName;
   final bool liked;
@@ -77,11 +77,18 @@ class PlayerBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(title, style: text.bodyStrong),
-              Text(
-                artist,
-                style: text.caption.copyWith(color: colors.inkMuted),
-              ),
+              if (title == null)
+                Text(
+                  Strings.nothingPlaying,
+                  style: text.bodyStrong.copyWith(color: colors.inkMuted),
+                )
+              else ...[
+                Text(title!, style: text.bodyStrong),
+                Text(
+                  artist ?? '',
+                  style: text.caption.copyWith(color: colors.inkMuted),
+                ),
+              ],
             ],
           ),
         ),

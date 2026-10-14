@@ -5,12 +5,14 @@ import '../components/cover_art.dart';
 import '../components/icon_data.dart';
 import '../components/track_table.dart';
 import '../format/time_format.dart';
+import '../library/cover_image.dart';
 import '../library/track.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
 import 'album_column.dart';
+import 'empty_state.dart';
 
 class PlaylistScreen extends StatelessWidget {
   const PlaylistScreen({
@@ -24,6 +26,8 @@ class PlaylistScreen extends StatelessWidget {
     required this.onSelectTrack,
     required this.onPlayTrack,
     required this.onTrackMore,
+    this.emptyTitle,
+    this.emptyHint,
   });
 
   final String title;
@@ -35,6 +39,8 @@ class PlaylistScreen extends StatelessWidget {
   final ValueChanged<Track> onSelectTrack;
   final ValueChanged<Track> onPlayTrack;
   final ValueChanged<Track> onTrackMore;
+  final String? emptyTitle;
+  final String? emptyHint;
 
   @override
   Widget build(BuildContext context) {
@@ -96,16 +102,24 @@ class PlaylistScreen extends StatelessWidget {
             ),
           ),
         ),
-        SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: space6),
-          sliver: SliverToBoxAdapter(
-            child: Semantics(
-              container: true,
-              label: Strings.songsIn(title),
-              child: TrackTableHeader(showAlbum: showAlbum),
+        if (tracks.isEmpty && emptyTitle != null)
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: space6),
+            sliver: SliverToBoxAdapter(
+              child: EmptyState(title: emptyTitle!, hint: emptyHint ?? ''),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: space6),
+            sliver: SliverToBoxAdapter(
+              child: Semantics(
+                container: true,
+                label: Strings.songsIn(title),
+                child: TrackTableHeader(showAlbum: showAlbum),
+              ),
             ),
           ),
-        ),
         SliverPadding(
           padding: const EdgeInsets.fromLTRB(space6, 0, space6, space6),
           sliver: SliverList.builder(
@@ -118,6 +132,7 @@ class PlaylistScreen extends StatelessWidget {
                 title: track.title,
                 artist: track.artist,
                 album: track.album,
+                image: coverImage(track.coverPath, width: 80),
                 duration: track.duration,
                 showAlbum: showAlbum,
                 isCurrent: current,

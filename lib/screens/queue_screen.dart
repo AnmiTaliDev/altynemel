@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../components/screen_header.dart';
 import '../components/track_table.dart';
+import '../library/cover_image.dart';
 import '../library/track.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
@@ -58,6 +59,7 @@ class QueueScreen extends StatelessWidget {
         title: track.title,
         artist: track.artist,
         album: track.album,
+        image: coverImage(track.coverPath, width: 80),
         duration: track.duration,
         showAlbum: showAlbum,
         isCurrent: isCurrent,
