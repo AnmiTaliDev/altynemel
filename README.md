@@ -59,8 +59,6 @@ flutter analyze
 flutter test
 ```
 
-Token tests read the design token file from `../altynemel-design/tokens.json` and are skipped when it is missing.
-
 ## License
 
 GPL-3.0-only. See [LICENSE](LICENSE). Copyright (C) 2026 Altynemel authors.
