@@ -1,9 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/components/icon_button.dart';
 import 'package:altynemel/components/menu.dart';
+import 'package:altynemel/components/pressable.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/strings.dart';
 
@@ -153,5 +155,70 @@ void main() {
     await tester.tap(moreButton('fading memories'));
     await tester.pumpAndSettle();
     expect(find.textContaining('Go to album'), findsNothing);
+  });
+
+  testWidgets('the remove button on a queue row removes that track', (
+    tester,
+  ) async {
+    final lib = await pumpHome(tester);
+    await lib.playback.playTracks(lib.library.tracks, 0, title: 'Library');
+    await tester.tap(find.bySemanticsLabel('Queue').first);
+    await tester.pumpAndSettle();
+    final removed = lib.playback.queueTracks[2];
+    final count = lib.playback.queueTracks.length;
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) =>
+            w is AltynemelIconButton &&
+            w.label == Strings.removeTrackFromQueue(removed.title),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(lib.playback.queueTracks.length, count - 1);
+    expect(
+      lib.playback.queueTracks.map((t) => t.id),
+      isNot(contains(removed.id)),
+    );
+  });
+
+  testWidgets('the current queue row has no remove button', (tester) async {
+    final lib = await pumpHome(tester);
+    await lib.playback.playTracks(lib.library.tracks, 0, title: 'Library');
+    await tester.tap(find.bySemanticsLabel('Queue').first);
+    await tester.pumpAndSettle();
+    final title = lib.playback.current!.title;
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is AltynemelIconButton &&
+            w.label == Strings.removeTrackFromQueue(title),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('the Delete key removes the focused queue row', (tester) async {
+    final lib = await pumpHome(tester);
+    await lib.playback.playTracks(lib.library.tracks, 0, title: 'Library');
+    await tester.tap(find.bySemanticsLabel('Queue').first);
+    await tester.pumpAndSettle();
+    final removed = lib.playback.queueTracks[1];
+    final count = lib.playback.queueTracks.length;
+    final row = find.byWidgetPredicate(
+      (w) => w is TrackTableRow && w.title == removed.title,
+    );
+    final target = find.descendant(
+      of: find.descendant(of: row, matching: find.byType(Pressable)),
+      matching: find.byType(GestureDetector),
+    );
+    Focus.of(tester.element(target.first)).requestFocus();
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.delete);
+    await tester.pumpAndSettle();
+    expect(lib.playback.queueTracks.length, count - 1);
+    expect(
+      lib.playback.queueTracks.map((t) => t.id),
+      isNot(contains(removed.id)),
+    );
   });
 }

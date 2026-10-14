@@ -66,6 +66,8 @@ class Strings {
   static String goToArtist(String name) => 'Go to $name';
   static String goToAlbum(String name) => 'Go to album $name';
   static const removeFromQueue = 'Remove from queue';
+  static String removeTrackFromQueue(String title) =>
+      'Remove $title from queue';
   static const collapse = 'Collapse';
   static const openNowPlaying = 'Open now playing';
   static const albumKind = 'Album';

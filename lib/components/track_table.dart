@@ -22,9 +22,14 @@ const double _numberColumn = 40;
 const double _timeColumn = 72;
 
 class TrackTableHeader extends StatelessWidget {
-  const TrackTableHeader({super.key, required this.showAlbum});
+  const TrackTableHeader({
+    super.key,
+    required this.showAlbum,
+    this.showRemove = false,
+  });
 
   final bool showAlbum;
+  final bool showRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +71,7 @@ class TrackTableHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: space4 + targetPointer),
+          if (showRemove) const SizedBox(width: targetPointer),
         ],
       ),
     );
@@ -90,6 +96,8 @@ class TrackTableRow extends StatefulWidget {
     this.isPlaying = false,
     this.isSelected = false,
     this.availability = TrackAvailability.available,
+    this.onRemove,
+    this.reserveRemove = false,
   });
 
   final int number;
@@ -107,6 +115,8 @@ class TrackTableRow extends StatefulWidget {
   final VoidCallback onSelect;
   final VoidCallback onPlay;
   final ValueChanged<Rect> onMore;
+  final VoidCallback? onRemove;
+  final bool reserveRemove;
 
   @override
   State<TrackTableRow> createState() => _TrackTableRowState();
@@ -127,6 +137,12 @@ class _TrackTableRowState extends State<TrackTableRow> {
     if (event is KeyDownEvent &&
         (shiftMenu || event.logicalKey == LogicalKeyboardKey.contextMenu)) {
       widget.onMore(_moreRect());
+      return KeyEventResult.handled;
+    }
+    if (event is KeyDownEvent &&
+        widget.onRemove != null &&
+        event.logicalKey == LogicalKeyboardKey.delete) {
+      widget.onRemove!();
       return KeyEventResult.handled;
     }
     final direction = switch (event.logicalKey) {
@@ -304,6 +320,8 @@ class _TrackTableRowState extends State<TrackTableRow> {
                               ),
                             ),
                             const SizedBox(width: space4 + targetPointer),
+                            if (widget.onRemove != null || widget.reserveRemove)
+                              const SizedBox(width: targetPointer),
                           ],
                         ),
                       ],
@@ -312,6 +330,20 @@ class _TrackTableRowState extends State<TrackTableRow> {
                 },
               ),
             ),
+            if (widget.onRemove != null)
+              Positioned(
+                right: space3 + targetPointer,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: AltynemelIconButton(
+                    icon: IconId.close,
+                    label: Strings.removeTrackFromQueue(widget.title),
+                    compact: true,
+                    onPressed: widget.onRemove,
+                  ),
+                ),
+              ),
             Positioned(
               right: space3,
               top: 0,

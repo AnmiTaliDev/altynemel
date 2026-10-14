@@ -406,6 +406,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
           onTrackMore: (track, position, anchor) =>
               _showMenu(track, anchor, queuePosition: position),
+          onRemoveTrack: playback.removeFromQueue,
         );
       case SidebarDestination.settings:
         return switch (_settingsPage) {

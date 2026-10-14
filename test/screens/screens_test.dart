@@ -76,6 +76,7 @@ void main() {
         onSelectTrack: (_) {},
         onPlayTrack: (_) {},
         onTrackMore: (_, _, _) {},
+        onRemoveTrack: (_) {},
       ),
     );
     expect(find.text('Next up'), findsOneWidget);
@@ -93,6 +94,7 @@ void main() {
         onSelectTrack: (_) {},
         onPlayTrack: (_) {},
         onTrackMore: (_, _, _) {},
+        onRemoveTrack: (_) {},
       ),
     );
     expect(find.text('The queue is empty'), findsOneWidget);

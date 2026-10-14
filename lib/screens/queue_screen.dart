@@ -22,6 +22,7 @@ class QueueScreen extends StatelessWidget {
     required this.onSelectTrack,
     required this.onPlayTrack,
     required this.onTrackMore,
+    required this.onRemoveTrack,
   });
 
   final List<Track> tracks;
@@ -31,6 +32,7 @@ class QueueScreen extends StatelessWidget {
   final ValueChanged<Track> onSelectTrack;
   final ValueChanged<Track> onPlayTrack;
   final void Function(Track track, int position, Rect anchor) onTrackMore;
+  final ValueChanged<int> onRemoveTrack;
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +72,8 @@ class QueueScreen extends StatelessWidget {
         onSelect: () => onSelectTrack(track),
         onPlay: () => onPlayTrack(track),
         onMore: (anchor) => onTrackMore(track, position, anchor),
+        onRemove: isCurrent ? null : () => onRemoveTrack(position),
+        reserveRemove: upcoming.isNotEmpty,
       );
     }
 
@@ -84,7 +88,10 @@ class QueueScreen extends StatelessWidget {
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: space6),
           sliver: SliverToBoxAdapter(
-            child: TrackTableHeader(showAlbum: showAlbum),
+            child: TrackTableHeader(
+              showAlbum: showAlbum,
+              showRemove: upcoming.isNotEmpty,
+            ),
           ),
         ),
         if (current != null)
