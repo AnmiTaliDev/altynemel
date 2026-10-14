@@ -28,7 +28,7 @@ Future<TestLibrary> pumpScreen(
     lib.wrap(HomeScreen(initialDestination: destination), theme: theme),
   );
   await tester.pumpAndSettle();
-  if (screen == 'playlist' || screen == 'queue') {
+  if (screen == 'playlist' || screen == 'queue' || screen == 'nowplaying') {
     await tester.tap(find.bySemanticsLabel(sharedPlaylistName));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(AltynemelButton, 'Play'));
@@ -38,13 +38,17 @@ Future<TestLibrary> pumpScreen(
     await tester.tap(find.bySemanticsLabel('Queue').first);
     await tester.pumpAndSettle();
   }
+  if (screen == 'nowplaying') {
+    await tester.tap(find.bySemanticsLabel('Open now playing'));
+    await tester.pumpAndSettle();
+  }
   return lib;
 }
 
 void main() {
   setUpAll(loadOnest);
 
-  const screens = ['playlist', 'library', 'queue', 'settings'];
+  const screens = ['playlist', 'library', 'queue', 'settings', 'nowplaying'];
 
   for (final screen in screens) {
     for (final theme in AltynemelThemeId.values) {

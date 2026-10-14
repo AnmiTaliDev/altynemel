@@ -23,7 +23,9 @@ import '../player/repeat_setting.dart';
 import '../settings/app_settings.dart';
 import '../settings/app_settings_scope.dart';
 import '../strings.dart';
+import '../theme/colors.dart';
 import 'about_screen.dart';
+import 'now_playing_screen.dart';
 import 'confirm_dialog.dart';
 import 'library_screen.dart';
 import 'playlist_screen.dart';
@@ -51,6 +53,10 @@ class _SeekIntent extends Intent {
   const _SeekIntent(this.seconds);
 
   final int seconds;
+}
+
+class _CollapseIntent extends Intent {
+  const _CollapseIntent();
 }
 
 class _MuteIntent extends Intent {
@@ -98,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _artistId;
   _SettingsPage? _settingsPage;
   LibraryTab _libraryTab = LibraryTab.albums;
+  bool _nowPlayingOpen = false;
   String _query = '';
   String? _selected;
 
@@ -409,6 +416,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _NextIntent(),
         SingleActivator(LogicalKeyboardKey.arrowLeft): _SeekIntent(-5),
         SingleActivator(LogicalKeyboardKey.arrowRight): _SeekIntent(5),
+        SingleActivator(LogicalKeyboardKey.escape): _CollapseIntent(),
         SingleActivator(LogicalKeyboardKey.keyM): _MuteIntent(),
         SingleActivator(LogicalKeyboardKey.keyF, control: true):
             _FocusSearchIntent(),
@@ -438,6 +446,10 @@ class _HomeScreenState extends State<HomeScreen> {
             enabled: () => !_textFieldFocused(),
             run: playback.toggleMute,
           ),
+          _CollapseIntent: _GuardedAction<_CollapseIntent>(
+            enabled: () => _nowPlayingOpen,
+            run: () => setState(() => _nowPlayingOpen = false),
+          ),
           _FocusSearchIntent: _GuardedAction<_FocusSearchIntent>(
             enabled: () => true,
             run: _searchFocus.requestFocus,
@@ -451,18 +463,79 @@ class _HomeScreenState extends State<HomeScreen> {
               listenable: Listenable.merge([library, playback]),
               builder: (context, _) {
                 final current = playback.current;
-                final shell = AppShell(
-                  titleBar: window == null
-                      ? null
-                      : ValueListenableBuilder<bool>(
-                          valueListenable: window.maximized,
-                          builder: (context, maximized, _) => WindowBar(
-                            maximized: maximized,
-                            onMinimize: window.minimize,
-                            onToggleMaximize: window.toggleMaximize,
-                            onClose: window.close,
+                final titleBar = window == null
+                    ? null
+                    : ValueListenableBuilder<bool>(
+                        valueListenable: window.maximized,
+                        builder: (context, maximized, _) => WindowBar(
+                          maximized: maximized,
+                          onMinimize: window.minimize,
+                          onToggleMaximize: window.toggleMaximize,
+                          onClose: window.close,
+                        ),
+                      );
+                if (_nowPlayingOpen && current != null) {
+                  final full = ColoredBox(
+                    color: AltynemelColors.of(context).ground,
+                    child: Column(
+                      children: [
+                        ?titleBar,
+                        Expanded(
+                          child: ValueListenableBuilder<Duration>(
+                            valueListenable: playback.position,
+                            builder: (context, position, _) {
+                              final liked = library.isLiked(current.id);
+                              return NowPlayingScreen(
+                                title: current.title,
+                                artist: current.artist,
+                                album: current.album,
+                                image: coverImage(
+                                  current.coverPath,
+                                  width: 640,
+                                ),
+                                liked: liked,
+                                onToggleLike: () =>
+                                    library.setLiked(current.id, !liked),
+                                isPlaying: playback.isPlaying,
+                                shuffle: playback.shuffle,
+                                repeat: playback.repeat,
+                                onShuffle: () =>
+                                    playback.setShuffle(!playback.shuffle),
+                                onPrevious: playback.previous,
+                                onPlayPause: playback.toggle,
+                                onNext: playback.next,
+                                onRepeat: () => playback.setRepeat(
+                                  _nextRepeat(playback.repeat),
+                                ),
+                                position: position,
+                                duration: playback.duration,
+                                onSeek: playback.seek,
+                                volume: playback.volume,
+                                volumeStep: settings.volumeStep,
+                                onVolume: playback.setVolume,
+                                onQueue: () => setState(() {
+                                  _nowPlayingOpen = false;
+                                  _destination = SidebarDestination.queue;
+                                  _playlistId = null;
+                                  _albumId = null;
+                                  _artistId = null;
+                                  _settingsPage = null;
+                                }),
+                                onCollapse: () =>
+                                    setState(() => _nowPlayingOpen = false),
+                                onMore: () => showTrackMenu(context, current),
+                              );
+                            },
                           ),
                         ),
+                      ],
+                    ),
+                  );
+                  if (window == null) return full;
+                  return DragToResizeArea(resizeEdgeSize: 6, child: full);
+                }
+                final shell = AppShell(
+                  titleBar: titleBar,
                   sidebar: Sidebar(
                     dragArea: window == null
                         ? null
@@ -518,6 +591,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         volume: playback.volume,
                         volumeStep: settings.volumeStep,
                         onVolume: playback.setVolume,
+                        onOpenNowPlaying: () =>
+                            setState(() => _nowPlayingOpen = true),
                         onQueue: () => setState(() {
                           _destination = SidebarDestination.queue;
                           _playlistId = null;

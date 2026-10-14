@@ -13,6 +13,7 @@ import 'cover_art.dart';
 import 'icon.dart';
 import 'icon_button.dart';
 import 'icon_data.dart';
+import 'pressable.dart';
 import 'progress_bar.dart';
 import 'time_label.dart';
 import 'transport.dart';
@@ -41,6 +42,7 @@ class PlayerBar extends StatelessWidget {
     required this.onVolume,
     required this.onQueue,
     this.volumeStep = 5,
+    this.onOpenNowPlaying,
     this.image,
     this.albumName,
   });
@@ -66,8 +68,9 @@ class PlayerBar extends StatelessWidget {
   final ValueChanged<int>? onVolume;
   final VoidCallback? onQueue;
   final int volumeStep;
+  final VoidCallback? onOpenNowPlaying;
 
-  Widget _track(BuildContext context) {
+  Widget _trackInfo(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     return Row(
@@ -97,6 +100,24 @@ class PlayerBar extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _track(BuildContext context) {
+    final open = onOpenNowPlaying;
+    return Row(
+      children: [
+        Expanded(
+          child: open == null || title == null
+              ? _trackInfo(context)
+              : Pressable(
+                  onPressed: open,
+                  radius: radiusControl,
+                  semanticLabel: Strings.openNowPlaying,
+                  builder: (context, state) => _trackInfo(context),
+                ),
         ),
         AltynemelIconButton(
           icon: IconId.heart,
