@@ -19,7 +19,7 @@ import 'progress_bar.dart';
 import 'time_label.dart';
 import 'transport.dart';
 
-const double volumeHiddenBelow = 860;
+const double playerBarCompactBelow = 900;
 
 class PlayerBar extends StatelessWidget {
   const PlayerBar({
@@ -71,12 +71,12 @@ class PlayerBar extends StatelessWidget {
   final int volumeStep;
   final VoidCallback? onOpenNowPlaying;
 
-  Widget _trackInfo(BuildContext context) {
+  Widget _trackInfo(BuildContext context, double coverSize, bool ellipsize) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     return Row(
       children: [
-        CoverArt(size: 56, image: image, albumName: albumName),
+        CoverArt(size: coverSize, image: image, albumName: albumName),
         const SizedBox(width: space3),
         Expanded(
           child: Semantics(
@@ -90,9 +90,16 @@ class PlayerBar extends StatelessWidget {
                   Text(
                     Strings.nothingPlaying,
                     style: text.bodyStrong.copyWith(color: colors.inkMuted),
+                    maxLines: ellipsize ? 1 : null,
+                    overflow: ellipsize ? TextOverflow.ellipsis : null,
                   )
                 else ...[
-                  Text(title!, style: text.bodyStrong),
+                  Text(
+                    title!,
+                    style: text.bodyStrong,
+                    maxLines: ellipsize ? 1 : null,
+                    overflow: ellipsize ? TextOverflow.ellipsis : null,
+                  ),
                   ArtistText(
                     artist ?? '',
                     style: text.caption.copyWith(color: colors.inkMuted),
@@ -106,35 +113,70 @@ class PlayerBar extends StatelessWidget {
     );
   }
 
-  Widget _track(BuildContext context) {
+  Widget _track(BuildContext context, {required bool compact}) {
     final open = onOpenNowPlaying;
+    final coverSize = compact ? 48.0 : 56.0;
     return Row(
       children: [
         Expanded(
           child: open == null || title == null
-              ? _trackInfo(context)
+              ? _trackInfo(context, coverSize, compact)
               : Pressable(
                   onPressed: open,
                   radius: radiusControl,
                   semanticLabel: Strings.openNowPlaying,
-                  builder: (context, state) => _trackInfo(context),
+                  builder: (context, state) =>
+                      _trackInfo(context, coverSize, compact),
                 ),
         ),
-        AltynemelIconButton(
-          icon: IconId.heart,
-          label: liked ? Strings.removeFromFavorites : Strings.addToFavorites,
-          pressed: liked,
-          compact: true,
-          onPressed: onToggleLike,
+        if (!compact)
+          AltynemelIconButton(
+            icon: IconId.heart,
+            label: liked ? Strings.removeFromFavorites : Strings.addToFavorites,
+            pressed: liked,
+            compact: true,
+            onPressed: onToggleLike,
+          ),
+      ],
+    );
+  }
+
+  Widget _progress(BuildContext context, double height) {
+    final colors = AltynemelColors.of(context);
+    final positionSeconds = position.inMilliseconds / 1000;
+    final maxSeconds = duration.inMilliseconds / 1000;
+    final timeWidth = MediaQuery.textScalerOf(context).scale(36);
+    return Row(
+      children: [
+        SizedBox(
+          width: timeWidth,
+          child: TimeLabel(position, textAlign: TextAlign.right),
         ),
+        const SizedBox(width: space3),
+        Expanded(
+          child: ProgressBar(
+            value: positionSeconds,
+            max: maxSeconds,
+            height: height,
+            gapColor: colors.surface,
+            semanticLabel: Strings.seek,
+            semanticValueOf: (seconds) => spokenProgress(
+              Duration(milliseconds: (seconds * 1000).round()),
+              duration,
+            ),
+            onChanged: onSeek == null
+                ? null
+                : (seconds) =>
+                      onSeek!(Duration(milliseconds: (seconds * 1000).round())),
+          ),
+        ),
+        const SizedBox(width: space3),
+        SizedBox(width: timeWidth, child: TimeLabel(duration)),
       ],
     );
   }
 
   Widget _center(BuildContext context) {
-    final colors = AltynemelColors.of(context);
-    final positionSeconds = position.inMilliseconds / 1000;
-    final maxSeconds = duration.inMilliseconds / 1000;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -149,40 +191,46 @@ class PlayerBar extends StatelessWidget {
           onNext: onNext,
           onRepeat: onRepeat,
         ),
-        Row(
-          children: [
-            SizedBox(
-              width: 36,
-              child: TimeLabel(position, textAlign: TextAlign.right),
-            ),
-            const SizedBox(width: space3),
-            Expanded(
-              child: ProgressBar(
-                value: positionSeconds,
-                max: maxSeconds,
-                height: targetPointer,
-                gapColor: colors.surface,
-                semanticLabel: Strings.seek,
-                semanticValueOf: (seconds) => spokenProgress(
-                  Duration(milliseconds: (seconds * 1000).round()),
-                  duration,
-                ),
-                onChanged: onSeek == null
-                    ? null
-                    : (seconds) => onSeek!(
-                        Duration(milliseconds: (seconds * 1000).round()),
-                      ),
-              ),
-            ),
-            const SizedBox(width: space3),
-            SizedBox(width: 36, child: TimeLabel(duration)),
-          ],
-        ),
+        _progress(context, targetPointer),
       ],
     );
   }
 
-  Widget _right(BuildContext context, bool showVolume) {
+  Widget _compactBar(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Expanded(child: _track(context, compact: true)),
+            const SizedBox(width: space3),
+            Transport(
+              variant: TransportVariant.bar,
+              showModes: false,
+              isPlaying: isPlaying,
+              shuffle: shuffle,
+              repeat: repeat,
+              onShuffle: onShuffle,
+              onPrevious: onPrevious,
+              onPlayPause: onPlayPause,
+              onNext: onNext,
+              onRepeat: onRepeat,
+            ),
+            const SizedBox(width: space2),
+            AltynemelIconButton(
+              icon: IconId.queue,
+              label: Strings.queue,
+              compact: true,
+              onPressed: onQueue,
+            ),
+          ],
+        ),
+        _progress(context, 24),
+      ],
+    );
+  }
+
+  Widget _right(BuildContext context) {
     final colors = AltynemelColors.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -193,26 +241,24 @@ class PlayerBar extends StatelessWidget {
           compact: true,
           onPressed: onQueue,
         ),
-        if (showVolume) ...[
-          const SizedBox(width: space2),
-          AltynemelIcon(IconId.volume, color: colors.inkMuted),
-          const SizedBox(width: space2),
-          SizedBox(
-            width: 96,
-            child: ProgressBar(
-              value: volume.toDouble(),
-              max: 100,
-              step: volumeStep.toDouble(),
-              height: targetPointer,
-              gapColor: colors.surface,
-              semanticLabel: Strings.volume,
-              semanticValueOf: (value) => Strings.percent(value.round()),
-              onChanged: onVolume == null
-                  ? null
-                  : (value) => onVolume!(value.round()),
-            ),
+        const SizedBox(width: space2),
+        AltynemelIcon(IconId.volume, color: colors.inkMuted),
+        const SizedBox(width: space2),
+        SizedBox(
+          width: 96,
+          child: ProgressBar(
+            value: volume.toDouble(),
+            max: 100,
+            step: volumeStep.toDouble(),
+            height: targetPointer,
+            gapColor: colors.surface,
+            semanticLabel: Strings.volume,
+            semanticValueOf: (value) => Strings.percent(value.round()),
+            onChanged: onVolume == null
+                ? null
+                : (value) => onVolume!(value.round()),
           ),
-        ],
+        ),
       ],
     );
   }
@@ -221,7 +267,7 @@ class PlayerBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final width = MediaQuery.sizeOf(context).width;
-    final showVolume = width >= volumeHiddenBelow;
+    final compact = width < playerBarCompactBelow;
     return Semantics(
       container: true,
       explicitChildNodes: true,
@@ -238,25 +284,27 @@ class PlayerBar extends StatelessWidget {
             top: BorderSide(color: colors.surfaceEdge, width: borderWidth),
           ),
         ),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final available = constraints.maxWidth - 2 * space5;
-            final centerWidth = math.min(
-              560.0,
-              math.max(showVolume ? 320.0 : 280.0, available / 2),
-            );
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(child: _track(context)),
-                const SizedBox(width: space5),
-                SizedBox(width: centerWidth, child: _center(context)),
-                const SizedBox(width: space5),
-                Expanded(child: _right(context, showVolume)),
-              ],
-            );
-          },
-        ),
+        child: compact
+            ? _compactBar(context)
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  final available = constraints.maxWidth - 2 * space5;
+                  final centerWidth = math.min(
+                    560.0,
+                    math.max(320.0, available / 2),
+                  );
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(child: _track(context, compact: false)),
+                      const SizedBox(width: space5),
+                      SizedBox(width: centerWidth, child: _center(context)),
+                      const SizedBox(width: space5),
+                      Expanded(child: _right(context)),
+                    ],
+                  );
+                },
+              ),
       ),
     );
   }

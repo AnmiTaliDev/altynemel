@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/components/button.dart';
+import 'package:altynemel/components/player_bar.dart';
 import 'package:altynemel/components/sidebar.dart';
 import 'package:altynemel/screens/home_screen.dart';
 
@@ -31,6 +32,25 @@ void main() {
     await pumpPlaying(tester, const Size(800, 700));
     expect(find.bySemanticsLabel('Volume'), findsNothing);
     expect(find.bySemanticsLabel('Queue'), findsWidgets);
+  });
+
+  testWidgets('narrow bar keeps the title on one line and drops the modes', (
+    tester,
+  ) async {
+    await pumpPlaying(tester, const Size(640, 700));
+    final title = find.descendant(
+      of: find.byType(PlayerBar),
+      matching: find.text('fading memories'),
+    );
+    expect(tester.getSize(title).height, lessThan(24));
+    expect(tester.getSize(find.byType(PlayerBar)).height, lessThan(110));
+    expect(find.bySemanticsLabel('Shuffle'), findsNothing);
+    expect(find.bySemanticsLabel('Repeat'), findsNothing);
+    expect(find.bySemanticsLabel('Pause'), findsWidgets);
+    expect(find.bySemanticsLabel('Next track'), findsWidgets);
+    expect(find.bySemanticsLabel('Queue'), findsWidgets);
+    await pumpPlaying(tester, const Size(1000, 700));
+    expect(find.bySemanticsLabel('Shuffle'), findsWidgets);
   });
 
   testWidgets('album column is hidden below 720 px', (tester) async {

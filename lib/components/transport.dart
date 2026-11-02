@@ -24,6 +24,7 @@ class Transport extends StatelessWidget {
     required this.onNext,
     required this.onRepeat,
     this.variant = TransportVariant.accent,
+    this.showModes = true,
   });
 
   final bool isPlaying;
@@ -35,6 +36,7 @@ class Transport extends StatelessWidget {
   final VoidCallback? onNext;
   final VoidCallback? onRepeat;
   final TransportVariant variant;
+  final bool showModes;
 
   @override
   Widget build(BuildContext context) {
@@ -50,14 +52,16 @@ class Transport extends StatelessWidget {
           ? MainAxisAlignment.center
           : MainAxisAlignment.spaceBetween,
       children: [
-        AltynemelIconButton(
-          icon: IconId.shuffle,
-          label: Strings.shuffle,
-          pressed: shuffle,
-          compact: compact,
-          onPressed: onShuffle,
-        ),
-        if (compact) const SizedBox(width: space2),
+        if (showModes) ...[
+          AltynemelIconButton(
+            icon: IconId.shuffle,
+            label: Strings.shuffle,
+            pressed: shuffle,
+            compact: compact,
+            onPressed: onShuffle,
+          ),
+          if (compact) const SizedBox(width: space2),
+        ],
         AltynemelIconButton(
           icon: IconId.prev,
           label: Strings.previousTrack,
@@ -79,15 +83,17 @@ class Transport extends StatelessWidget {
           compact: compact,
           onPressed: onNext,
         ),
-        if (compact) const SizedBox(width: space2),
-        AltynemelIconButton(
-          icon: IconId.repeat,
-          label: repeatLabel,
-          pressed: repeat != RepeatSetting.off,
-          badge: repeat == RepeatSetting.one ? '1' : null,
-          compact: compact,
-          onPressed: onRepeat,
-        ),
+        if (showModes) ...[
+          if (compact) const SizedBox(width: space2),
+          AltynemelIconButton(
+            icon: IconId.repeat,
+            label: repeatLabel,
+            pressed: repeat != RepeatSetting.off,
+            badge: repeat == RepeatSetting.one ? '1' : null,
+            compact: compact,
+            onPressed: onRepeat,
+          ),
+        ],
       ],
     );
   }
