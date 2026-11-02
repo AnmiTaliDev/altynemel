@@ -21,17 +21,25 @@ class PhoneShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return ColoredBox(
       color: AltynemelColors.of(context).ground,
-      child: Column(
-        children: [
-          ?titleBar,
-          Expanded(child: body),
-          if (miniPlayer != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(space2, space2, space2, space2),
-              child: miniPlayer,
-            ),
-          nav,
-        ],
+      child: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            ?titleBar,
+            Expanded(child: body),
+            if (miniPlayer != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  space2,
+                  space2,
+                  space2,
+                  space2,
+                ),
+                child: miniPlayer,
+              ),
+            nav,
+          ],
+        ),
       ),
     );
   }

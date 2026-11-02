@@ -25,7 +25,12 @@ class PhoneNav extends StatelessWidget {
       explicitChildNodes: true,
       label: Strings.mainNavigation,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: space2),
+        padding: EdgeInsets.fromLTRB(
+          space2,
+          0,
+          space2,
+          MediaQuery.viewPaddingOf(context).bottom,
+        ),
         decoration: BoxDecoration(
           color: colors.surface,
           border: Border(

@@ -126,4 +126,25 @@ void main() {
     final second = tester.getTopLeft(tiles.last).dy;
     expect(second, first);
   });
+
+  testWidgets('the back button walks out of the open views', (tester) async {
+    final lib = await pumpPhone(tester);
+    await tester.tap(navItem('Playlists'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel(sharedPlaylistName));
+    await tester.pumpAndSettle();
+    expect(find.byType(PlaylistScreen), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(PlaylistsScreen), findsOneWidget);
+    lib.playback.playTracks(lib.library.tracks, 1, title: 'Playing');
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(MiniPlayer));
+    await tester.pumpAndSettle();
+    expect(find.byType(NowPlayingScreen), findsOneWidget);
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.byType(NowPlayingScreen), findsNothing);
+    expect(find.byType(PlaylistsScreen), findsOneWidget);
+  });
 }
