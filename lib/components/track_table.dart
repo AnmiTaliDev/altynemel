@@ -13,6 +13,7 @@ import 'cover_art.dart';
 import 'icon.dart';
 import 'icon_button.dart';
 import 'icon_data.dart';
+import 'layout_mode.dart';
 import 'menu.dart';
 import 'pressable.dart';
 import 'time_label.dart';
@@ -33,6 +34,7 @@ class TrackTableHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (isPhone(context)) return const SizedBox.shrink();
     final colors = AltynemelColors.of(context);
     final style = AltynemelTextStyles.of(
       context,
@@ -174,7 +176,8 @@ class _TrackTableRowState extends State<TrackTableRow> {
     final text = AltynemelTextStyles.of(context);
     final unavailable =
         widget.availability == TrackAvailability.unavailableOffline;
-    final showMore = _hovered || _hasFocus || widget.isSelected;
+    final phone = isPhone(context);
+    final showMore = phone || _hovered || _hasFocus || widget.isSelected;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -232,26 +235,28 @@ class _TrackTableRowState extends State<TrackTableRow> {
                           ),
                         Row(
                           children: [
-                            SizedBox(
-                              width: _numberColumn,
-                              child: Center(
-                                child: widget.isCurrent && widget.isPlaying
-                                    ? AltynemelIcon(
-                                        IconId.playing,
-                                        size: 20,
-                                        color: colors.ink,
-                                      )
-                                    : Text(
-                                        '${widget.number}',
-                                        style: text.time.copyWith(
-                                          color: widget.isCurrent
-                                              ? colors.ink
-                                              : colors.inkMuted,
+                            if (!phone) ...[
+                              SizedBox(
+                                width: _numberColumn,
+                                child: Center(
+                                  child: widget.isCurrent && widget.isPlaying
+                                      ? AltynemelIcon(
+                                          IconId.playing,
+                                          size: 20,
+                                          color: colors.ink,
+                                        )
+                                      : Text(
+                                          '${widget.number}',
+                                          style: text.time.copyWith(
+                                            color: widget.isCurrent
+                                                ? colors.ink
+                                                : colors.inkMuted,
+                                          ),
                                         ),
-                                      ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: space4),
+                              const SizedBox(width: space4),
+                            ],
                             Expanded(
                               flex: 4,
                               child: Padding(
@@ -311,15 +316,19 @@ class _TrackTableRowState extends State<TrackTableRow> {
                                 ),
                               ),
                             ],
-                            const SizedBox(width: space4),
-                            SizedBox(
-                              width: _timeColumn,
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: TimeLabel(widget.duration),
+                            if (!phone) ...[
+                              const SizedBox(width: space4),
+                              SizedBox(
+                                width: _timeColumn,
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TimeLabel(widget.duration),
+                                ),
                               ),
+                            ],
+                            SizedBox(
+                              width: (phone ? space2 : space4) + targetPointer,
                             ),
-                            const SizedBox(width: space4 + targetPointer),
                             if (widget.onRemove != null || widget.reserveRemove)
                               const SizedBox(width: targetPointer),
                           ],

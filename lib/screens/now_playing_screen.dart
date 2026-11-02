@@ -8,6 +8,7 @@ import '../components/cover_art.dart';
 import '../components/icon.dart';
 import '../components/icon_button.dart';
 import '../components/icon_data.dart';
+import '../components/layout_mode.dart';
 import '../components/menu.dart';
 import '../components/progress_bar.dart';
 import '../components/time_label.dart';
@@ -104,7 +105,7 @@ class NowPlayingScreen extends StatelessWidget {
     );
   }
 
-  Widget _details(BuildContext context) {
+  Widget _details(BuildContext context, {required bool phone}) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     final seconds = position.inMilliseconds / 1000;
@@ -116,7 +117,7 @@ class NowPlayingScreen extends StatelessWidget {
         Semantics(
           header: true,
           liveRegion: true,
-          child: Text(title, style: text.displayXl),
+          child: Text(title, style: phone ? text.displayMd : text.displayXl),
         ),
         const SizedBox(height: space2),
         ArtistText(artist, style: text.bodyLg),
@@ -200,8 +201,19 @@ class NowPlayingScreen extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= nowPlayingWideFrom;
+          final phone = isPhoneWidth(constraints.maxWidth);
           final coverSize = wide
               ? 320.0
+              : phone
+              ? math.min(
+                  constraints.maxWidth - 2 * space5,
+                  math.max(
+                    100.0,
+                    constraints.maxHeight *
+                        0.28 /
+                        MediaQuery.textScalerOf(context).scale(1),
+                  ),
+                )
               : math.max(
                   160.0,
                   math.min(240.0, constraints.maxWidth - 2 * space5),
@@ -235,14 +247,16 @@ class NowPlayingScreen extends StatelessWidget {
                                   children: [
                                     cover,
                                     const SizedBox(width: space7),
-                                    Expanded(child: _details(context)),
+                                    Expanded(
+                                      child: _details(context, phone: phone),
+                                    ),
                                   ],
                                 )
                               : Column(
                                   children: [
                                     cover,
                                     const SizedBox(height: space5),
-                                    _details(context),
+                                    _details(context, phone: phone),
                                   ],
                                 ),
                         ),

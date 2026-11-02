@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/layout_mode.dart';
 import '../components/button.dart';
 import '../components/cover_art.dart';
 import '../components/icon_data.dart';
@@ -65,7 +66,12 @@ class PlaylistScreen extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(space6, space5, space6, 0),
+          padding: EdgeInsets.fromLTRB(
+            pageGutter(context),
+            space5,
+            pageGutter(context),
+            0,
+          ),
           sliver: SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(bottom: space5),
@@ -140,14 +146,14 @@ class PlaylistScreen extends StatelessWidget {
         ),
         if (tracks.isEmpty && emptyTitle != null)
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: space6),
+            padding: EdgeInsets.symmetric(horizontal: pageGutter(context)),
             sliver: SliverToBoxAdapter(
               child: EmptyState(title: emptyTitle!, hint: emptyHint ?? ''),
             ),
           )
         else
           SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: space6),
+            padding: EdgeInsets.symmetric(horizontal: pageGutter(context)),
             sliver: SliverToBoxAdapter(
               child: Semantics(
                 container: true,
@@ -157,7 +163,12 @@ class PlaylistScreen extends StatelessWidget {
             ),
           ),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(space6, 0, space6, space6),
+          padding: EdgeInsets.fromLTRB(
+            pageGutter(context),
+            0,
+            pageGutter(context),
+            pageGutter(context),
+          ),
           sliver: SliverList.builder(
             itemCount: tracks.length,
             itemBuilder: (context, index) {

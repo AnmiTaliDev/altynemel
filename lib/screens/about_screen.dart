@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../about/app_info.dart';
 import '../about/notices.dart';
+import '../components/layout_mode.dart';
 import '../components/button.dart';
 import '../components/pressable.dart';
 import '../components/screen_header.dart';
@@ -57,7 +58,12 @@ class AboutScreen extends StatelessWidget {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     return ListView(
-      padding: const EdgeInsets.fromLTRB(space6, space5, space6, space6),
+      padding: EdgeInsets.fromLTRB(
+        pageGutter(context),
+        space5,
+        pageGutter(context),
+        pageGutter(context),
+      ),
       children: [
         Align(
           alignment: Alignment.centerLeft,
@@ -141,10 +147,10 @@ class _FreeSoftwareScreenState extends State<FreeSoftwareScreen> {
         return CustomScrollView(
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                space6,
+              padding: EdgeInsets.fromLTRB(
+                pageGutter(context),
                 space5,
-                space6,
+                pageGutter(context),
                 space4,
               ),
               sliver: SliverList.list(
@@ -183,7 +189,12 @@ class _FreeSoftwareScreenState extends State<FreeSoftwareScreen> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(space6, 0, space6, space6),
+              padding: EdgeInsets.fromLTRB(
+                pageGutter(context),
+                0,
+                pageGutter(context),
+                pageGutter(context),
+              ),
               sliver: SliverList.builder(
                 itemCount: sections.length,
                 itemBuilder: (context, index) {

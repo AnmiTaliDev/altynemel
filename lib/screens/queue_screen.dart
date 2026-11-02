@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/layout_mode.dart';
 import '../components/screen_header.dart';
 import '../components/track_table.dart';
 import '../library/cover_image.dart';
@@ -37,8 +38,13 @@ class QueueScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (tracks.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.fromLTRB(space6, space5, space6, space6),
+      return Padding(
+        padding: EdgeInsets.fromLTRB(
+          pageGutter(context),
+          space5,
+          pageGutter(context),
+          pageGutter(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -80,13 +86,18 @@ class QueueScreen extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(space6, space5, space6, space5),
+          padding: EdgeInsets.fromLTRB(
+            pageGutter(context),
+            space5,
+            pageGutter(context),
+            space5,
+          ),
           sliver: const SliverToBoxAdapter(
             child: ScreenHeader(title: Strings.queue),
           ),
         ),
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: space6),
+          padding: EdgeInsets.symmetric(horizontal: pageGutter(context)),
           sliver: SliverToBoxAdapter(
             child: TrackTableHeader(
               showAlbum: showAlbum,
@@ -96,17 +107,22 @@ class QueueScreen extends StatelessWidget {
         ),
         if (current != null)
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(space6, space2, space6, 0),
+            padding: EdgeInsets.fromLTRB(
+              pageGutter(context),
+              space2,
+              pageGutter(context),
+              0,
+            ),
             sliver: SliverToBoxAdapter(
               child: row(tracks[current], current, true),
             ),
           ),
         if (upcoming.isNotEmpty) ...[
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              space6 + space3,
+            padding: EdgeInsets.fromLTRB(
+              pageGutter(context) + space3,
               space5,
-              space6,
+              pageGutter(context),
               space2,
             ),
             sliver: SliverToBoxAdapter(
@@ -120,7 +136,12 @@ class QueueScreen extends StatelessWidget {
             ),
           ),
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(space6, 0, space6, space6),
+            padding: EdgeInsets.fromLTRB(
+              pageGutter(context),
+              0,
+              pageGutter(context),
+              pageGutter(context),
+            ),
             sliver: SliverList.builder(
               itemCount: upcoming.length,
               itemBuilder: (context, index) {

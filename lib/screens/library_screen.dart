@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../components/layout_mode.dart';
 import '../components/button.dart';
 import '../components/media_tile.dart';
 import '../components/pill_tabs.dart';
@@ -104,7 +105,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
     if (_isEmpty) {
       final noMatches = !widget.libraryEmpty;
       return Padding(
-        padding: const EdgeInsets.fromLTRB(space6, space5, space6, space6),
+        padding: EdgeInsets.fromLTRB(
+          pageGutter(context),
+          space5,
+          pageGutter(context),
+          pageGutter(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -138,7 +144,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(space6, space5, space6, space5),
+          padding: EdgeInsets.fromLTRB(
+            pageGutter(context),
+            space5,
+            pageGutter(context),
+            space5,
+          ),
           sliver: SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,17 +211,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Widget _tiles(int count, Widget Function(int index) build) {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        space6 - space2,
+      padding: EdgeInsets.fromLTRB(
+        pageGutter(context) - space2,
         0,
-        space6 - space2,
-        space6,
+        pageGutter(context) - space2,
+        pageGutter(context),
       ),
       sliver: SliverLayoutBuilder(
         builder: (context, constraints) {
           final columns = math.max(
             1,
-            ((constraints.crossAxisExtent + space2) / (mediaTileWidth + space2))
+            ((constraints.crossAxisExtent + space2) /
+                    (mediaTileWidthOf(context) + space2))
                 .floor(),
           );
           return SliverList.builder(
@@ -226,7 +238,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       if (row * columns + column < count)
                         build(row * columns + column)
                       else
-                        const SizedBox(width: mediaTileWidth),
+                        SizedBox(width: mediaTileWidthOf(context)),
                     ],
                   ],
                 ),
@@ -242,7 +254,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return SliverMainAxisGroup(
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: space6),
+          padding: EdgeInsets.symmetric(horizontal: pageGutter(context)),
           sliver: SliverToBoxAdapter(
             child: Semantics(
               container: true,
@@ -252,7 +264,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
           ),
         ),
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(space6, 0, space6, space6),
+          padding: EdgeInsets.fromLTRB(
+            pageGutter(context),
+            0,
+            pageGutter(context),
+            pageGutter(context),
+          ),
           sliver: SliverList.builder(
             itemCount: widget.tracks.length,
             itemBuilder: (context, index) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../components/layout_mode.dart';
 import '../components/button.dart';
 import '../components/choice_row.dart';
 import '../components/pill_tabs.dart';
@@ -37,7 +38,12 @@ class SettingsScreen extends StatelessWidget {
       listenable: settings,
       builder: (context, _) {
         return ListView(
-          padding: const EdgeInsets.fromLTRB(space6, space5, space6, space6),
+          padding: EdgeInsets.fromLTRB(
+            pageGutter(context),
+            space5,
+            pageGutter(context),
+            pageGutter(context),
+          ),
           children: [
             const ScreenHeader(title: Strings.settings),
             section(Strings.appearance),

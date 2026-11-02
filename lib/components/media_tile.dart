@@ -5,10 +5,16 @@ import '../theme/radii.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
 import 'cover_art.dart';
+import 'layout_mode.dart';
 import 'pressable.dart';
 
 const double mediaTileCover = 160;
 const double mediaTileWidth = mediaTileCover + 2 * space2;
+const double mediaTileCoverPhone = 140;
+const double mediaTileWidthPhone = mediaTileCoverPhone + 2 * space2;
+
+double mediaTileWidthOf(BuildContext context) =>
+    isPhone(context) ? mediaTileWidthPhone : mediaTileWidth;
 
 class MediaTile extends StatelessWidget {
   const MediaTile({
@@ -31,7 +37,7 @@ class MediaTile extends StatelessWidget {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     return SizedBox(
-      width: mediaTileWidth,
+      width: mediaTileWidthOf(context),
       child: Pressable(
         onPressed: onPressed,
         radius: radiusControl,
@@ -46,7 +52,11 @@ class MediaTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CoverArt(size: mediaTileCover, image: image, albumName: title),
+                CoverArt(
+                  size: isPhone(context) ? mediaTileCoverPhone : mediaTileCover,
+                  image: image,
+                  albumName: title,
+                ),
                 const SizedBox(height: space2),
                 Text(title, style: text.bodyStrong),
                 if (subtitle != null)

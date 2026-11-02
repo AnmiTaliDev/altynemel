@@ -8,10 +8,17 @@ import 'package:altynemel/screens/home_screen.dart';
 import '../support/fonts.dart';
 import '../support/test_library.dart';
 
-const sizes = [Size(640, 480), Size(800, 600), Size(1100, 700)];
+const sizes = [
+  Size(360, 640),
+  Size(412, 915),
+  Size(640, 480),
+  Size(800, 600),
+  Size(1100, 700),
+];
 const scales = [1.3, 1.5];
 const destinations = {
   'library': SidebarDestination.library,
+  'playlists': SidebarDestination.playlists,
   'queue': SidebarDestination.queue,
   'now playing list': SidebarDestination.nowPlaying,
   'settings': SidebarDestination.settings,
