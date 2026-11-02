@@ -61,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _SettingsPage? _settingsPage;
   LibraryTab _libraryTab = LibraryTab.albums;
   bool _nowPlayingOpen = false;
+  bool _railExpanded = false;
   String _query = '';
   String? _selected;
 
@@ -82,6 +83,21 @@ class _HomeScreenState extends State<HomeScreen> {
       if (playlist.id == id) return playlist.name;
     }
     return Strings.playlist;
+  }
+
+  void _expandRail() {
+    setState(() => _railExpanded = true);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _searchFocus.requestFocus(),
+    );
+  }
+
+  void _focusSearch() {
+    if (sidebarCompactFor(MediaQuery.sizeOf(context).width)) {
+      _expandRail();
+    } else {
+      _searchFocus.requestFocus();
+    }
   }
 
   void _select(Track track) => setState(() => _selected = track.id);
@@ -384,6 +400,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final playback = PlaybackScope.of(context);
     final settings = AppSettingsScope.of(context);
     final window = WindowScope.maybeOf(context);
+    final compact = sidebarCompactFor(MediaQuery.sizeOf(context).width);
+    if (!compact) _railExpanded = false;
     final playlists = [
       const SidebarPlaylist(id: likedContext, name: Strings.liked),
       for (final p in library.playlists)
@@ -422,12 +440,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 run: playback.toggleMute,
               ),
               CollapseIntent: GuardedAction<CollapseIntent>(
-                enabled: () => _nowPlayingOpen,
-                run: () => setState(() => _nowPlayingOpen = false),
+                enabled: () => _nowPlayingOpen || _railExpanded,
+                run: () => setState(() {
+                  _nowPlayingOpen = false;
+                  _railExpanded = false;
+                }),
               ),
               FocusSearchIntent: GuardedAction<FocusSearchIntent>(
                 enabled: () => true,
-                run: _searchFocus.requestFocus,
+                run: _focusSearch,
               ),
             },
             child: Focus(
@@ -515,12 +536,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                     final shell = AppShell(
                       titleBar: titleBar,
+                      expanded: _railExpanded,
+                      onDismiss: () => setState(() => _railExpanded = false),
                       sidebar: Sidebar(
+                        compact: compact && !_railExpanded,
+                        onSearch: _expandRail,
                         dragArea: window == null
                             ? null
                             : (child) => DragToMoveArea(child: child),
                         destination: _playlistId == null ? _destination : null,
                         onDestination: (value) => setState(() {
+                          _railExpanded = false;
                           _destination = value;
                           _playlistId = null;
                           _albumId = null;
@@ -530,6 +556,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         playlists: playlists,
                         selectedPlaylistId: _playlistId,
                         onPlaylist: (id) => setState(() {
+                          _railExpanded = false;
                           _playlistId = id;
                           _albumId = null;
                           _artistId = null;

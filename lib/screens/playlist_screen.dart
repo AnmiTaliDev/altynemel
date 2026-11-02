@@ -57,8 +57,7 @@ class PlaylistScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
-    final showAlbum =
-        MediaQuery.sizeOf(context).width >= albumColumnHiddenBelow;
+    final showAlbum = showAlbumColumn(context);
     final total = tracks.fold(Duration.zero, (sum, t) => sum + t.duration);
     final summary =
         '${Strings.songCount(tracks.length)} · ${shortDuration(total)}';

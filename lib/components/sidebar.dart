@@ -31,6 +31,8 @@ class Sidebar extends StatelessWidget {
     this.searchFocusNode,
     this.onSearchChanged,
     this.dragArea,
+    this.compact = false,
+    this.onSearch,
   });
 
   final SidebarDestination? destination;
@@ -42,11 +44,78 @@ class Sidebar extends StatelessWidget {
   final FocusNode? searchFocusNode;
   final ValueChanged<String>? onSearchChanged;
   final Widget Function(Widget child)? dragArea;
+  final bool compact;
+  final VoidCallback? onSearch;
 
   Widget _wrapDrag(Widget child) => dragArea == null ? child : dragArea!(child);
 
+  Widget _rail(BuildContext context) {
+    final colors = AltynemelColors.of(context);
+    return Semantics(
+      container: true,
+      explicitChildNodes: true,
+      label: Strings.mainNavigation,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            right: BorderSide(color: colors.surfaceEdge, width: borderWidth),
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(vertical: space5),
+          child: Column(
+            children: [
+              _wrapDrag(const SizedBox(height: 28, width: double.infinity)),
+              const SizedBox(height: space5),
+              _RailItem(
+                icon: IconId.search,
+                label: Strings.search,
+                current: false,
+                onPressed: onSearch,
+              ),
+              const SizedBox(height: space5),
+              _RailItem(
+                icon: IconId.playing,
+                label: Strings.nowPlaying,
+                current: destination == SidebarDestination.nowPlaying,
+                onPressed: () => onDestination(SidebarDestination.nowPlaying),
+              ),
+              _RailItem(
+                icon: IconId.library,
+                label: Strings.library,
+                current: destination == SidebarDestination.library,
+                onPressed: () => onDestination(SidebarDestination.library),
+              ),
+              _RailItem(
+                icon: IconId.queue,
+                label: Strings.queue,
+                current: destination == SidebarDestination.queue,
+                onPressed: () => onDestination(SidebarDestination.queue),
+              ),
+              const SizedBox(height: space5),
+              for (final playlist in playlists)
+                _RailItem(
+                  label: playlist.name,
+                  current: playlist.id == selectedPlaylistId,
+                  onPressed: () => onPlaylist(playlist.id),
+                ),
+              const SizedBox(height: space5),
+              _RailItem(
+                icon: IconId.more,
+                label: Strings.settings,
+                current: destination == SidebarDestination.settings,
+                onPressed: () => onDestination(SidebarDestination.settings),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (compact) return _rail(context);
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
     final brand = text.displayMd.copyWith(
@@ -190,6 +259,62 @@ class _NavItem extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _RailItem extends StatelessWidget {
+  const _RailItem({
+    required this.label,
+    required this.current,
+    required this.onPressed,
+    this.icon,
+  });
+
+  final String label;
+  final bool current;
+  final VoidCallback? onPressed;
+  final IconId? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AltynemelColors.of(context);
+    final text = AltynemelTextStyles.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Tooltip(
+        message: label,
+        excludeFromSemantics: true,
+        child: Pressable(
+          onPressed: onPressed,
+          radius: radiusControl,
+          semanticLabel: label,
+          selected: current,
+          builder: (context, state) {
+            final highlighted = current || state.hovered;
+            final color = highlighted ? colors.ink : colors.inkMuted;
+            return Container(
+              width: targetMin,
+              height: targetMin,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: highlighted ? colors.surfaceHigh : Colors.transparent,
+                borderRadius: borderRadiusControl,
+              ),
+              child: icon != null
+                  ? AltynemelIcon(icon!, size: 22, color: color)
+                  : Text(
+                      label.isEmpty
+                          ? ''
+                          : String.fromCharCode(
+                              label.runes.first,
+                            ).toUpperCase(),
+                      style: text.bodyStrong.copyWith(color: color),
+                    ),
+            );
+          },
+        ),
       ),
     );
   }

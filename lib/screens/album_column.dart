@@ -1,7 +1,10 @@
 import 'package:flutter/widgets.dart';
 
-const double albumColumnHiddenBelow = 720;
+import '../components/app_shell.dart';
+
+const double albumColumnMinContentWidth = 700;
 
 bool showAlbumColumn(BuildContext context) {
-  return MediaQuery.sizeOf(context).width >= albumColumnHiddenBelow;
+  final width = MediaQuery.sizeOf(context).width;
+  return width - sidebarSlotWidth(width) >= albumColumnMinContentWidth;
 }

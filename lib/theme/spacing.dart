@@ -11,4 +11,6 @@ const double targetMin = 48;
 const double targetPointer = 40;
 const double targetLg = 72;
 const double sidebarWidth = 232;
+const double sidebarRailWidth = 72;
+const double sidebarCompactBelow = 800;
 const double playerBarHeight = 88;
