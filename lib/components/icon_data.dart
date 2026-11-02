@@ -24,6 +24,8 @@ enum IconId {
   minimize,
   maximize,
   restore,
+  playlists,
+  settings,
 }
 
 class IconShape {
@@ -65,6 +67,12 @@ const iconShapes = <IconId, IconShape>{
   IconId.minimize: IconShape('M6 12h12'),
   IconId.maximize: IconShape('M7 7h10v10H7z'),
   IconId.restore: IconShape('M9 9V7h8v8h-2M7 9h8v8H7z'),
+  IconId.playlists: IconShape(
+    'M4 7h12M4 12h8M4 17h6M20 15A2 2 0 1 1 16 15A2 2 0 1 1 20 15ZM20 15V6.5',
+  ),
+  IconId.settings: IconShape(
+    'M4 8h7M17 8h3M4 16h3M13 16h7M17 8A3 3 0 1 1 11 8A3 3 0 1 1 17 8ZM13 16A3 3 0 1 1 7 16A3 3 0 1 1 13 16Z',
+  ),
 };
 
 final _paths = <IconId, Path>{};

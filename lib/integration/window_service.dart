@@ -5,7 +5,7 @@ import 'package:window_manager/window_manager.dart';
 import '../strings.dart';
 
 const Size defaultWindowSize = Size(1100, 700);
-const Size minimumWindowSize = Size(640, 480);
+const Size minimumWindowSize = Size(360, 480);
 
 class WindowService with WindowListener {
   WindowService({this.onClosing});

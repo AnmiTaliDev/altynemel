@@ -7,6 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
 import '../components/app_shell.dart';
+import '../components/layout_mode.dart';
+import '../components/mini_player.dart';
+import '../components/phone_nav.dart';
+import '../components/phone_shell.dart';
+import '../components/search_field.dart';
 import '../components/window_bar.dart';
 import '../integration/window_scope.dart';
 import '../components/player_bar.dart';
@@ -25,12 +30,14 @@ import '../settings/app_settings.dart';
 import '../settings/app_settings_scope.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
+import '../theme/spacing.dart';
 import 'about_screen.dart';
 import 'now_playing_screen.dart';
 import 'confirm_dialog.dart';
 import 'home_shortcuts.dart';
 import 'library_screen.dart';
 import 'playlist_screen.dart';
+import 'playlists_screen.dart';
 import 'queue_screen.dart';
 import 'settings_screen.dart';
 import 'track_menu.dart';
@@ -98,6 +105,35 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       _searchFocus.requestFocus();
     }
+  }
+
+  void _goTo(SidebarDestination value) => setState(() {
+    _railExpanded = false;
+    _destination = value;
+    _playlistId = null;
+    _albumId = null;
+    _artistId = null;
+    _settingsPage = null;
+  });
+
+  PhoneTab? _phoneTab() {
+    if (_playlistId != null) return PhoneTab.playlists;
+    return switch (_destination) {
+      SidebarDestination.library || null => PhoneTab.library,
+      SidebarDestination.playlists => PhoneTab.playlists,
+      SidebarDestination.queue => PhoneTab.queue,
+      SidebarDestination.settings => PhoneTab.settings,
+      SidebarDestination.nowPlaying => null,
+    };
+  }
+
+  void _selectPhoneTab(PhoneTab tab) {
+    _goTo(switch (tab) {
+      PhoneTab.library => SidebarDestination.library,
+      PhoneTab.playlists => SidebarDestination.playlists,
+      PhoneTab.queue => SidebarDestination.queue,
+      PhoneTab.settings => SidebarDestination.settings,
+    });
   }
 
   void _select(Track track) => setState(() => _selected = track.id);
@@ -247,7 +283,9 @@ class _HomeScreenState extends State<HomeScreen> {
     library.deletePlaylist(playlistId);
     setState(() {
       _playlistId = null;
-      _destination = SidebarDestination.library;
+      _destination = isPhone(context)
+          ? SidebarDestination.playlists
+          : SidebarDestination.library;
     });
   }
 
@@ -315,6 +353,9 @@ class _HomeScreenState extends State<HomeScreen> {
         emptyTitle: isLiked ? Strings.likedEmpty : null,
         emptyHint: isLiked ? Strings.likedEmptyHint : null,
         menuPlaylistId: isLiked ? null : playlistId,
+        onBack: isPhone(context)
+            ? () => setState(() => _playlistId = null)
+            : null,
         onDelete: isLiked ? null : () => _deletePlaylist(library, playlistId),
       );
     }
@@ -345,6 +386,28 @@ class _HomeScreenState extends State<HomeScreen> {
           onOpenArtist: (artist) => setState(() => _artistId = artist.id),
           onOpenSettings: () =>
               setState(() => _destination = SidebarDestination.settings),
+        );
+      case SidebarDestination.playlists:
+        return PlaylistsScreen(
+          playlists: [
+            PlaylistSummary(
+              id: likedContext,
+              name: Strings.liked,
+              trackCount: library.likedTracks.length,
+            ),
+            for (final p in library.playlists)
+              PlaylistSummary(
+                id: p.id,
+                name: p.name,
+                trackCount: library.playlistTracks(p.id).length,
+              ),
+          ],
+          onOpen: (id) => setState(() {
+            _playlistId = id;
+            _albumId = null;
+            _artistId = null;
+            _settingsPage = null;
+          }),
         );
       case SidebarDestination.queue:
         final position = playback.queuePosition;
@@ -394,13 +457,44 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget _phoneBody(
+    LibraryController library,
+    PlaybackController playback,
+    AppSettings settings,
+  ) {
+    final body = _body(library, playback, settings);
+    final atLibraryRoot =
+        (_destination ?? SidebarDestination.library) ==
+            SidebarDestination.library &&
+        _playlistId == null &&
+        _albumId == null &&
+        _artistId == null;
+    if (!atLibraryRoot) return body;
+    final gutter = pageGutter(context);
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.fromLTRB(gutter, space4, gutter, 0),
+          child: SearchField(
+            controller: _search,
+            focusNode: _searchFocus,
+            onChanged: _onSearch,
+          ),
+        ),
+        Expanded(child: body),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final library = LibraryScope.of(context);
     final playback = PlaybackScope.of(context);
     final settings = AppSettingsScope.of(context);
     final window = WindowScope.maybeOf(context);
-    final compact = sidebarCompactFor(MediaQuery.sizeOf(context).width);
+    final width = MediaQuery.sizeOf(context).width;
+    final compact = sidebarCompactFor(width);
+    final phone = isPhoneWidth(width);
     if (!compact) _railExpanded = false;
     final playlists = [
       const SidebarPlaylist(id: likedContext, name: Strings.liked),
@@ -534,6 +628,46 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (window == null) return full;
                       return DragToResizeArea(resizeEdgeSize: 6, child: full);
                     }
+                    if (phone) {
+                      final phoneShell = PhoneShell(
+                        titleBar: titleBar,
+                        body: _phoneBody(library, playback, settings),
+                        miniPlayer: current == null
+                            ? null
+                            : ValueListenableBuilder<Duration>(
+                                valueListenable: playback.position,
+                                builder: (context, position, _) {
+                                  final total =
+                                      playback.duration.inMilliseconds;
+                                  return MiniPlayer(
+                                    title: current.title,
+                                    artist: current.artist,
+                                    image: coverImage(
+                                      current.coverPath,
+                                      width: 112,
+                                    ),
+                                    albumName: current.album,
+                                    isPlaying: playback.isPlaying,
+                                    progress: total <= 0
+                                        ? 0
+                                        : position.inMilliseconds / total,
+                                    onOpen: () =>
+                                        setState(() => _nowPlayingOpen = true),
+                                    onPlayPause: playback.toggle,
+                                  );
+                                },
+                              ),
+                        nav: PhoneNav(
+                          selected: _phoneTab(),
+                          onSelected: _selectPhoneTab,
+                        ),
+                      );
+                      if (window == null) return phoneShell;
+                      return DragToResizeArea(
+                        resizeEdgeSize: 6,
+                        child: phoneShell,
+                      );
+                    }
                     final shell = AppShell(
                       titleBar: titleBar,
                       expanded: _railExpanded,
@@ -545,14 +679,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? null
                             : (child) => DragToMoveArea(child: child),
                         destination: _playlistId == null ? _destination : null,
-                        onDestination: (value) => setState(() {
-                          _railExpanded = false;
-                          _destination = value;
-                          _playlistId = null;
-                          _albumId = null;
-                          _artistId = null;
-                          _settingsPage = null;
-                        }),
+                        onDestination: _goTo,
                         playlists: playlists,
                         selectedPlaylistId: _playlistId,
                         onPlaylist: (id) => setState(() {
