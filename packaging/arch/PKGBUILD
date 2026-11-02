@@ -1,0 +1,35 @@
+pkgname=altynemel-git
+_pkgname=altynemel
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Desktop music player'
+arch=('x86_64')
+url='https://github.com/AnmiTaliDev/altynemel'
+license=('GPL-3.0-only')
+depends=('gtk3' 'mpv')
+makedepends=('git' 'flutter' 'cmake' 'ninja' 'clang' 'pkgconf')
+provides=("$_pkgname")
+conflicts=("$_pkgname")
+source=("$_pkgname::git+$url.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$_pkgname"
+  printf '0.1.0.r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+  cd "$_pkgname"
+  flutter pub get
+  flutter build linux --release
+}
+
+package() {
+  cd "$_pkgname"
+  install -d "$pkgdir/usr/lib/$_pkgname" "$pkgdir/usr/bin"
+  cp -r build/linux/x64/release/bundle/. "$pkgdir/usr/lib/$_pkgname/"
+  mv "$pkgdir/usr/lib/$_pkgname/share" "$pkgdir/usr/share"
+  ln -s "/usr/lib/$_pkgname/$_pkgname" "$pkgdir/usr/bin/$_pkgname"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 NOTICE "$pkgdir/usr/share/licenses/$pkgname/NOTICE"
+}
