@@ -27,7 +27,7 @@ class PhoneShell extends StatelessWidget {
           Expanded(child: body),
           if (miniPlayer != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(space2, space2, space2, 0),
+              padding: const EdgeInsets.fromLTRB(space2, space2, space2, space2),
               child: miniPlayer,
             ),
           nav,
