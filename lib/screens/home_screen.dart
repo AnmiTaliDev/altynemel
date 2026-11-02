@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:window_manager/window_manager.dart';
 
@@ -29,6 +28,7 @@ import '../theme/colors.dart';
 import 'about_screen.dart';
 import 'now_playing_screen.dart';
 import 'confirm_dialog.dart';
+import 'home_shortcuts.dart';
 import 'library_screen.dart';
 import 'playlist_screen.dart';
 import 'queue_screen.dart';
@@ -38,52 +38,6 @@ import 'track_menu.dart';
 const String likedContext = 'liked';
 
 const Duration seekStep = Duration(seconds: 5);
-
-class _PlayPauseIntent extends Intent {
-  const _PlayPauseIntent();
-}
-
-class _PreviousIntent extends Intent {
-  const _PreviousIntent();
-}
-
-class _NextIntent extends Intent {
-  const _NextIntent();
-}
-
-class _SeekIntent extends Intent {
-  const _SeekIntent(this.seconds);
-
-  final int seconds;
-}
-
-class _CollapseIntent extends Intent {
-  const _CollapseIntent();
-}
-
-class _MuteIntent extends Intent {
-  const _MuteIntent();
-}
-
-class _FocusSearchIntent extends Intent {
-  const _FocusSearchIntent();
-}
-
-class _GuardedAction<T extends Intent> extends Action<T> {
-  _GuardedAction({required this.enabled, required this.run});
-
-  final bool Function() enabled;
-  final void Function() run;
-
-  @override
-  bool isEnabled(T intent) => enabled();
-
-  @override
-  Object? invoke(T intent) {
-    run();
-    return null;
-  }
-}
 
 enum _SettingsPage { about, freeSoftware }
 
@@ -170,20 +124,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _settingsPage = null;
       }
     });
-  }
-
-  bool _textFieldFocused() {
-    final context = FocusManager.instance.primaryFocus?.context;
-    return context != null &&
-        context.findAncestorWidgetOfExactType<EditableText>() != null;
-  }
-
-  bool _controlFocused() {
-    final context = FocusManager.instance.primaryFocus?.context;
-    return context != null &&
-        (context.findAncestorWidgetOfExactType<EditableText>() != null ||
-            context.findAncestorWidgetOfExactType<FocusableActionDetector>() !=
-                null);
   }
 
   Widget _playlistBody(
@@ -455,49 +395,37 @@ class _HomeScreenState extends State<HomeScreen> {
       child: AlbumLinkScope(
         onOpen: _openAlbum,
         child: Shortcuts(
-          shortcuts: const {
-            SingleActivator(LogicalKeyboardKey.space): _PlayPauseIntent(),
-            SingleActivator(LogicalKeyboardKey.arrowLeft, control: true):
-                _PreviousIntent(),
-            SingleActivator(LogicalKeyboardKey.arrowRight, control: true):
-                _NextIntent(),
-            SingleActivator(LogicalKeyboardKey.arrowLeft): _SeekIntent(-5),
-            SingleActivator(LogicalKeyboardKey.arrowRight): _SeekIntent(5),
-            SingleActivator(LogicalKeyboardKey.escape): _CollapseIntent(),
-            SingleActivator(LogicalKeyboardKey.keyM): _MuteIntent(),
-            SingleActivator(LogicalKeyboardKey.keyF, control: true):
-                _FocusSearchIntent(),
-          },
+          shortcuts: homeShortcuts,
           child: Actions(
             actions: {
-              _PlayPauseIntent: _GuardedAction<_PlayPauseIntent>(
-                enabled: () => !_controlFocused(),
+              PlayPauseIntent: GuardedAction<PlayPauseIntent>(
+                enabled: () => !controlFocused(),
                 run: playback.toggle,
               ),
-              _PreviousIntent: _GuardedAction<_PreviousIntent>(
-                enabled: () => !_textFieldFocused(),
+              PreviousIntent: GuardedAction<PreviousIntent>(
+                enabled: () => !textFieldFocused(),
                 run: playback.previous,
               ),
-              _NextIntent: _GuardedAction<_NextIntent>(
-                enabled: () => !_textFieldFocused(),
+              NextIntent: GuardedAction<NextIntent>(
+                enabled: () => !textFieldFocused(),
                 run: playback.next,
               ),
-              _SeekIntent: CallbackAction<_SeekIntent>(
+              SeekIntent: CallbackAction<SeekIntent>(
                 onInvoke: (intent) {
-                  if (_controlFocused()) return null;
+                  if (controlFocused()) return null;
                   playback.seekBy(Duration(seconds: intent.seconds));
                   return null;
                 },
               ),
-              _MuteIntent: _GuardedAction<_MuteIntent>(
-                enabled: () => !_textFieldFocused(),
+              MuteIntent: GuardedAction<MuteIntent>(
+                enabled: () => !textFieldFocused(),
                 run: playback.toggleMute,
               ),
-              _CollapseIntent: _GuardedAction<_CollapseIntent>(
+              CollapseIntent: GuardedAction<CollapseIntent>(
                 enabled: () => _nowPlayingOpen,
                 run: () => setState(() => _nowPlayingOpen = false),
               ),
-              _FocusSearchIntent: _GuardedAction<_FocusSearchIntent>(
+              FocusSearchIntent: GuardedAction<FocusSearchIntent>(
                 enabled: () => true,
                 run: _searchFocus.requestFocus,
               ),
