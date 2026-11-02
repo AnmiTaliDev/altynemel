@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 
 import 'app.dart';
+import 'integration/android_media_session.dart';
+import 'integration/android_storage.dart';
 import 'integration/global_shortcuts.dart';
 import 'integration/mpris.dart';
 import 'integration/window_service.dart';
@@ -19,11 +21,18 @@ import 'storage/library_database.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
-  final directory = appDataDirectory();
+  final directory = await appDataDirectory();
   final database = LibraryDatabase.open('${directory.path}/library.db');
   final settings = AppSettings();
   final persistence = SettingsPersistence(settings, database)..restore();
   persistence.attach();
+  if (Platform.isAndroid) {
+    final granted = await requestAndroidAudioAccess();
+    if (granted && settings.libraryFolder == null) {
+      settings.setLibraryFolder(androidMusicFolder);
+    }
+    await requestAndroidNotificationAccess();
+  }
   final library = LibraryController(
     database: database,
     settings: settings,
@@ -34,6 +43,7 @@ Future<void> main() async {
     persistence: PlaybackPersistence(database),
   );
   await playback.restore(library.trackById);
+  if (Platform.isAndroid) await startAndroidMediaSession(playback);
   if (Platform.isLinux) {
     unawaited(GlobalShortcuts(actions: shortcutActions(playback)).start());
   }

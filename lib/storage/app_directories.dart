@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:path_provider/path_provider.dart';
+
 const String appDirectoryName = 'dev.anmitali.altynemel';
 
-Directory appDataDirectory() {
+Future<Directory> appDataDirectory() async {
+  if (Platform.isAndroid) return getApplicationSupportDirectory();
   final env = Platform.environment;
   final home = env['HOME'];
   final String base;
