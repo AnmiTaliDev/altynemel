@@ -7,6 +7,8 @@ import '../components/pill_tabs.dart';
 import '../components/screen_header.dart';
 import '../components/toggle.dart';
 import '../settings/app_settings.dart';
+import '../settings/catalog.dart';
+import '../settings/choices.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
@@ -51,6 +53,16 @@ class SettingsScreen extends StatelessWidget {
           children: [
             const ScreenHeader(title: Strings.settings),
             section(Strings.appearance),
+            ChoiceRow<DesignStyle>(
+              title: Strings.setupStyleLabel,
+              description: designStyle.hint,
+              selected: settings.valueOf(designStyle),
+              onSelected: (value) => settings.setValue(designStyle, value),
+              options: [
+                for (final value in DesignStyle.values)
+                  PillOption(value: value, label: designStyleLabels[value]!),
+              ],
+            ),
             ChoiceRow<ThemeChoice>(
               title: Strings.theme,
               description: Strings.themeHint,

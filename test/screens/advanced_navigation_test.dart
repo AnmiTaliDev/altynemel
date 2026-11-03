@@ -29,6 +29,8 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Open advanced settings'));
+    await tester.pump();
     await tester.tap(find.text('Open advanced settings'));
     await tester.pumpAndSettle();
     expect(find.byType(AdvancedSettingsScreen), findsOneWidget);
@@ -56,6 +58,8 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
+    await tester.ensureVisible(find.text('Open advanced settings'));
+    await tester.pump();
     await tester.tap(find.text('Open advanced settings'));
     await tester.pumpAndSettle();
     await tester.binding.handlePopRoute();
