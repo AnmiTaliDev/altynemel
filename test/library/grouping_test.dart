@@ -31,6 +31,7 @@ Track t(
 void main() {
   artistSeparatorTests();
   artistSortTests();
+  albumSortTests();
   group('splitArtists', () {
     test('splits on comma, semicolon and feat. variants', () {
       expect(splitArtists('june lu, sløwmind', enabled: true), [
@@ -217,6 +218,50 @@ void artistSortTests() {
         sort: ArtistSort.trackCount,
       ).map((a) => a.name);
       expect(names, ['Bob', 'Zed', 'Amy']);
+    });
+  });
+}
+
+void albumSortTests() {
+  group('album order', () {
+    Track track(String id, String album, String artist) => Track(
+      id: id,
+      title: 't$id',
+      artist: artist,
+      album: album,
+      albumArtist: artist,
+      duration: const Duration(seconds: 5),
+      path: '/m/$artist/$album/$id.mp3',
+    );
+
+    final tracks = [
+      track('1', 'Alpha', 'Zed'),
+      track('2', 'Beta', 'Amy'),
+      track('3', 'Beta', 'Amy'),
+      track('4', 'Gamma', 'Bob'),
+    ];
+
+    test('by title is alphabetical', () {
+      expect(buildAlbums(tracks).map((a) => a.title), [
+        'Alpha',
+        'Beta',
+        'Gamma',
+      ]);
+    });
+
+    test('by artist sorts on the album artist first', () {
+      expect(buildAlbums(tracks, sort: AlbumSort.artist).map((a) => a.title), [
+        'Beta',
+        'Gamma',
+        'Alpha',
+      ]);
+    });
+
+    test('by track count puts the longest album first', () {
+      expect(
+        buildAlbums(tracks, sort: AlbumSort.trackCount).map((a) => a.title),
+        ['Beta', 'Alpha', 'Gamma'],
+      );
     });
   });
 }

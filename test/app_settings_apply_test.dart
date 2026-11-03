@@ -232,4 +232,14 @@ void main() {
     expect(counts, [...counts]..sort((a, b) => b.compareTo(a)));
     expect(counts.first, greaterThan(counts.last));
   });
+
+  testWidgets('the album order follows the setting', (tester) async {
+    final lib = await pumpApp(tester);
+    final byTitle = lib.library.albums.map((a) => a.title).toList();
+    lib.settings.setValue(albumSort, AlbumSort.trackCount);
+    await tester.pumpAndSettle();
+    final byCount = lib.library.albums.map((a) => a.trackCount).toList();
+    expect(byCount, [...byCount]..sort((a, b) => b.compareTo(a)));
+    expect(lib.library.albums.map((a) => a.title).toList(), isNot(byTitle));
+  });
 }

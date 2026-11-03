@@ -52,3 +52,11 @@ const artistSortLabels = {
   ArtistSort.name: 'Name',
   ArtistSort.trackCount: 'Most tracks first',
 };
+
+enum AlbumSort { title, artist, trackCount }
+
+const albumSortLabels = {
+  AlbumSort.title: 'Title',
+  AlbumSort.artist: 'Artist',
+  AlbumSort.trackCount: 'Most tracks first',
+};

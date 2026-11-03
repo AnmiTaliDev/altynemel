@@ -463,6 +463,16 @@ const artistSort = EnumSetting<ArtistSort>(
   labels: artistSortLabels,
 );
 
+const albumSort = EnumSetting<AlbumSort>(
+  key: 'albumSort',
+  group: SettingGroup.library,
+  label: 'Album order',
+  hint: 'How the albums tab is sorted.',
+  defaultValue: AlbumSort.title,
+  values: AlbumSort.values,
+  labels: albumSortLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -507,4 +517,5 @@ const List<SettingDef<Object>> allSettings = [
   minimumTrackSeconds,
   artistSeparators,
   artistSort,
+  albumSort,
 ];

@@ -37,6 +37,7 @@ class LibraryController extends ChangeNotifier {
     _shortest = settings.valueOf(minimumTrackSeconds);
     _separators = settings.valueOf(artistSeparators);
     _artistSort = settings.valueOf(artistSort);
+    _albumSort = settings.valueOf(albumSort);
     _settings.addListener(_onSettings);
     _reload();
   }
@@ -54,6 +55,7 @@ class LibraryController extends ChangeNotifier {
   int _shortest = 0;
   String _separators = '';
   ArtistSort _artistSort = ArtistSort.name;
+  AlbumSort _albumSort = AlbumSort.title;
   bool _scanning = false;
   bool _disposed = false;
   String? _error;
@@ -117,7 +119,7 @@ class LibraryController extends ChangeNotifier {
         if (track.duration == Duration.zero || track.duration >= shortest)
           track,
     ], _order);
-    _albums = buildAlbums(_tracks);
+    _albums = buildAlbums(_tracks, sort: _settings.valueOf(albumSort));
     _artists = buildArtists(
       _tracks,
       split: _split,
@@ -136,7 +138,9 @@ class LibraryController extends ChangeNotifier {
         _settings.albumOrder != _order ||
         shortest != _shortest ||
         _settings.valueOf(artistSeparators) != _separators ||
-        _settings.valueOf(artistSort) != _artistSort;
+        _settings.valueOf(artistSort) != _artistSort ||
+        _settings.valueOf(albumSort) != _albumSort;
+    _albumSort = _settings.valueOf(albumSort);
     _artistSort = _settings.valueOf(artistSort);
     _separators = _settings.valueOf(artistSeparators);
     _shortest = shortest;

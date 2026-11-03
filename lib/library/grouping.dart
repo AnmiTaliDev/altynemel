@@ -119,9 +119,27 @@ List<Track> sortLibraryTracks(List<Track> tracks, AlbumOrder order) {
   return [for (final group in groups) ...orderAlbumTracks(group, order)];
 }
 
-List<Album> buildAlbums(List<Track> tracks) {
+List<Album> buildAlbums(
+  List<Track> tracks, {
+  AlbumSort sort = AlbumSort.title,
+}) {
   final groups = _groupAlbums(tracks).entries.toList()
-    ..sort((a, b) => _compareGroups(a.value, b.value));
+    ..sort((a, b) {
+      switch (sort) {
+        case AlbumSort.title:
+          break;
+        case AlbumSort.artist:
+          final byArtist = _compareText(
+            _albumArtist(a.value),
+            _albumArtist(b.value),
+          );
+          if (byArtist != 0) return byArtist;
+        case AlbumSort.trackCount:
+          final byCount = b.value.length.compareTo(a.value.length);
+          if (byCount != 0) return byCount;
+      }
+      return _compareGroups(a.value, b.value);
+    });
   return [
     for (final entry in groups)
       Album(
