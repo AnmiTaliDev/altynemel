@@ -107,7 +107,10 @@ class PlaybackController extends ChangeNotifier {
         'audio-pitch-correction',
         _settings.valueOf(pitchCorrection) ? 'yes' : 'no',
       );
-      platform.setProperty('replaygain', _settings.valueOf(replayGain).name);
+      platform.setProperty(
+        'replaygain',
+        _settings.valueOf(replayGain).mpvValue,
+      );
       platform.setProperty(
         'audio-buffer',
         _settings.valueOf(audioBufferSeconds).toString(),

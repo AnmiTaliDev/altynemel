@@ -5,7 +5,15 @@ const crossfadeCurveLabels = {
   CrossfadeCurve.linear: 'Linear',
 };
 
-enum ReplayGainMode { off, track, album }
+enum ReplayGainMode {
+  off('no'),
+  track('track'),
+  album('album');
+
+  const ReplayGainMode(this.mpvValue);
+
+  final String mpvValue;
+}
 
 const replayGainLabels = {
   ReplayGainMode.off: 'Off',

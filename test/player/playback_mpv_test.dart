@@ -67,6 +67,23 @@ void main() {
     expect(await rig.property('replaygain'), 'track');
   });
 
+  test('switching normalization back off reaches mpv as no', () async {
+    rig = MpvRig(preset: (s) => s.setValue(replayGain, ReplayGainMode.album));
+    expect(await rig.property('replaygain'), 'album');
+    rig.settings.setValue(replayGain, ReplayGainMode.off);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(await rig.property('replaygain'), 'no');
+  });
+
+  test('every mode has the value mpv understands', () {
+    rig = MpvRig();
+    expect(ReplayGainMode.values.map((m) => m.mpvValue), [
+      'no',
+      'track',
+      'album',
+    ]);
+  });
+
   test('the audio buffer follows the setting', () async {
     rig = MpvRig(preset: (s) => s.setValue(audioBufferSeconds, 0.5));
     expect(
