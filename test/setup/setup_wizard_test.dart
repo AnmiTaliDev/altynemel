@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -12,12 +14,13 @@ Future<AppSettings> pumpWizard(
   WidgetTester tester, {
   Size size = const Size(1100, 800),
   SetupStep initial = SetupStep.welcome,
+  Future<void> Function()? onFinish,
 }) async {
   final settings = AppSettings()..setSetupCompleted(false);
   addTearDown(settings.dispose);
   await pumpThemed(
     tester,
-    SetupWizard(settings: settings, initialStep: initial),
+    SetupWizard(settings: settings, initialStep: initial, onFinish: onFinish),
     size: size,
   );
   return settings;
@@ -102,4 +105,26 @@ void main() {
       }
     });
   }
+
+  testWidgets('finishing waits for the finish action before completing', (
+    tester,
+  ) async {
+    final gate = Completer<void>();
+    var started = 0;
+    final settings = await pumpWizard(
+      tester,
+      initial: SetupStep.finish,
+      onFinish: () {
+        started++;
+        return gate.future;
+      },
+    );
+    await tester.tap(find.text(Strings.setupFinish));
+    await tester.pump();
+    expect(started, 1);
+    expect(settings.setupCompleted, isFalse);
+    gate.complete();
+    await tester.pumpAndSettle();
+    expect(settings.setupCompleted, isTrue);
+  });
 }

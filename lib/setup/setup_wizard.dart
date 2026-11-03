@@ -43,12 +43,14 @@ class SetupWizard extends StatefulWidget {
     this.initialStep = SetupStep.welcome,
     this.onChooseFolder,
     this.onRequestAccess,
+    this.onFinish,
   });
 
   final AppSettings settings;
   final Widget? titleBar;
   final Future<void> Function()? onChooseFolder;
   final Future<bool> Function()? onRequestAccess;
+  final Future<void> Function()? onFinish;
   final SetupStep initialStep;
 
   @override
@@ -67,9 +69,15 @@ class _SetupWizardState extends State<SetupWizard> {
     });
   }
 
+  Future<void> _finish() async {
+    await widget.onFinish?.call();
+    if (!mounted) return;
+    widget.settings.setSetupCompleted(true);
+  }
+
   void _next() {
     if (_step.isLast) {
-      widget.settings.setSetupCompleted(true);
+      _finish();
     } else {
       _go(_step.next, forward: true);
     }

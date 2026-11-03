@@ -26,7 +26,7 @@ Future<void> main() async {
   final settings = AppSettings();
   final persistence = SettingsPersistence(settings, database)..restore();
   persistence.attach();
-  if (Platform.isAndroid) {
+  if (Platform.isAndroid && settings.setupCompleted) {
     final granted = await requestAndroidAudioAccess();
     if (granted && settings.libraryFolder == null) {
       settings.setLibraryFolder(androidMusicFolder);

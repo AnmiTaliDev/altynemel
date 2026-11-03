@@ -50,6 +50,7 @@ class SetupHost extends StatelessWidget {
       onRequestAccess: Platform.isAndroid
           ? () => requestAudioAccess(settings)
           : null,
+      onFinish: Platform.isAndroid ? requestAndroidNotificationAccess : null,
     );
     if (service == null) return wizard;
     return DragToResizeArea(resizeEdgeSize: 6, child: wizard);
