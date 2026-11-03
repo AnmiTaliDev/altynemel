@@ -86,6 +86,58 @@ class AltynemelTextStyles extends ThemeExtension<AltynemelTextStyles> {
     );
   }
 
+  factory AltynemelTextStyles.material(AltynemelColors colors) {
+    final ink = colors.ink;
+    return AltynemelTextStyles(
+      displayXl: _style(color: ink, size: 32, lineHeight: 40, weight: 400),
+      displayLg: _style(color: ink, size: 28, lineHeight: 36, weight: 400),
+      displayMd: _style(color: ink, size: 22, lineHeight: 28, weight: 400),
+      bodyLg: _style(
+        color: ink,
+        size: 16,
+        lineHeight: 24,
+        weight: 400,
+        letterSpacingEm: 0.5 / 16,
+      ),
+      body: _style(
+        color: ink,
+        size: 14,
+        lineHeight: 20,
+        weight: 400,
+        letterSpacingEm: 0.25 / 14,
+      ),
+      bodyStrong: _style(
+        color: ink,
+        size: 14,
+        lineHeight: 20,
+        weight: 500,
+        letterSpacingEm: 0.1 / 14,
+      ),
+      caption: _style(
+        color: ink,
+        size: 12,
+        lineHeight: 16,
+        weight: 400,
+        letterSpacingEm: 0.4 / 12,
+      ),
+      label: _style(
+        color: ink,
+        size: 12,
+        lineHeight: 16,
+        weight: 500,
+        letterSpacingEm: 0.5 / 12,
+      ),
+      time: _style(
+        color: ink,
+        size: 12,
+        lineHeight: 16,
+        weight: 400,
+        letterSpacingEm: 0.5 / 12,
+        features: [const FontFeature.tabularFigures()],
+      ),
+    );
+  }
+
   static AltynemelTextStyles of(BuildContext context) =>
       Theme.of(context).extension<AltynemelTextStyles>()!;
 
