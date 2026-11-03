@@ -437,7 +437,7 @@ class PlaybackController extends ChangeNotifier {
   Future<void> seekBy(Duration delta) => seek(position.value + delta);
 
   Future<void> setVolume(int value) async {
-    _volume = value.clamp(0, 100);
+    _volume = value.clamp(0, _settings.valueOf(maximumVolume));
     if (_volume > 0) _volumeBeforeMute = _volume;
     if (!_fading) await _primary.setVolume(_volume.toDouble());
     notifyListeners();
@@ -499,7 +499,7 @@ class PlaybackController extends ChangeNotifier {
   Future<void> restore(Track? Function(String id) resolve) async {
     final saved = _persistence?.load();
     if (saved == null) return;
-    _volume = saved.volume.clamp(0, 100);
+    _volume = saved.volume.clamp(0, _settings.valueOf(maximumVolume));
     if (_volume > 0) _volumeBeforeMute = _volume;
     _queue.restore(saved.queue, resolve);
     if (_queue.current == null) {

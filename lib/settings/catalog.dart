@@ -77,6 +77,18 @@ const defaultVolume = IntSetting(
   unit: '%',
 );
 
+const maximumVolume = IntSetting(
+  key: 'maximumVolume',
+  group: SettingGroup.sound,
+  label: 'Maximum volume',
+  hint: 'Upper limit for the volume controls, to protect your ears.',
+  defaultValue: 100,
+  min: 10,
+  max: 100,
+  step: 5,
+  unit: '%',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -85,4 +97,5 @@ const List<SettingDef<Object>> allSettings = [
   crossfadeStepMs,
   skipUnavailableTracks,
   defaultVolume,
+  maximumVolume,
 ];

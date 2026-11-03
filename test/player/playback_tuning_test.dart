@@ -229,4 +229,18 @@ void main() {
     await rig.controller.toggleMute();
     expect(rig.controller.volume, 70);
   });
+
+  test('the volume never exceeds the maximum', () async {
+    rig = Rig(preset: (settings) => settings.setValue(maximumVolume, 60));
+    await rig.controller.setVolume(90);
+    expect(rig.controller.volume, 60);
+    await rig.controller.setVolume(20);
+    expect(rig.controller.volume, 20);
+  });
+
+  test('without a limit the volume reaches 100', () async {
+    rig = Rig();
+    await rig.controller.setVolume(100);
+    expect(rig.controller.volume, 100);
+  });
 }
