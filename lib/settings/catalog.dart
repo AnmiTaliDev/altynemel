@@ -521,6 +521,17 @@ const searchIgnoreAccents = BoolSetting(
   defaultValue: false,
 );
 
+const designStyle = EnumSetting<DesignStyle>(
+  key: 'designStyle',
+  group: SettingGroup.appearance,
+  label: 'Design style',
+  hint:
+      'Altynemel is the original look. Material 3 follows Google\'s design system.',
+  defaultValue: DesignStyle.altynemel,
+  values: DesignStyle.values,
+  labels: designStyleLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -572,4 +583,5 @@ const List<SettingDef<Object>> allSettings = [
   searchInTitle,
   searchInFileName,
   searchIgnoreAccents,
+  designStyle,
 ];

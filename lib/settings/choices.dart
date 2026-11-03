@@ -60,3 +60,10 @@ const albumSortLabels = {
   AlbumSort.artist: 'Artist',
   AlbumSort.trackCount: 'Most tracks first',
 };
+
+enum DesignStyle { altynemel, material }
+
+const designStyleLabels = {
+  DesignStyle.altynemel: 'Altynemel',
+  DesignStyle.material: 'Material 3',
+};
