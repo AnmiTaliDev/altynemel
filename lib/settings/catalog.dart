@@ -390,6 +390,14 @@ const coverRadius = IntSetting(
   unit: 'px',
 );
 
+const scanExtensions = TextSetting(
+  key: 'scanExtensions',
+  group: SettingGroup.library,
+  label: 'File types to scan',
+  hint: 'Extensions the scanner picks up, separated by commas.',
+  defaultValue: 'mp3, flac, m4a, aac, ogg, opus, wav',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -426,4 +434,5 @@ const List<SettingDef<Object>> allSettings = [
   showTrackDurations,
   nowPlayingCover,
   coverRadius,
+  scanExtensions,
 ];

@@ -5,11 +5,13 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 
 import '../settings/app_settings.dart';
+import '../settings/catalog.dart';
 import '../storage/library_database.dart';
 import '../strings.dart';
 import 'album.dart';
 import 'artist.dart';
 import 'grouping.dart';
+import 'scan_options.dart';
 import 'scanner.dart';
 import 'track.dart';
 
@@ -30,6 +32,7 @@ class LibraryController extends ChangeNotifier {
     _interval = settings.rescanInterval;
     _split = settings.splitArtists;
     _order = settings.albumOrder;
+    _extensions = settings.valueOf(scanExtensions);
     _settings.addListener(_onSettings);
     _reload();
   }
@@ -43,6 +46,7 @@ class LibraryController extends ChangeNotifier {
   RescanInterval _interval = RescanInterval.minutes15;
   bool _split = true;
   AlbumOrder _order = AlbumOrder.discAndTrack;
+  String _extensions = '';
   bool _scanning = false;
   bool _disposed = false;
   String? _error;
@@ -96,6 +100,8 @@ class LibraryController extends ChangeNotifier {
     final regroup =
         _settings.splitArtists != _split || _settings.albumOrder != _order;
     final intervalChanged = _settings.rescanInterval != _interval;
+    final extensionsChanged = _settings.valueOf(scanExtensions) != _extensions;
+    _extensions = _settings.valueOf(scanExtensions);
     _folder = _settings.libraryFolder;
     _split = _settings.splitArtists;
     _order = _settings.albumOrder;
@@ -105,7 +111,7 @@ class LibraryController extends ChangeNotifier {
       notifyListeners();
     }
     if (intervalChanged || folderChanged) _restartTimer();
-    if (folderChanged && _folder != null) scan();
+    if ((folderChanged || extensionsChanged) && _folder != null) scan();
   }
 
   void _restartTimer() {
@@ -131,6 +137,9 @@ class LibraryController extends ChangeNotifier {
         root: folder,
         coversDirectory: coversDirectory,
         known: _database.knownFiles(),
+        options: ScanOptions(
+          extensions: parseExtensions(_settings.valueOf(scanExtensions)),
+        ),
       );
       final result = await Isolate.run(() => scanLibrary(request));
       if (_disposed) return;

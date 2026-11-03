@@ -31,4 +31,5 @@ String stemOf(String path) {
   return dot <= 0 ? name : name.substring(0, dot);
 }
 
-bool isAudioFile(String path) => audioExtensions.contains(extensionOf(path));
+bool isAudioFile(String path, [Set<String> extensions = audioExtensions]) =>
+    extensions.contains(extensionOf(path));

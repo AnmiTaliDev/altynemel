@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:audio_metadata_reader/audio_metadata_reader.dart';
 
 import 'audio_file.dart';
+import 'scan_options.dart';
 
 const unknownArtist = 'Unknown artist';
 
@@ -21,11 +22,13 @@ class ScanRequest {
     required this.root,
     required this.coversDirectory,
     required this.known,
+    this.options = const ScanOptions(),
   });
 
   final String root;
   final String coversDirectory;
   final Map<String, KnownFile> known;
+  final ScanOptions options;
 }
 
 class ScannedTrack {
@@ -69,7 +72,10 @@ String? _blankToNull(String? value) {
   return trimmed.isEmpty ? null : trimmed;
 }
 
-List<File> findAudioFiles(Directory root) {
+List<File> findAudioFiles(
+  Directory root, [
+  ScanOptions options = const ScanOptions(),
+]) {
   final files = <File>[];
   final pending = <Directory>[root];
   while (pending.isNotEmpty) {
@@ -83,7 +89,7 @@ List<File> findAudioFiles(Directory root) {
     for (final entry in entries) {
       if (entry is Directory) {
         pending.add(entry);
-      } else if (entry is File && isAudioFile(entry.path)) {
+      } else if (entry is File && isAudioFile(entry.path, options.extensions)) {
         files.add(entry);
       }
     }
@@ -238,7 +244,7 @@ ScanResult scanLibrary(ScanRequest request) {
   final seen = <String>{};
   final changed = <ScannedTrack>[];
   final folderCovers = <String, String?>{};
-  for (final file in findAudioFiles(root)) {
+  for (final file in findAudioFiles(root, request.options)) {
     final FileStat stat;
     try {
       stat = file.statSync();
