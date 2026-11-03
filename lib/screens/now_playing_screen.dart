@@ -17,6 +17,7 @@ import '../format/time_format.dart';
 import '../player/repeat_setting.dart';
 import '../settings/app_settings_scope.dart';
 import '../settings/catalog.dart';
+import '../settings/choices.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
@@ -227,7 +228,13 @@ class NowPlayingScreen extends StatelessWidget {
             size: coverSize,
             image: image,
             albumName: album ?? title,
-            shape: CoverShape.arch,
+            shape: switch (AppSettingsScope.maybeOf(
+              context,
+            )?.valueOf(nowPlayingCover)) {
+              CoverStyle.square => CoverShape.square,
+              CoverStyle.circle => CoverShape.circle,
+              _ => CoverShape.arch,
+            },
           );
           return Column(
             children: [

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:altynemel/components/cover_art.dart';
 import 'package:altynemel/screens/now_playing_screen.dart';
 import 'package:altynemel/settings/catalog.dart';
+import 'package:altynemel/settings/choices.dart';
 import 'package:altynemel/screens/queue_screen.dart';
 
 import '../support/test_library.dart';
@@ -141,5 +142,25 @@ void main() {
       greaterThanOrEqualTo(tester.getRect(cover).bottom),
       reason: 'narrow layout puts the title under the cover',
     );
+  });
+
+  testWidgets('the now playing cover shape follows the setting', (
+    tester,
+  ) async {
+    final lib = await pumpHome(tester);
+    await startPlaylist(tester);
+    await tester.tap(find.bySemanticsLabel('Open now playing'));
+    await tester.pumpAndSettle();
+    final cover = find.byType(CoverArt);
+    final arch = tester.getSize(cover);
+    expect(arch.height, closeTo(arch.width * 1.25, 0.01));
+    lib.settings.setValue(nowPlayingCover, CoverStyle.square);
+    await tester.pumpAndSettle();
+    final square = tester.getSize(cover);
+    expect(square.height, square.width);
+    lib.settings.setValue(nowPlayingCover, CoverStyle.circle);
+    await tester.pumpAndSettle();
+    expect(tester.widget<CoverArt>(cover).shape, CoverShape.circle);
+    expect(tester.getSize(cover).height, tester.getSize(cover).width);
   });
 }

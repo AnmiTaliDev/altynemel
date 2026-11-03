@@ -5,7 +5,7 @@ import '../theme/colors.dart';
 import '../theme/radii.dart';
 import 'svg_path.dart';
 
-enum CoverShape { square, arch }
+enum CoverShape { square, arch, circle }
 
 class CoverArt extends StatelessWidget {
   const CoverArt({
@@ -28,9 +28,13 @@ class CoverArt extends StatelessWidget {
     final colors = AltynemelColors.of(context);
     final width = size;
     final height = shape == CoverShape.arch ? size * 1.25 : size;
-    final borderRadius = shape == CoverShape.arch
-        ? const BorderRadius.vertical(top: Radius.circular(radiusPill))
-        : BorderRadius.circular(radius);
+    final borderRadius = switch (shape) {
+      CoverShape.arch => const BorderRadius.vertical(
+        top: Radius.circular(radiusPill),
+      ),
+      CoverShape.circle => BorderRadius.circular(size),
+      CoverShape.square => BorderRadius.circular(radius),
+    };
     final placeholder = CustomPaint(
       size: Size(width, height),
       painter: _DunePainter(

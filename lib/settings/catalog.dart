@@ -369,6 +369,16 @@ const showTrackDurations = BoolSetting(
   defaultValue: true,
 );
 
+const nowPlayingCover = EnumSetting<CoverStyle>(
+  key: 'nowPlayingCover',
+  group: SettingGroup.appearance,
+  label: 'Now playing cover shape',
+  hint: 'Shape of the large cover on the full screen player.',
+  defaultValue: CoverStyle.arch,
+  values: CoverStyle.values,
+  labels: coverStyleLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -403,4 +413,5 @@ const List<SettingDef<Object>> allSettings = [
   nowPlayingWideFrom,
   showTrackNumbers,
   showTrackDurations,
+  nowPlayingCover,
 ];

@@ -37,3 +37,11 @@ const rowDensityHeights = {
   RowDensity.comfortable: 56.0,
   RowDensity.spacious: 72.0,
 };
+
+enum CoverStyle { arch, square, circle }
+
+const coverStyleLabels = {
+  CoverStyle.arch: 'Arch',
+  CoverStyle.square: 'Square',
+  CoverStyle.circle: 'Circle',
+};
