@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/library/library_controller.dart';
 import 'package:altynemel/settings/app_settings.dart';
+import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/storage/library_database.dart';
 
 import '../support/audio_fixtures.dart';
@@ -122,5 +123,17 @@ void main() {
     controller.addToPlaylist(playlist, id);
     expect(controller.playlistTracks(playlist).single.id, id);
     expect(controller.playlists.single.name, 'Mine');
+  });
+
+  test('changing the file types rescans the library', () async {
+    writeFile(music, 'a.mp3', mp3Bytes(title: 'A', album: 'X'));
+    writeFile(music, 'b.ogg', mp3Bytes(title: 'B', album: 'X'));
+    settings.setLibraryFolder(music.path);
+    await until(() => controller.tracks.length == 2);
+    settings.setValue(scanExtensions, 'ogg');
+    await until(() => controller.tracks.length == 1);
+    expect(controller.tracks.single.path, endsWith('b.ogg'));
+    settings.reset(scanExtensions);
+    await until(() => controller.tracks.length == 2);
   });
 }
