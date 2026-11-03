@@ -304,6 +304,18 @@ const phoneLayoutBelow = IntSetting(
   unit: 'px',
 );
 
+const compactSidebarBelow = IntSetting(
+  key: 'compactSidebarBelow',
+  group: SettingGroup.layout,
+  label: 'Icon rail below',
+  hint: 'Windows narrower than this shrink the sidebar to an icon rail.',
+  defaultValue: 800,
+  min: 400,
+  max: 1400,
+  step: 10,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -332,4 +344,5 @@ const List<SettingDef<Object>> allSettings = [
   sidebarExpandedWidth,
   playerBarMinHeight,
   phoneLayoutBelow,
+  compactSidebarBelow,
 ];

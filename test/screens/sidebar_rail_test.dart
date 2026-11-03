@@ -140,4 +140,22 @@ void main() {
     await tester.pumpAndSettle();
     expect(sidebarWidthNow(tester), 300);
   });
+
+  test('the default rail threshold matches the layout constant', () {
+    expect(compactSidebarBelow.defaultValue, sidebarCompactBelow);
+  });
+
+  testWidgets('the rail threshold follows the setting', (tester) async {
+    tester.view.physicalSize = const Size(1000, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
+    await tester.pumpWidget(lib.wrap(const HomeScreen()));
+    await tester.pumpAndSettle();
+    expect(sidebarWidthNow(tester), sidebarWidth);
+    lib.settings.setValue(compactSidebarBelow, 1100);
+    await tester.pumpAndSettle();
+    expect(sidebarWidthNow(tester), sidebarRailWidth);
+  });
 }

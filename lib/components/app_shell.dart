@@ -5,7 +5,12 @@ import '../settings/catalog.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 
-bool sidebarCompactFor(double windowWidth) => windowWidth < sidebarCompactBelow;
+bool sidebarCompactFor(BuildContext context) {
+  final settings = AppSettingsScope.maybeOf(context);
+  final threshold =
+      settings?.valueOf(compactSidebarBelow) ?? sidebarCompactBelow.toInt();
+  return MediaQuery.sizeOf(context).width < threshold;
+}
 
 double sidebarWidthOf(BuildContext context) {
   final settings = AppSettingsScope.maybeOf(context);
@@ -15,8 +20,7 @@ double sidebarWidthOf(BuildContext context) {
 }
 
 double sidebarSlotWidth(BuildContext context) {
-  final windowWidth = MediaQuery.sizeOf(context).width;
-  return sidebarCompactFor(windowWidth)
+  return sidebarCompactFor(context)
       ? sidebarRailWidth
       : sidebarWidthOf(context);
 }
@@ -42,8 +46,7 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
-    final windowWidth = MediaQuery.sizeOf(context).width;
-    final compact = sidebarCompactFor(windowWidth);
+    final compact = sidebarCompactFor(context);
     final expandedWidth = sidebarWidthOf(context);
     final slot = sidebarSlotWidth(context);
     final overlay = compact && expanded;

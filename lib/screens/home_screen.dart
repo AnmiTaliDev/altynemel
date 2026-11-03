@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _focusSearch() {
-    if (sidebarCompactFor(MediaQuery.sizeOf(context).width)) {
+    if (sidebarCompactFor(context)) {
       _expandRail();
     } else {
       _searchFocus.requestFocus();
@@ -528,7 +528,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final settings = AppSettingsScope.of(context);
     final window = WindowScope.maybeOf(context);
     final width = MediaQuery.sizeOf(context).width;
-    final compact = sidebarCompactFor(width);
+    final compact = sidebarCompactFor(context);
     final phone = isPhoneWidth(context, width);
     if (!compact) _railExpanded = false;
     final playlists = [
