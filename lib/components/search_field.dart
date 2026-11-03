@@ -4,6 +4,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'focus_ring.dart';
 import 'icon.dart';
@@ -34,8 +35,11 @@ class _SearchFieldState extends State<SearchField> {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
+    final style = AltynemelStyle.of(context);
+    final scheme = style.scheme;
+    final material = style.material;
     return FocusRing(
-      visible: _focused,
+      visible: _focused && !material,
       radius: radiusPill,
       child: Focus(
         canRequestFocus: false,
@@ -45,17 +49,29 @@ class _SearchFieldState extends State<SearchField> {
           label: widget.label,
           excludeSemantics: false,
           child: Container(
-            constraints: const BoxConstraints(minHeight: targetPointer),
-            padding: const EdgeInsets.symmetric(horizontal: space3),
+            constraints: BoxConstraints(
+              minHeight: material ? 56 : targetPointer,
+            ),
+            padding: EdgeInsets.symmetric(
+              horizontal: material ? space4 : space3,
+            ),
             decoration: BoxDecoration(
-              color: colors.surface,
+              color: material ? scheme!.surfaceContainerHigh : colors.surface,
               borderRadius: borderRadiusPill,
-              border: Border.all(color: colors.lineStrong, width: borderWidth),
+              border: material
+                  ? (_focused
+                        ? Border.all(color: scheme!.primary, width: 2)
+                        : Border.all(color: Colors.transparent, width: 2))
+                  : Border.all(color: colors.lineStrong, width: borderWidth),
             ),
             child: Row(
               children: [
-                AltynemelIcon(IconId.search, size: 20, color: colors.inkMuted),
-                const SizedBox(width: space2),
+                AltynemelIcon(
+                  IconId.search,
+                  size: material ? 24 : 20,
+                  color: material ? scheme!.onSurface : colors.inkMuted,
+                ),
+                SizedBox(width: material ? space3 : space2),
                 Expanded(
                   child: TextField(
                     controller: widget.controller,
