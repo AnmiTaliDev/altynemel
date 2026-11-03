@@ -152,6 +152,18 @@ const seekStepSeconds = IntSetting(
   unit: 's',
 );
 
+const seekStepLongSeconds = IntSetting(
+  key: 'seekStepLongSeconds',
+  group: SettingGroup.playback,
+  label: 'Long seek step',
+  hint: 'Jump made by Shift with the left and right arrow keys.',
+  defaultValue: 30,
+  min: 5,
+  max: 600,
+  step: 5,
+  unit: 's',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -167,4 +179,5 @@ const List<SettingDef<Object>> allSettings = [
   replayGain,
   audioBufferSeconds,
   seekStepSeconds,
+  seekStepLongSeconds,
 ];
