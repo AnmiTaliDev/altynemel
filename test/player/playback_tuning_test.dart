@@ -4,15 +4,19 @@ import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:altynemel/library/track.dart';
 import 'package:altynemel/player/playback_controller.dart';
 import 'package:altynemel/settings/app_settings.dart';
+import 'package:altynemel/player/playback_persistence.dart';
 import 'package:altynemel/settings/catalog.dart';
+import 'package:altynemel/storage/library_database.dart';
 
 import '../support/fake_player.dart';
 
 class Rig {
-  Rig({this.seconds = 100, this.count = 3}) {
+  Rig({this.seconds = 100, this.count = 3, this.withDatabase = false}) {
     settings = AppSettings();
+    if (withDatabase) database = LibraryDatabase.inMemory();
     controller = PlaybackController(
       settings: settings,
+      persistence: withDatabase ? PlaybackPersistence(database!) : null,
       fileExists: (_) => true,
       playerFactory: () {
         final fake = FakePlatformPlayer();
@@ -34,6 +38,8 @@ class Rig {
 
   final int seconds;
   final int count;
+  final bool withDatabase;
+  LibraryDatabase? database;
   final List<FakePlatformPlayer> fakes = [];
   late final AppSettings settings;
   late final PlaybackController controller;
@@ -57,6 +63,7 @@ class Rig {
   void dispose() {
     controller.dispose();
     settings.dispose();
+    database?.close();
   }
 }
 
@@ -118,5 +125,22 @@ void main() {
     await rig.controller.previous();
     await rig.settle();
     expect(rig.controller.current!.id, '0');
+  });
+
+  test('the position is saved at the configured interval', () async {
+    rig = Rig(withDatabase: true);
+    rig.settings.setValue(positionSaveSeconds, 1);
+    await rig.start();
+    await rig.positionAt(30);
+    await Future<void>.delayed(const Duration(milliseconds: 1300));
+    expect(PlaybackPersistence(rig.database!).load()!.positionMs, 30000);
+  });
+
+  test('a longer interval does not save the position yet', () async {
+    rig = Rig(withDatabase: true);
+    await rig.start();
+    await rig.positionAt(30);
+    await Future<void>.delayed(const Duration(milliseconds: 1300));
+    expect(PlaybackPersistence(rig.database!).load()!.positionMs, 0);
   });
 }

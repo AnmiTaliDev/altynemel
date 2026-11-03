@@ -23,7 +23,19 @@ const previousRestartSeconds = IntSetting(
   unit: 's',
 );
 
+const positionSaveSeconds = IntSetting(
+  key: 'positionSaveSeconds',
+  group: SettingGroup.playback,
+  label: 'Position save interval',
+  hint: 'How often the playback position is written while playing.',
+  defaultValue: 5,
+  min: 1,
+  max: 60,
+  unit: 's',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
+  positionSaveSeconds,
 ];

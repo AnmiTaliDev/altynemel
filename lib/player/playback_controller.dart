@@ -12,8 +12,6 @@ import 'play_queue.dart';
 import 'playback_persistence.dart';
 import 'repeat_setting.dart';
 
-const Duration saveInterval = Duration(seconds: 5);
-
 bool _defaultFileExists(String path) => File(path).existsSync();
 
 Player createPlayer() {
@@ -240,7 +238,10 @@ class PlaybackController extends ChangeNotifier {
     notifyListeners();
     if (value) {
       if (_persistence != null) {
-        _saveTimer ??= Timer.periodic(saveInterval, (_) => _save());
+        _saveTimer ??= Timer.periodic(
+          Duration(seconds: _settings.valueOf(positionSaveSeconds)),
+          (_) => _save(),
+        );
       }
     } else {
       _saveTimer?.cancel();
