@@ -5,6 +5,7 @@ import 'package:altynemel/components/button.dart';
 import 'package:altynemel/components/player_bar.dart';
 import 'package:altynemel/components/sidebar.dart';
 import 'package:altynemel/screens/home_screen.dart';
+import 'package:altynemel/settings/catalog.dart';
 
 import '../support/test_library.dart';
 
@@ -101,5 +102,20 @@ void main() {
     await pumpPlaying(tester, const Size(1100, 700));
     final node = tester.getSemantics(find.bySemanticsLabel('Seek'));
     expect(node.value, '0 seconds of 2 minutes 27 seconds');
+  });
+
+  test('the default compact bar threshold matches the layout constant', () {
+    expect(compactPlayerBarBelow.defaultValue, playerBarCompactBelow);
+  });
+
+  testWidgets('the compact bar threshold follows the setting', (tester) async {
+    final lib = await pumpPlaying(tester, const Size(1000, 700));
+    expect(find.bySemanticsLabel('Shuffle'), findsWidgets);
+    lib.settings.setValue(compactPlayerBarBelow, 1200);
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Shuffle'), findsNothing);
+    lib.settings.setValue(compactPlayerBarBelow, 500);
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Shuffle'), findsWidgets);
   });
 }

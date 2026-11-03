@@ -269,7 +269,10 @@ class PlayerBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final width = MediaQuery.sizeOf(context).width;
-    final compact = width < playerBarCompactBelow;
+    final threshold =
+        AppSettingsScope.maybeOf(context)?.valueOf(compactPlayerBarBelow) ??
+        playerBarCompactBelow.toInt();
+    final compact = width < threshold;
     return Semantics(
       container: true,
       explicitChildNodes: true,

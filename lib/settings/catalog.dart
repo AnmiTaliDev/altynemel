@@ -316,6 +316,18 @@ const compactSidebarBelow = IntSetting(
   unit: 'px',
 );
 
+const compactPlayerBarBelow = IntSetting(
+  key: 'compactPlayerBarBelow',
+  group: SettingGroup.layout,
+  label: 'Compact player bar below',
+  hint: 'Windows narrower than this use the one row player bar.',
+  defaultValue: 900,
+  min: 500,
+  max: 1400,
+  step: 10,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -345,4 +357,5 @@ const List<SettingDef<Object>> allSettings = [
   playerBarMinHeight,
   phoneLayoutBelow,
   compactSidebarBelow,
+  compactPlayerBarBelow,
 ];
