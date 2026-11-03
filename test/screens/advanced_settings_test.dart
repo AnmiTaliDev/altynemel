@@ -158,4 +158,18 @@ void main() {
     await tester.pump();
     expect(find.text('Fade length'), findsOneWidget);
   });
+
+  testWidgets('a changed value gets a reset button that restores it', (
+    tester,
+  ) async {
+    final settings = await pumpAdvanced(tester);
+    expect(find.text('Reset'), findsNothing);
+    await tester.tap(find.text('Loud'));
+    await tester.pump();
+    expect(find.text('Reset'), findsOneWidget);
+    await tester.tap(find.text('Reset'));
+    await tester.pump();
+    expect(settings.valueOf(enumDef), Mode.quiet);
+    expect(find.text('Reset'), findsNothing);
+  });
 }

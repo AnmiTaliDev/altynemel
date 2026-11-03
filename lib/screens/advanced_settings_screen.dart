@@ -139,7 +139,13 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
                   child: Text(entry.key.title, style: text.displayMd),
                 ),
               ),
-              for (final def in entry.value) _row(def),
+              for (final def in entry.value)
+                ResettableRow(
+                  title: def.label,
+                  modified: settings.isModified(def),
+                  onReset: () => settings.reset(def),
+                  child: _row(def),
+                ),
             ],
           ],
         );
