@@ -1,5 +1,7 @@
 import '../storage/library_database.dart';
 import 'app_settings.dart';
+import 'catalog.dart';
+import 'setting_def.dart';
 
 T _enumByName<T extends Enum>(List<T> values, String? name, T fallback) {
   for (final value in values) {
@@ -14,11 +16,18 @@ bool _bool(String? value, bool fallback) {
   return fallback;
 }
 
+const String definitionKeyPrefix = 's.';
+
 class SettingsPersistence {
-  SettingsPersistence(this._settings, this._database);
+  SettingsPersistence(
+    this._settings,
+    this._database, {
+    this.definitions = allSettings,
+  });
 
   final AppSettings _settings;
   final LibraryDatabase _database;
+  final List<SettingDef<Object>> definitions;
 
   void restore() {
     final stored = _database.settings();
@@ -48,6 +57,12 @@ class SettingsPersistence {
       _enumByName(AlbumOrder.values, stored['albumOrder'], defaults.albumOrder),
     );
     _settings.setLibraryFolder(stored['libraryFolder']);
+    for (final def in definitions) {
+      final raw = stored['$definitionKeyPrefix${def.key}'];
+      if (raw == null) continue;
+      final value = def.decode(raw);
+      if (value != null) _settings.setValue(def, value);
+    }
     defaults.dispose();
   }
 
@@ -66,5 +81,11 @@ class SettingsPersistence {
     _database.setSetting('albumOrder', _settings.albumOrder.name);
     final folder = _settings.libraryFolder;
     if (folder != null) _database.setSetting('libraryFolder', folder);
+    for (final def in definitions) {
+      _database.setSetting(
+        '$definitionKeyPrefix${def.key}',
+        def.encode(_settings.valueOf(def)),
+      );
+    }
   }
 }
