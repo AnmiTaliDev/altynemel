@@ -201,4 +201,21 @@ void main() {
       findsNothing,
     );
   });
+
+  testWidgets('short tracks can be hidden from the library', (tester) async {
+    final lib = await pumpApp(tester);
+    expect(lib.library.tracks.length, 4);
+    lib.settings.setValue(minimumTrackSeconds, 200);
+    await tester.pumpAndSettle();
+    expect(lib.library.tracks.length, 3);
+    expect(
+      lib.library.tracks.every(
+        (t) => t.duration >= const Duration(seconds: 200),
+      ),
+      isTrue,
+    );
+    lib.settings.reset(minimumTrackSeconds);
+    await tester.pumpAndSettle();
+    expect(lib.library.tracks.length, 4);
+  });
 }

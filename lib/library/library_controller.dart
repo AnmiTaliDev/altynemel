@@ -33,6 +33,7 @@ class LibraryController extends ChangeNotifier {
     _split = settings.splitArtists;
     _order = settings.albumOrder;
     _scanKey = _scanSettingsKey();
+    _shortest = settings.valueOf(minimumTrackSeconds);
     _settings.addListener(_onSettings);
     _reload();
   }
@@ -47,6 +48,7 @@ class LibraryController extends ChangeNotifier {
   bool _split = true;
   AlbumOrder _order = AlbumOrder.discAndTrack;
   String _scanKey = '';
+  int _shortest = 0;
   bool _scanning = false;
   bool _disposed = false;
   String? _error;
@@ -104,7 +106,12 @@ class LibraryController extends ChangeNotifier {
   );
 
   void _reload() {
-    _tracks = sortLibraryTracks(_database.tracks(), _order);
+    final shortest = Duration(seconds: _settings.valueOf(minimumTrackSeconds));
+    _tracks = sortLibraryTracks([
+      for (final track in _database.tracks())
+        if (track.duration == Duration.zero || track.duration >= shortest)
+          track,
+    ], _order);
     _albums = buildAlbums(_tracks);
     _artists = buildArtists(_tracks, split: _split);
     _liked = _database.likedIds();
@@ -113,8 +120,12 @@ class LibraryController extends ChangeNotifier {
 
   void _onSettings() {
     final folderChanged = _settings.libraryFolder != _folder;
+    final shortest = _settings.valueOf(minimumTrackSeconds);
     final regroup =
-        _settings.splitArtists != _split || _settings.albumOrder != _order;
+        _settings.splitArtists != _split ||
+        _settings.albumOrder != _order ||
+        shortest != _shortest;
+    _shortest = shortest;
     final intervalChanged = _settings.rescanInterval != _interval;
     final scanChanged = _scanSettingsKey() != _scanKey;
     _scanKey = _scanSettingsKey();

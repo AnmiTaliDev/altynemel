@@ -431,6 +431,19 @@ const coverFileNames = TextSetting(
   defaultValue: 'cover.jpg, cover.png, folder.jpg',
 );
 
+const minimumTrackSeconds = IntSetting(
+  key: 'minimumTrackSeconds',
+  group: SettingGroup.library,
+  label: 'Hide short tracks',
+  hint:
+      'Tracks shorter than this stay out of the library. Zero shows everything.',
+  defaultValue: 0,
+  min: 0,
+  max: 600,
+  step: 5,
+  unit: 's',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -472,4 +485,5 @@ const List<SettingDef<Object>> allSettings = [
   followSymlinks,
   excludedFolders,
   coverFileNames,
+  minimumTrackSeconds,
 ];
