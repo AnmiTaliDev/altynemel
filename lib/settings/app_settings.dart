@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import 'setting_def.dart';
+
 enum ThemeChoice { system, night, day, contrast }
 
 enum RescanInterval { minutes5, minutes15, hour1 }
@@ -16,6 +18,7 @@ class AppSettings extends ChangeNotifier {
   bool _splitArtists = true;
   AlbumOrder _albumOrder = AlbumOrder.discAndTrack;
   String? _libraryFolder;
+  final Map<String, Object> _values = {};
 
   ThemeChoice get theme => _theme;
   bool get reduceMotion => _reduceMotion;
@@ -37,6 +40,38 @@ class AppSettings extends ChangeNotifier {
   void setSplitArtists(bool value) => _update(() => _splitArtists = value);
   void setAlbumOrder(AlbumOrder value) => _update(() => _albumOrder = value);
   void setLibraryFolder(String? value) => _update(() => _libraryFolder = value);
+
+  T valueOf<T extends Object>(SettingDef<T> def) {
+    return (_values[def.key] as T?) ?? def.defaultValue;
+  }
+
+  bool isModified(SettingDef<Object> def) => _values.containsKey(def.key);
+
+  void setValue<T extends Object>(SettingDef<T> def, T value) {
+    final next = def.normalize(value);
+    if (valueOf(def) == next) return;
+    _update(() {
+      if (next == def.defaultValue) {
+        _values.remove(def.key);
+      } else {
+        _values[def.key] = next;
+      }
+    });
+  }
+
+  void reset(SettingDef<Object> def) {
+    if (!isModified(def)) return;
+    _update(() => _values.remove(def.key));
+  }
+
+  void resetAll(Iterable<SettingDef<Object>> defs) {
+    if (!defs.any(isModified)) return;
+    _update(() {
+      for (final def in defs) {
+        _values.remove(def.key);
+      }
+    });
+  }
 
   void _update(VoidCallback change) {
     change();
