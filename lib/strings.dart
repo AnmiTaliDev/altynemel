@@ -201,6 +201,7 @@ class Strings {
   static const setupRunAgain = 'Run the setup again';
   static const setupRunAgainHint =
       'Walk through the first run choices once more.';
+  static const setupSkipAll = 'Skip setup';
   static const setupStepWelcome = 'Welcome';
   static const setupStepAppearance = 'Look';
   static const setupStepLibrary = 'Music';
