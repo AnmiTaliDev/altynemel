@@ -11,6 +11,7 @@ import '../theme/text_styles.dart';
 import 'setup_progress.dart';
 import 'setup_step.dart';
 import 'steps/appearance_step.dart';
+import 'steps/library_step.dart';
 import 'steps/welcome_step.dart';
 
 const double setupWideFrom = 840;
@@ -38,10 +39,14 @@ class SetupWizard extends StatefulWidget {
     required this.settings,
     this.titleBar,
     this.initialStep = SetupStep.welcome,
+    this.onChooseFolder,
+    this.onRequestAccess,
   });
 
   final AppSettings settings;
   final Widget? titleBar;
+  final Future<void> Function()? onChooseFolder;
+  final Future<bool> Function()? onRequestAccess;
   final SetupStep initialStep;
 
   @override
@@ -75,6 +80,11 @@ class _SetupWizardState extends State<SetupWizard> {
   Widget _body(SetupStep step) => switch (step) {
     SetupStep.welcome => const WelcomeStep(),
     SetupStep.appearance => AppearanceStep(settings: widget.settings),
+    SetupStep.library => LibraryStep(
+      settings: widget.settings,
+      onChooseFolder: widget.onChooseFolder,
+      onRequestAccess: widget.onRequestAccess,
+    ),
     _ => const SizedBox.shrink(),
   };
 
