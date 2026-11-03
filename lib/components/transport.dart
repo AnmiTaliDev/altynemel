@@ -5,6 +5,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import 'icon.dart';
 import 'icon_button.dart';
 import 'icon_data.dart';
@@ -113,31 +114,54 @@ class _PlayButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
+    final style = AltynemelStyle.of(context);
     final accent = variant == TransportVariant.accent;
     final size = accent ? targetLg : targetMin;
     final iconSize = accent ? 28.0 : 22.0;
     final label = isPlaying ? Strings.pause : Strings.play;
+    final shape = style.material && accent
+        ? BorderRadius.circular(28)
+        : borderRadiusPill;
     final button = Pressable(
       onPressed: onPressed,
-      radius: size / 2,
+      radius: style.material && accent ? 28 : size / 2,
       semanticLabel: isPlaying ? Strings.pause : Strings.play,
       builder: (context, state) {
         final enabled = state.enabled;
-        final foreground = !enabled
-            ? colors.inkDisabled
-            : (accent ? colors.onAccent : colors.ground);
-        final background = !enabled
-            ? colors.line
-            : (accent
-                  ? colors.accent
-                  : (state.hovered ? colors.inkMuted : colors.ink));
+        final Color foreground;
+        final Color background;
+        if (style.material) {
+          final scheme = style.scheme!;
+          foreground = !enabled
+              ? scheme.onSurface.withValues(alpha: 0.38)
+              : scheme.onPrimary;
+          final base = !enabled
+              ? scheme.onSurface.withValues(alpha: 0.12)
+              : scheme.primary;
+          final layer = !enabled
+              ? 0.0
+              : state.pressed
+              ? 0.12
+              : (state.hovered || state.focused)
+              ? 0.08
+              : 0.0;
+          background = layer == 0
+              ? base
+              : Color.alphaBlend(foreground.withValues(alpha: layer), base);
+        } else {
+          foreground = !enabled
+              ? colors.inkDisabled
+              : (accent ? colors.onAccent : colors.ground);
+          background = !enabled
+              ? colors.line
+              : (accent
+                    ? colors.accent
+                    : (state.hovered ? colors.inkMuted : colors.ink));
+        }
         return Container(
           width: size,
           height: size,
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: borderRadiusPill,
-          ),
+          decoration: BoxDecoration(color: background, borderRadius: shape),
           alignment: Alignment.center,
           child: isPlaying
               ? AltynemelIcon(
