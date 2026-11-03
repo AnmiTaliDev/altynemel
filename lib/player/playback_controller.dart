@@ -36,8 +36,7 @@ class PlaybackController extends ChangeNotifier {
     _listen();
     _gapless = settings.gapless;
     _crossfade = settings.crossfade;
-    _appliedSpeed = settings.valueOf(playbackSpeed);
-    _appliedPitch = settings.valueOf(pitchCorrection);
+    _appliedTuning = _tuning;
     _volume = settings.valueOf(defaultVolume);
     _volumeBeforeMute = _volume == 0 ? 70 : _volume;
     _settings.addListener(_onSettings);
@@ -55,8 +54,7 @@ class PlaybackController extends ChangeNotifier {
   Timer? _fadeTimer;
   Timer? _saveTimer;
   bool _fading = false;
-  double _appliedSpeed = 1;
-  bool _appliedPitch = true;
+  late (double, bool, ReplayGainMode) _appliedTuning;
   bool _gapless = true;
   bool _crossfade = false;
   bool _playing = false;
@@ -94,6 +92,12 @@ class PlaybackController extends ChangeNotifier {
     _applyTuning(player);
   }
 
+  (double, bool, ReplayGainMode) get _tuning => (
+    _settings.valueOf(playbackSpeed),
+    _settings.valueOf(pitchCorrection),
+    _settings.valueOf(replayGain),
+  );
+
   void _applyTuning(Player player) {
     unawaited(player.setRate(_settings.valueOf(playbackSpeed)));
     final platform = player.platform;
@@ -102,6 +106,7 @@ class PlaybackController extends ChangeNotifier {
         'audio-pitch-correction',
         _settings.valueOf(pitchCorrection) ? 'yes' : 'no',
       );
+      platform.setProperty('replaygain', _settings.valueOf(replayGain).name);
     }
   }
 
@@ -120,11 +125,9 @@ class PlaybackController extends ChangeNotifier {
   }
 
   void _onSettings() {
-    final speed = _settings.valueOf(playbackSpeed);
-    final pitch = _settings.valueOf(pitchCorrection);
-    if (speed != _appliedSpeed || pitch != _appliedPitch) {
-      _appliedSpeed = speed;
-      _appliedPitch = pitch;
+    final tuning = _tuning;
+    if (tuning != _appliedTuning) {
+      _appliedTuning = tuning;
       _applyTuning(_primary);
       final secondary = _secondary;
       if (secondary != null) _applyTuning(secondary);

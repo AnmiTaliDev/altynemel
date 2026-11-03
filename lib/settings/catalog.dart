@@ -118,6 +118,16 @@ const pitchCorrection = BoolSetting(
   defaultValue: true,
 );
 
+const replayGain = EnumSetting<ReplayGainMode>(
+  key: 'replayGain',
+  group: SettingGroup.sound,
+  label: 'Volume normalization',
+  hint: 'Use ReplayGain tags to even out the loudness of tracks or albums.',
+  defaultValue: ReplayGainMode.off,
+  values: ReplayGainMode.values,
+  labels: replayGainLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -130,4 +140,5 @@ const List<SettingDef<Object>> allSettings = [
   resumeOnLaunch,
   playbackSpeed,
   pitchCorrection,
+  replayGain,
 ];

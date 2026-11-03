@@ -4,6 +4,7 @@ import 'package:media_kit/media_kit.dart' hide Track;
 import 'package:altynemel/player/playback_controller.dart';
 import 'package:altynemel/settings/app_settings.dart';
 import 'package:altynemel/settings/catalog.dart';
+import 'package:altynemel/settings/choices.dart';
 
 class MpvRig {
   MpvRig({void Function(AppSettings settings)? preset}) {
@@ -51,5 +52,18 @@ void main() {
     rig.settings.setValue(pitchCorrection, true);
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(await rig.property('audio-pitch-correction'), 'yes');
+  });
+
+  test('normalization is off by default', () async {
+    rig = MpvRig();
+    expect(await rig.property('replaygain'), 'no');
+  });
+
+  test('normalization follows the setting', () async {
+    rig = MpvRig(preset: (s) => s.setValue(replayGain, ReplayGainMode.album));
+    expect(await rig.property('replaygain'), 'album');
+    rig.settings.setValue(replayGain, ReplayGainMode.track);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(await rig.property('replaygain'), 'track');
   });
 }
