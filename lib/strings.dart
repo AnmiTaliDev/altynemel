@@ -138,6 +138,74 @@ class Strings {
   static const settingsCopied = 'Copied to the clipboard.';
   static const settingsPasted = 'Settings applied.';
   static const settingsPasteFailed = 'The clipboard has no valid settings.';
+  static const setupWelcomeTitle = 'Welcome to Altynemel';
+  static const setupWelcomeBody =
+      'A few quick choices to set the player up. It takes about a minute and every choice can be changed later in Settings.';
+  static const setupWelcomeLook = 'Pick a look';
+  static const setupWelcomeMusic = 'Point it at your music';
+  static const setupWelcomePlayback = 'Tune the playback';
+  static const setupAppearanceTitle = 'Choose how it looks';
+  static const setupAppearanceHint =
+      'The preview is live. Pick a design style, a theme and an accent color.';
+  static const setupStyleLabel = 'Design style';
+  static const setupStyleAltynemel = 'Altynemel';
+  static const setupStyleAltynemelHint =
+      'Quiet and sharp, with thin outlines and a calm palette.';
+  static const setupStyleMaterial = 'Material 3';
+  static const setupStyleMaterialHint =
+      'Google design system with tonal colors, rounded shapes and state layers.';
+  static const setupThemeLabel = 'Theme';
+  static const setupAccentLabel = 'Accent color';
+  static const setupPreviewLabel = 'Preview';
+  static const setupPreviewTrack = 'Fading memories';
+  static const setupPreviewArtist = 'June Lu';
+  static const setupPreviewPlay = 'Play';
+  static const setupPreviewQueue = 'Add to queue';
+  static const setupLibraryTitle = 'Add your music';
+  static const setupLibraryHint =
+      'Choose the folder that holds your music. The app scans it in the background and keeps it up to date.';
+  static const setupLibraryNone = 'No folder selected yet.';
+  static String setupLibraryChosen(String path) => 'Selected: $path';
+  static const setupLibraryChoose = 'Choose folder';
+  static const setupLibraryChange = 'Change folder';
+  static const setupLibraryLater =
+      'You can skip this and add a folder later in Settings.';
+  static const setupAccessAllow = 'Allow access to audio files';
+  static const setupAccessGranted = 'Access to audio files is allowed.';
+  static const setupAccessDenied =
+      'Access was not granted. Allow it in the system settings to see your music.';
+  static const setupPlaybackTitle = 'Set up playback';
+  static const setupPlaybackHint =
+      'Basic playback behavior. Many more options live in the advanced settings.';
+  static const setupNormalization = 'Volume normalization';
+  static const setupNormalizationHint =
+      'Even out the loudness of tracks that carry ReplayGain tags.';
+  static const setupResume = 'Resume where you left off';
+  static const setupResumeHint =
+      'Start playing the last track right after the app opens.';
+  static const setupFinishTitle = 'You are all set';
+  static const setupFinishHint =
+      'This is what you chose. Everything can be changed later in Settings.';
+  static const setupSummaryStyle = 'Design style';
+  static const setupSummaryTheme = 'Theme';
+  static const setupSummaryAccent = 'Accent color';
+  static const setupSummaryLibrary = 'Music folder';
+  static const setupSummaryPlayback = 'Playback';
+  static const setupSummaryNoFolder = 'Not chosen';
+  static const setupNext = 'Next';
+  static const setupBack = 'Back';
+  static const setupSkip = 'Skip';
+  static const setupFinish = 'Start listening';
+  static const setupStepsLabel = 'Setup progress';
+  static String setupStepOf(int step, int total) => 'Step $step of $total';
+  static const setupRunAgain = 'Run the setup again';
+  static const setupRunAgainHint =
+      'Walk through the first run choices once more.';
+  static const setupStepWelcome = 'Welcome';
+  static const setupStepAppearance = 'Look';
+  static const setupStepLibrary = 'Music';
+  static const setupStepPlayback = 'Playback';
+  static const setupStepFinish = 'Done';
   static const restore = 'Restore';
   static const closeWindow = 'Close';
   static const nothingPlaying = 'Nothing playing';
