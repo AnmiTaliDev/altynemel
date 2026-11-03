@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/components/cover_art.dart';
+import 'package:altynemel/components/screen_header.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/settings/catalog.dart';
@@ -81,5 +82,23 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getSize(cover).width, 64);
     expect(tester.getSize(find.byType(TrackTableRow).first).height, 68);
+  });
+
+  double headerLeft(WidgetTester tester) {
+    final title = find.descendant(
+      of: find.byType(ScreenHeader),
+      matching: find.text('Library'),
+    );
+    return tester.getTopLeft(title).dx;
+  }
+
+  testWidgets('the page margin moves the content on a desktop layout', (
+    tester,
+  ) async {
+    final lib = await pumpApp(tester);
+    expect(headerLeft(tester), 232 + 32);
+    lib.settings.setValue(pageMargin, 64);
+    await tester.pumpAndSettle();
+    expect(headerLeft(tester), 232 + 64);
   });
 }

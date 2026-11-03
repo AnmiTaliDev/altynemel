@@ -220,6 +220,18 @@ const rowCoverSize = IntSetting(
   unit: 'px',
 );
 
+const pageMargin = IntSetting(
+  key: 'pageMargin',
+  group: SettingGroup.layout,
+  label: 'Page margin',
+  hint: 'Space on the left and right of every screen on a desktop layout.',
+  defaultValue: 32,
+  min: 8,
+  max: 96,
+  step: 4,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -241,4 +253,5 @@ const List<SettingDef<Object>> allSettings = [
   accentColor,
   rowDensity,
   rowCoverSize,
+  pageMargin,
 ];
