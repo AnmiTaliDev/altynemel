@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'icon.dart';
 import 'icon_data.dart';
@@ -66,6 +67,7 @@ class MenuPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
+    final style = AltynemelStyle.of(context);
     return Semantics(
       container: true,
       explicitChildNodes: true,
@@ -75,11 +77,26 @@ class MenuPanel extends StatelessWidget {
       child: Container(
         width: 288,
         padding: const EdgeInsets.all(space3),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          borderRadius: borderRadiusControl,
-          border: Border.all(color: colors.lineStrong, width: borderWidth),
-        ),
+        decoration: style.material
+            ? BoxDecoration(
+                color: style.scheme!.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: style.scheme!.shadow.withValues(alpha: 0.28),
+                    blurRadius: 16,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              )
+            : BoxDecoration(
+                color: colors.surface,
+                borderRadius: borderRadiusControl,
+                border: Border.all(
+                  color: colors.lineStrong,
+                  width: borderWidth,
+                ),
+              ),
         child: FocusTraversalGroup(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -138,6 +155,24 @@ class MenuItem extends StatelessWidget {
       toggled: toggled,
       builder: (context, state) {
         final foreground = state.enabled ? colors.ink : colors.inkDisabled;
+        final style = AltynemelStyle.of(context);
+        final Color fill;
+        if (style.material) {
+          final layer = !state.enabled
+              ? 0.0
+              : state.pressed
+              ? 0.12
+              : (state.hovered || state.focused)
+              ? 0.08
+              : 0.0;
+          fill = layer == 0
+              ? Colors.transparent
+              : style.scheme!.onSurface.withValues(alpha: layer);
+        } else {
+          fill = state.hovered && state.enabled
+              ? colors.surfaceHigh
+              : Colors.transparent;
+        }
         return Container(
           constraints: const BoxConstraints(minHeight: targetPointer),
           padding: const EdgeInsets.symmetric(
@@ -145,10 +180,10 @@ class MenuItem extends StatelessWidget {
             vertical: space2,
           ),
           decoration: BoxDecoration(
-            color: state.hovered && state.enabled
-                ? colors.surfaceHigh
-                : Colors.transparent,
-            borderRadius: borderRadiusControl,
+            color: fill,
+            borderRadius: style.material
+                ? BorderRadius.circular(12)
+                : borderRadiusControl,
           ),
           child: Row(
             children: [
