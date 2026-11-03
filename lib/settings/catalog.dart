@@ -473,6 +473,14 @@ const albumSort = EnumSetting<AlbumSort>(
   labels: albumSortLabels,
 );
 
+const rescanOnStart = BoolSetting(
+  key: 'rescanOnStart',
+  group: SettingGroup.library,
+  label: 'Scan when the app starts',
+  hint: 'Look for new and removed files right after launch.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -518,4 +526,5 @@ const List<SettingDef<Object>> allSettings = [
   artistSeparators,
   artistSort,
   albumSort,
+  rescanOnStart,
 ];

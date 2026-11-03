@@ -145,4 +145,36 @@ void main() {
     settings.setValue(skipHiddenFolders, true);
     await until(() => controller.tracks.length == 1);
   });
+
+  test('start scans the folder by default', () async {
+    writeFile(music, 'a.mp3', mp3Bytes(title: 'A', album: 'X'));
+    settings.setLibraryFolder(music.path);
+    await until(() => controller.tracks.length == 1);
+    final fresh = LibraryController(
+      database: LibraryDatabase.inMemory(),
+      settings: settings,
+      coversDirectory: '${root.path}/covers2',
+    )..start();
+    addTearDown(fresh.dispose);
+    await until(() => fresh.tracks.length == 1);
+  });
+
+  test(
+    'start leaves the library alone when scanning on start is off',
+    () async {
+      writeFile(music, 'a.mp3', mp3Bytes(title: 'A', album: 'X'));
+      settings.setValue(rescanOnStart, false);
+      settings.setLibraryFolder(music.path);
+      final fresh = LibraryController(
+        database: LibraryDatabase.inMemory(),
+        settings: settings,
+        coversDirectory: '${root.path}/covers3',
+      );
+      addTearDown(fresh.dispose);
+      fresh.start();
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+      expect(fresh.scanning, isFalse);
+      expect(fresh.tracks, isEmpty);
+    },
+  );
 }

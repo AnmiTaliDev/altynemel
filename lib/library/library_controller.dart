@@ -93,7 +93,7 @@ class LibraryController extends ChangeNotifier {
 
   void start() {
     _restartTimer();
-    if (_folder != null) scan();
+    if (_folder != null && _settings.valueOf(rescanOnStart)) scan();
   }
 
   String _scanSettingsKey() => [
