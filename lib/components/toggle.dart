@@ -4,6 +4,7 @@ import '../theme/colors.dart';
 import '../theme/motion.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'focus_ring.dart';
 import 'icon.dart';
@@ -73,7 +74,9 @@ class Toggle extends StatelessWidget {
               FocusRing(
                 visible: state.focused,
                 radius: radiusPill,
-                child: _Switch(value: value, enabled: enabled),
+                child: AltynemelStyle.of(context).material
+                    ? _MaterialSwitch(value: value, enabled: enabled)
+                    : _Switch(value: value, enabled: enabled),
               ),
             ],
           ),
@@ -124,6 +127,75 @@ class _Switch extends StatelessWidget {
                   IconId.check,
                   size: 16,
                   color: enabled ? colors.ink : colors.inkDisabled,
+                  strokeWidth: 2.2,
+                )
+              : null,
+        ),
+      ),
+    );
+  }
+}
+
+class _MaterialSwitch extends StatelessWidget {
+  const _MaterialSwitch({required this.value, required this.enabled});
+
+  final bool value;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = AltynemelStyle.of(context).scheme!;
+    final Color track;
+    final Color border;
+    final Color thumb;
+    if (!enabled) {
+      track = value
+          ? scheme.onSurface.withValues(alpha: 0.12)
+          : scheme.surfaceContainerHighest.withValues(alpha: 0.12);
+      border = value
+          ? Colors.transparent
+          : scheme.onSurface.withValues(alpha: 0.12);
+      thumb = value ? scheme.surface : scheme.onSurface.withValues(alpha: 0.38);
+    } else if (value) {
+      track = scheme.primary;
+      border = Colors.transparent;
+      thumb = scheme.onPrimary;
+    } else {
+      track = scheme.surfaceContainerHighest;
+      border = scheme.outline;
+      thumb = scheme.outline;
+    }
+    final duration = motionDuration(context, motionQuick);
+    final size = value ? 24.0 : 16.0;
+    return AnimatedContainer(
+      duration: duration,
+      curve: motionCurve,
+      width: 52,
+      height: 32,
+      decoration: BoxDecoration(
+        color: track,
+        borderRadius: borderRadiusPill,
+        border: Border.all(color: border, width: 2),
+      ),
+      child: AnimatedAlign(
+        duration: duration,
+        curve: motionCurve,
+        alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+        child: AnimatedContainer(
+          duration: duration,
+          curve: motionCurve,
+          width: size,
+          height: size,
+          margin: EdgeInsets.symmetric(horizontal: value ? 2 : 6),
+          decoration: BoxDecoration(color: thumb, shape: BoxShape.circle),
+          alignment: Alignment.center,
+          child: value
+              ? AltynemelIcon(
+                  IconId.check,
+                  size: 16,
+                  color: enabled
+                      ? scheme.primary
+                      : scheme.onSurface.withValues(alpha: 0.38),
                   strokeWidth: 2.2,
                 )
               : null,
