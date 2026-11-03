@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/integration/global_shortcuts.dart';
@@ -32,4 +34,44 @@ void main() {
     await shortcuts.dispatch('previous');
     expect(calls, ['next', 'previous']);
   });
+
+  test('a failed call leaves no unhandled timeout behind', () async {
+    final uncaught = <Object>[];
+    await runZonedGuarded(() async {
+      final pending = Future<int>.delayed(
+        const Duration(milliseconds: 30),
+        () => throw TimeoutException('no response'),
+      );
+      await expectLater(
+        awaitAfterCall<int>(Future<void>.error(StateError('denied')), pending),
+        throwsStateError,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+    }, (error, stack) => uncaught.add(error));
+    expect(uncaught, isEmpty);
+  });
+
+  test('the pending response is returned after a successful call', () async {
+    final value = await awaitAfterCall<int>(
+      Future<void>.value(),
+      Future<int>.delayed(const Duration(milliseconds: 10), () => 7),
+    );
+    expect(value, 7);
+  });
+
+  test(
+    'a late timeout still reaches the caller after a successful call',
+    () async {
+      await expectLater(
+        awaitAfterCall<int>(
+          Future<void>.value(),
+          Future<int>.delayed(
+            const Duration(milliseconds: 10),
+            () => throw TimeoutException('no response'),
+          ),
+        ),
+        throwsA(isA<TimeoutException>()),
+      );
+    },
+  );
 }

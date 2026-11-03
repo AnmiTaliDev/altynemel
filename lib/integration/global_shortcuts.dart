@@ -40,6 +40,16 @@ Map<String, Future<void> Function()> shortcutActions(
   };
 }
 
+Future<T> awaitAfterCall<T>(Future<Object?> call, Future<T> pending) async {
+  try {
+    await call;
+  } on Object {
+    pending.ignore();
+    rethrow;
+  }
+  return pending;
+}
+
 class GlobalShortcuts {
   GlobalShortcuts({
     required this.actions,
@@ -139,13 +149,15 @@ class GlobalShortcuts {
       name: _service,
       path: DBusObjectPath(_path),
     );
-    await portal.callMethod(
-      _shortcutsInterface,
-      method,
-      arguments(token),
-      replySignature: DBusSignature('o'),
+    final signal = await awaitAfterCall(
+      portal.callMethod(
+        _shortcutsInterface,
+        method,
+        arguments(token),
+        replySignature: DBusSignature('o'),
+      ),
+      response,
     );
-    final signal = await response;
     if (signal.values[0].asUint32() != 0) {
       throw DBusMethodResponseException(
         DBusMethodErrorResponse('$_requestInterface.Denied'),
