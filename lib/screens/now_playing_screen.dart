@@ -15,12 +15,14 @@ import '../components/time_label.dart';
 import '../components/transport.dart';
 import '../format/time_format.dart';
 import '../player/repeat_setting.dart';
+import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
 
-const double nowPlayingWideFrom = 900;
+const double nowPlayingWideDefault = 900;
 
 class NowPlayingScreen extends StatelessWidget {
   const NowPlayingScreen({
@@ -200,7 +202,10 @@ class NowPlayingScreen extends StatelessWidget {
       label: Strings.nowPlaying,
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final wide = constraints.maxWidth >= nowPlayingWideFrom;
+          final wideFrom =
+              AppSettingsScope.maybeOf(context)?.valueOf(nowPlayingWideFrom) ??
+              nowPlayingWideDefault.toInt();
+          final wide = constraints.maxWidth >= wideFrom;
           final phone = isPhoneWidth(context, constraints.maxWidth);
           final coverSize = wide
               ? 320.0

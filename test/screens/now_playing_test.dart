@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:altynemel/components/cover_art.dart';
 import 'package:altynemel/screens/now_playing_screen.dart';
+import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/screens/queue_screen.dart';
 
 import '../support/test_library.dart';
@@ -113,5 +115,31 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the wide now playing threshold follows the setting', (
+    tester,
+  ) async {
+    final lib = await pumpHome(tester);
+    await startPlaylist(tester);
+    await tester.tap(find.bySemanticsLabel('Open now playing'));
+    await tester.pumpAndSettle();
+    final cover = find.byType(CoverArt);
+    final title = find.descendant(
+      of: find.byType(NowPlayingScreen),
+      matching: find.text('fading memories'),
+    );
+    expect(
+      tester.getRect(title).top,
+      lessThan(tester.getRect(cover).bottom),
+      reason: 'wide layout puts the title beside the cover',
+    );
+    lib.settings.setValue(nowPlayingWideFrom, 1500);
+    await tester.pumpAndSettle();
+    expect(
+      tester.getRect(title).top,
+      greaterThanOrEqualTo(tester.getRect(cover).bottom),
+      reason: 'narrow layout puts the title under the cover',
+    );
   });
 }

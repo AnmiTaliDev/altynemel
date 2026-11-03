@@ -341,6 +341,18 @@ const albumColumnMinWidth = IntSetting(
   unit: 'px',
 );
 
+const nowPlayingWideFrom = IntSetting(
+  key: 'nowPlayingWideFrom',
+  group: SettingGroup.layout,
+  label: 'Wide now playing from',
+  hint: 'Windows at least this wide put the cover beside the controls.',
+  defaultValue: 900,
+  min: 500,
+  max: 1600,
+  step: 10,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -372,4 +384,5 @@ const List<SettingDef<Object>> allSettings = [
   compactSidebarBelow,
   compactPlayerBarBelow,
   albumColumnMinWidth,
+  nowPlayingWideFrom,
 ];
