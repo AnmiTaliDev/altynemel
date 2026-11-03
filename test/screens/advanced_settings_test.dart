@@ -172,4 +172,28 @@ void main() {
     expect(settings.valueOf(enumDef), Mode.quiet);
     expect(find.text('Reset'), findsNothing);
   });
+
+  testWidgets('reset all asks first and then restores every value', (
+    tester,
+  ) async {
+    final settings = await pumpAdvanced(tester);
+    await tester.tap(find.text('Loud'));
+    await tester.tap(find.byType(Toggle));
+    await tester.pump();
+    expect(settings.valueOf(enumDef), Mode.loud);
+    await tester.tap(find.text('Reset all'));
+    await tester.pumpAndSettle();
+    expect(find.text('Reset all advanced settings?'), findsOneWidget);
+    await tester.tap(find.text('Reset all').last);
+    await tester.pumpAndSettle();
+    expect(settings.valueOf(enumDef), Mode.quiet);
+    expect(settings.valueOf(boolDef), isTrue);
+  });
+
+  testWidgets('reset all is disabled while nothing is changed', (tester) async {
+    await pumpAdvanced(tester);
+    await tester.tap(find.text('Reset all'));
+    await tester.pumpAndSettle();
+    expect(find.text('Reset all advanced settings?'), findsNothing);
+  });
 }

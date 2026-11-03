@@ -15,6 +15,7 @@ import '../settings/setting_search.dart';
 import '../strings.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
+import 'confirm_dialog.dart';
 import 'empty_state.dart';
 
 class AdvancedSettingsScreen extends StatefulWidget {
@@ -37,6 +38,17 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
   String _query = '';
 
   AppSettings get settings => widget.settings;
+
+  Future<void> _resetAll() async {
+    final confirmed = await confirmAction(
+      context,
+      title: Strings.resetAllQuestion,
+      hint: Strings.resetAllHint,
+      confirmLabel: Strings.resetAllSettings,
+    );
+    if (!confirmed || !mounted) return;
+    settings.resetAll(widget.definitions);
+  }
 
   Widget _row(SettingDef<Object> def) {
     return switch (def) {
@@ -105,13 +117,22 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
             pageGutter(context),
           ),
           children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: AltynemelButton(
-                label: Strings.back,
-                kind: ButtonKind.text,
-                onPressed: widget.onBack,
-              ),
+            Row(
+              children: [
+                AltynemelButton(
+                  label: Strings.back,
+                  kind: ButtonKind.text,
+                  onPressed: widget.onBack,
+                ),
+                const Spacer(),
+                AltynemelButton(
+                  label: Strings.resetAllSettings,
+                  kind: ButtonKind.text,
+                  onPressed: widget.definitions.any(settings.isModified)
+                      ? _resetAll
+                      : null,
+                ),
+              ],
             ),
             const SizedBox(height: space3),
             const ScreenHeader(
