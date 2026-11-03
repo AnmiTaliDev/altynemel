@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/components/progress_bar.dart';
@@ -195,5 +196,31 @@ void main() {
     await tester.tap(find.text('Reset all'));
     await tester.pumpAndSettle();
     expect(find.text('Reset all advanced settings?'), findsNothing);
+  });
+
+  testWidgets('copy puts the changed values on the clipboard', (tester) async {
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copied = (call.arguments as Map)['text'] as String;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final settings = await pumpAdvanced(tester);
+    settings.setValue(enumDef, Mode.loud);
+    await tester.pump();
+    await tester.tap(find.text('Copy settings'));
+    await tester.pump();
+    expect(copied, contains('"mode": "loud"'));
+    expect(find.text('Copied to the clipboard.'), findsOneWidget);
   });
 }

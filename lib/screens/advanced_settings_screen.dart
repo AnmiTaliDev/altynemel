@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../components/button.dart';
 import '../components/choice_row.dart';
@@ -12,7 +13,9 @@ import '../settings/app_settings.dart';
 import '../settings/catalog.dart';
 import '../settings/setting_def.dart';
 import '../settings/setting_search.dart';
+import '../settings/settings_transfer.dart';
 import '../strings.dart';
+import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
 import 'confirm_dialog.dart';
@@ -36,8 +39,17 @@ class AdvancedSettingsScreen extends StatefulWidget {
 
 class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
   String _query = '';
+  String? _status;
 
   AppSettings get settings => widget.settings;
+
+  Future<void> _copy() async {
+    await Clipboard.setData(
+      ClipboardData(text: exportSettings(settings, widget.definitions)),
+    );
+    if (!mounted) return;
+    setState(() => _status = Strings.settingsCopied);
+  }
 
   Future<void> _resetAll() async {
     final confirmed = await confirmAction(
@@ -104,6 +116,7 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final text = AltynemelTextStyles.of(context);
+    final colors = AltynemelColors.of(context);
     return ListenableBuilder(
       listenable: settings,
       builder: (context, _) {
@@ -138,6 +151,23 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
             const ScreenHeader(
               title: Strings.advancedSettings,
               caption: Strings.advancedSettingsHint,
+            ),
+            const SizedBox(height: space4),
+            Wrap(
+              spacing: space3,
+              runSpacing: space2,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                AltynemelButton(label: Strings.copySettings, onPressed: _copy),
+                if (_status != null)
+                  Semantics(
+                    liveRegion: true,
+                    child: Text(
+                      _status!,
+                      style: text.caption.copyWith(color: colors.inkMuted),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(height: space4),
             SearchField(
