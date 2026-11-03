@@ -18,7 +18,7 @@ class Rig {
     controller = PlaybackController(
       settings: settings,
       persistence: withDatabase ? PlaybackPersistence(database!) : null,
-      fileExists: (_) => true,
+      fileExists: (path) => !missing.contains(path),
       playerFactory: () {
         final fake = FakePlatformPlayer();
         fakes.add(fake);
@@ -40,6 +40,7 @@ class Rig {
   final int seconds;
   final int count;
   final bool withDatabase;
+  final Set<String> missing = {};
   LibraryDatabase? database;
   final List<FakePlatformPlayer> fakes = [];
   late final AppSettings settings;
@@ -188,5 +189,26 @@ void main() {
     await rig.positionAt(97);
     await Future<void>.delayed(const Duration(milliseconds: 120));
     expect(rig.fakes[1].state.volume, greaterThan(0));
+  });
+
+  test('a missing file is skipped by default', () async {
+    rig = Rig();
+    rig.missing.add('/music/1.mp3');
+    await rig.start();
+    await rig.controller.next();
+    await rig.settle();
+    expect(rig.controller.current!.id, '2');
+    expect(rig.controller.isPlaying, isTrue);
+  });
+
+  test('with skipping off a missing file stops playback on it', () async {
+    rig = Rig();
+    rig.missing.add('/music/1.mp3');
+    rig.settings.setValue(skipUnavailableTracks, false);
+    await rig.start();
+    await rig.controller.next();
+    await rig.settle();
+    expect(rig.controller.current!.id, '1');
+    expect(rig.controller.isPlaying, isFalse);
   });
 }

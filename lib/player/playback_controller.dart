@@ -180,6 +180,11 @@ class PlaybackController extends ChangeNotifier {
   }
 
   Future<void> _skipBroken() async {
+    if (!_settings.valueOf(skipUnavailableTracks)) {
+      _setPlaying(false);
+      notifyListeners();
+      return;
+    }
     _errorStreak++;
     if (_errorStreak >= _queue.items.length) {
       _setPlaying(false);

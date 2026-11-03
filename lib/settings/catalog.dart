@@ -57,10 +57,19 @@ const crossfadeStepMs = IntSetting(
   unit: 'ms',
 );
 
+const skipUnavailableTracks = BoolSetting(
+  key: 'skipUnavailableTracks',
+  group: SettingGroup.playback,
+  label: 'Skip missing files',
+  hint: 'Move on to the next track when a file is gone. Off stops playback.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
   positionSaveSeconds,
   crossfadeCurve,
   crossfadeStepMs,
+  skipUnavailableTracks,
 ];
