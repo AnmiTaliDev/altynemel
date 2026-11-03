@@ -481,6 +481,14 @@ const rescanOnStart = BoolSetting(
   defaultValue: true,
 );
 
+const searchInAlbum = BoolSetting(
+  key: 'searchInAlbum',
+  group: SettingGroup.search,
+  label: 'Search album names',
+  hint: 'Match the search text against album names when looking for tracks.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -527,4 +535,5 @@ const List<SettingDef<Object>> allSettings = [
   artistSort,
   albumSort,
   rescanOnStart,
+  searchInAlbum,
 ];

@@ -242,4 +242,15 @@ void main() {
     expect(byCount, [...byCount]..sort((a, b) => b.compareTo(a)));
     expect(lib.library.albums.map((a) => a.title).toList(), isNot(byTitle));
   });
+
+  testWidgets('the search can skip album names', (tester) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    await tester.enterText(find.byType(TextField).first, 'Stille');
+    await tester.pumpAndSettle();
+    expect(find.byType(TrackTableRow), findsWidgets);
+    lib.settings.setValue(searchInAlbum, false);
+    await tester.pumpAndSettle();
+    expect(find.byType(TrackTableRow), findsNothing);
+  });
 }

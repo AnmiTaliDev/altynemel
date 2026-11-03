@@ -22,6 +22,7 @@ import '../library/artist_link_scope.dart';
 import '../library/grouping.dart';
 import '../library/library_controller.dart';
 import '../library/library_scope.dart';
+import '../library/search_options.dart';
 import '../library/track.dart';
 import '../player/playback_controller.dart';
 import '../player/playback_scope.dart';
@@ -395,7 +396,11 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (_destination) {
       case SidebarDestination.library:
       case null:
-        final tracks = filterTracks(library.tracks, _query);
+        final tracks = filterTracks(
+          library.tracks,
+          _query,
+          searchOptionsOf(settings),
+        );
         return LibraryScreen(
           albums: filterAlbums(library.albums, _query),
           artists: filterArtists(library.artists, _query),

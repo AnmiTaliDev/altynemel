@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:altynemel/library/grouping.dart';
 import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/settings/choices.dart';
+import 'package:altynemel/library/search_options.dart';
 import 'package:altynemel/library/track.dart';
 import 'package:altynemel/settings/app_settings.dart';
 
@@ -132,6 +133,13 @@ void main() {
       expect(filterTracks(tracks, 'natt').length, 1);
       expect(filterTracks(tracks, '  ').length, 2);
       expect(filterTracks(tracks, 'zzz'), isEmpty);
+    });
+
+    test('can leave album names out of the search', () {
+      const off = SearchOptions(album: false);
+      expect(filterTracks(tracks, 'сарыарқа', off), isEmpty);
+      expect(filterTracks(tracks, 'балбырауын', off).length, 1);
+      expect(filterTracks(tracks, 'сарыарқа').length, 1);
     });
   });
 }

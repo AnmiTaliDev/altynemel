@@ -3,6 +3,7 @@ import '../settings/choices.dart';
 import 'album.dart';
 import 'artist.dart';
 import 'audio_file.dart';
+import 'search_options.dart';
 import 'track.dart';
 
 const unknownAlbum = 'Unknown album';
@@ -188,12 +189,18 @@ bool _matches(String? value, String query) {
   return value != null && value.toLowerCase().contains(query);
 }
 
-List<Track> filterTracks(List<Track> tracks, String query) {
+List<Track> filterTracks(
+  List<Track> tracks,
+  String query, [
+  SearchOptions options = const SearchOptions(),
+]) {
   final q = query.trim().toLowerCase();
   if (q.isEmpty) return tracks;
   return [
     for (final t in tracks)
-      if (_matches(t.title, q) || _matches(t.artist, q) || _matches(t.album, q))
+      if (_matches(t.title, q) ||
+          _matches(t.artist, q) ||
+          (options.album && _matches(t.album, q)))
         t,
   ];
 }
