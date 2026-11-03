@@ -306,4 +306,68 @@ void main() {
     await rig.positionAt(97);
     expect(rig.fakes[1].state.rate, 1.25);
   });
+
+  test(
+    'play on a track whose file is missing reports it and does not play',
+    () async {
+      rig = Rig(count: 1);
+      rig.missing.add('/music/0.mp3');
+      await rig.controller.playTracks(rig.tracks, 0);
+      await rig.settle();
+      expect(rig.controller.isPlaying, isFalse);
+      expect(rig.controller.error, 'File not found: Track 0');
+      await rig.controller.play();
+      await rig.settle();
+      expect(rig.controller.isPlaying, isFalse);
+      expect(rig.controller.error, 'File not found: Track 0');
+    },
+  );
+
+  test('play loads the track once its file is back', () async {
+    rig = Rig(count: 1);
+    rig.missing.add('/music/0.mp3');
+    await rig.controller.playTracks(rig.tracks, 0);
+    await rig.settle();
+    rig.missing.clear();
+    await rig.controller.play();
+    await rig.settle();
+    expect(rig.controller.isPlaying, isTrue);
+    expect(rig.controller.error, isNull);
+  });
+
+  test('play resumes a loaded track without reloading it', () async {
+    rig = Rig();
+    await rig.start();
+    await rig.controller.pause();
+    final opens = rig.primary.log.where((e) => e == 'open').length;
+    await rig.controller.play();
+    expect(rig.controller.isPlaying, isTrue);
+    expect(rig.primary.log.where((e) => e == 'open').length, opens);
+  });
+
+  test('restoring a queue whose first file is missing stays paused', () async {
+    final first = Rig(withDatabase: true);
+    await first.start(0);
+    first.controller.persist();
+    final second = Rig(count: 3);
+    second.missing.add('/music/0.mp3');
+    final restored = PlaybackController(
+      settings: second.settings,
+      persistence: PlaybackPersistence(first.database!),
+      fileExists: (path) => !second.missing.contains(path),
+      playerFactory: () {
+        final fake = FakePlatformPlayer();
+        second.fakes.add(fake);
+        return Player(platformPlayer: fake);
+      },
+    );
+    await restored.restore((id) => first.tracks[int.parse(id)]);
+    await second.settle();
+    expect(restored.isPlaying, isFalse);
+    expect(restored.current!.id, '1');
+    restored.dispose();
+    second.dispose();
+    first.dispose();
+    rig = Rig();
+  });
 }

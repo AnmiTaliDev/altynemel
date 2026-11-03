@@ -58,6 +58,7 @@ class PlaybackController extends ChangeNotifier {
   bool _gapless = true;
   bool _crossfade = false;
   bool _playing = false;
+  bool _loaded = false;
   bool _ended = false;
   bool _opening = false;
   bool _disposed = false;
@@ -175,6 +176,7 @@ class PlaybackController extends ChangeNotifier {
   Future<void> _startCurrent({required bool play, Duration? startAt}) async {
     if (_disposed) return;
     _cancelFade();
+    _loaded = false;
     final track = _queue.current;
     if (track == null) {
       await _primary.stop();
@@ -187,7 +189,7 @@ class PlaybackController extends ChangeNotifier {
     if (!_exists(track)) {
       _error = 'File not found: ${track.title}';
       notifyListeners();
-      await _skipBroken();
+      await _skipBroken(play: play);
       return;
     }
     _opening = true;
@@ -209,6 +211,7 @@ class PlaybackController extends ChangeNotifier {
     await _primary.setVolume(_volume.toDouble());
     await _primary.open(Playlist(medias), play: play);
     _opening = false;
+    _loaded = true;
     if (startAt != null && startAt > Duration.zero) {
       await _primary.seek(startAt);
     }
@@ -217,7 +220,7 @@ class PlaybackController extends ChangeNotifier {
     _save();
   }
 
-  Future<void> _skipBroken() async {
+  Future<void> _skipBroken({bool play = true}) async {
     if (!_settings.valueOf(skipUnavailableTracks)) {
       _setPlaying(false);
       notifyListeners();
@@ -235,7 +238,7 @@ class PlaybackController extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    await _startCurrent(play: true);
+    await _startCurrent(play: play);
   }
 
   void _onPlaylist(Playlist playlist) {
@@ -407,7 +410,8 @@ class PlaybackController extends ChangeNotifier {
 
   Future<void> play() async {
     if (_queue.current == null) return;
-    if (_ended) {
+    if (_ended || !_loaded) {
+      _errorStreak = 0;
       await _startCurrent(play: true);
       return;
     }
