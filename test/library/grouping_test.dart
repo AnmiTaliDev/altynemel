@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/library/grouping.dart';
+import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/library/track.dart';
 import 'package:altynemel/settings/app_settings.dart';
 
@@ -27,6 +28,7 @@ Track t(
 }
 
 void main() {
+  artistSeparatorTests();
   group('splitArtists', () {
     test('splits on comma, semicolon and feat. variants', () {
       expect(splitArtists('june lu, sløwmind', enabled: true), [
@@ -127,6 +129,54 @@ void main() {
       expect(filterTracks(tracks, 'natt').length, 1);
       expect(filterTracks(tracks, '  ').length, 2);
       expect(filterTracks(tracks, 'zzz'), isEmpty);
+    });
+  });
+}
+
+void artistSeparatorTests() {
+  group('configurable artist separators', () {
+    test('the catalog default equals the grouping default', () {
+      expect(artistSeparators.defaultValue, defaultArtistSeparators);
+    });
+
+    test('a custom separator splits and the old ones stop', () {
+      expect(splitArtists('A / B', enabled: true, separators: '/'), ['A', 'B']);
+      expect(splitArtists('A, B', enabled: true, separators: '/'), ['A, B']);
+    });
+
+    test('word separators need spaces and may drop their dot', () {
+      expect(splitArtists('A with B', enabled: true, separators: 'with'), [
+        'A',
+        'B',
+      ]);
+      expect(splitArtists('Without Words', enabled: true, separators: 'with'), [
+        'Without Words',
+      ]);
+      expect(splitArtists('A vs B', enabled: true, separators: 'vs.'), [
+        'A',
+        'B',
+      ]);
+    });
+
+    test('an empty spec never splits', () {
+      expect(splitArtists('A, B', enabled: true, separators: ' | '), ['A, B']);
+    });
+
+    test('artists are built with the given separators', () {
+      final tracks = [
+        const Track(
+          id: '1',
+          title: 't',
+          artist: 'X & Y',
+          duration: Duration(seconds: 5),
+        ),
+      ];
+      final names = buildArtists(
+        tracks,
+        split: true,
+        separators: '&',
+      ).map((a) => a.name);
+      expect(names, ['X', 'Y']);
     });
   });
 }

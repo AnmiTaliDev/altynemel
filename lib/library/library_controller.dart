@@ -34,6 +34,7 @@ class LibraryController extends ChangeNotifier {
     _order = settings.albumOrder;
     _scanKey = _scanSettingsKey();
     _shortest = settings.valueOf(minimumTrackSeconds);
+    _separators = settings.valueOf(artistSeparators);
     _settings.addListener(_onSettings);
     _reload();
   }
@@ -49,6 +50,7 @@ class LibraryController extends ChangeNotifier {
   AlbumOrder _order = AlbumOrder.discAndTrack;
   String _scanKey = '';
   int _shortest = 0;
+  String _separators = '';
   bool _scanning = false;
   bool _disposed = false;
   String? _error;
@@ -113,7 +115,11 @@ class LibraryController extends ChangeNotifier {
           track,
     ], _order);
     _albums = buildAlbums(_tracks);
-    _artists = buildArtists(_tracks, split: _split);
+    _artists = buildArtists(
+      _tracks,
+      split: _split,
+      separators: _settings.valueOf(artistSeparators),
+    );
     _liked = _database.likedIds();
     _playlists = _database.playlists();
   }
@@ -124,7 +130,9 @@ class LibraryController extends ChangeNotifier {
     final regroup =
         _settings.splitArtists != _split ||
         _settings.albumOrder != _order ||
-        shortest != _shortest;
+        shortest != _shortest ||
+        _settings.valueOf(artistSeparators) != _separators;
+    _separators = _settings.valueOf(artistSeparators);
     _shortest = shortest;
     final intervalChanged = _settings.rescanInterval != _interval;
     final scanChanged = _scanSettingsKey() != _scanKey;

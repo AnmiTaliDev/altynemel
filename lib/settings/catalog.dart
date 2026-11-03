@@ -444,6 +444,15 @@ const minimumTrackSeconds = IntSetting(
   unit: 's',
 );
 
+const artistSeparators = TextSetting(
+  key: 'artistSeparators',
+  group: SettingGroup.library,
+  label: 'Artist separators',
+  hint:
+      'Tokens that split one artist tag into several, divided by a vertical bar. Words need spaces around them.',
+  defaultValue: ', | ; | feat. | ft. | featuring',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -486,4 +495,5 @@ const List<SettingDef<Object>> allSettings = [
   excludedFolders,
   coverFileNames,
   minimumTrackSeconds,
+  artistSeparators,
 ];

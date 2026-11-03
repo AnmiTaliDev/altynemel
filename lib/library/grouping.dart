@@ -6,15 +6,45 @@ import 'track.dart';
 
 const unknownAlbum = 'Unknown album';
 
-final _artistSeparator = RegExp(
-  r'\s*(?:[,;]|\s(?:feat\.?|ft\.?|featuring)\s)\s*',
-  caseSensitive: false,
-);
+const defaultArtistSeparators = ', | ; | feat. | ft. | featuring';
 
-List<String> splitArtists(String value, {required bool enabled}) {
+final _separatorPatterns = <String, RegExp>{};
+
+RegExp artistSeparatorPattern(String spec) {
+  return _separatorPatterns.putIfAbsent(spec, () {
+    final symbols = <String>[];
+    final words = <String>[];
+    for (final raw in spec.split('|')) {
+      final token = raw.trim();
+      if (token.isEmpty) continue;
+      if (RegExp(r'[A-Za-z]').hasMatch(token)) {
+        final dotted = token.endsWith('.');
+        final body = dotted ? token.substring(0, token.length - 1) : token;
+        words.add('${RegExp.escape(body)}${dotted ? r'\.?' : ''}');
+      } else {
+        symbols.add(RegExp.escape(token));
+      }
+    }
+    final alternatives = [
+      ...symbols,
+      if (words.isNotEmpty) r'\s(?:' + words.join('|') + r')\s',
+    ];
+    if (alternatives.isEmpty) return RegExp(r'(?!)');
+    return RegExp(
+      r'\s*(?:' + alternatives.join('|') + r')\s*',
+      caseSensitive: false,
+    );
+  });
+}
+
+List<String> splitArtists(
+  String value, {
+  required bool enabled,
+  String separators = defaultArtistSeparators,
+}) {
   if (!enabled) return [value.trim()];
   final parts = value
-      .split(_artistSeparator)
+      .split(artistSeparatorPattern(separators))
       .map((part) => part.trim())
       .where((part) => part.isNotEmpty)
       .toList();
@@ -105,10 +135,18 @@ List<Album> buildAlbums(List<Track> tracks) {
   ];
 }
 
-List<Artist> buildArtists(List<Track> tracks, {required bool split}) {
+List<Artist> buildArtists(
+  List<Track> tracks, {
+  required bool split,
+  String separators = defaultArtistSeparators,
+}) {
   final counts = <String, int>{};
   for (final track in tracks) {
-    for (final name in splitArtists(track.artist, enabled: split).toSet()) {
+    for (final name in splitArtists(
+      track.artist,
+      enabled: split,
+      separators: separators,
+    ).toSet()) {
       counts[name] = (counts[name] ?? 0) + 1;
     }
   }

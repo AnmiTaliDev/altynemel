@@ -18,7 +18,11 @@ class ArtistText extends StatelessWidget {
       return Text(artist, style: style);
     }
     final colors = AltynemelColors.of(context);
-    final names = splitArtists(artist, enabled: scope.split);
+    final names = splitArtists(
+      artist,
+      enabled: scope.split,
+      separators: scope.separators,
+    );
     final labels = names.length == 1 ? [artist] : names;
     return Wrap(
       children: [

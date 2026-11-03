@@ -21,6 +21,7 @@ Future<void> showTrackMenu(
   ValueChanged<String>? onOpenArtist,
   ValueChanged<String>? onOpenAlbum,
   bool splitArtistNames = true,
+  String artistSeparatorSpec = defaultArtistSeparators,
 }) {
   return showGeneralDialog<void>(
     context: context,
@@ -39,6 +40,7 @@ Future<void> showTrackMenu(
           onOpenArtist: onOpenArtist,
           onOpenAlbum: onOpenAlbum,
           splitArtistNames: splitArtistNames,
+          artistSeparatorSpec: artistSeparatorSpec,
           library: LibraryScope.of(context),
           playback: PlaybackScope.of(context),
         ),
@@ -59,6 +61,7 @@ class _TrackMenu extends StatefulWidget {
     this.onOpenArtist,
     this.onOpenAlbum,
     this.splitArtistNames = true,
+    this.artistSeparatorSpec = defaultArtistSeparators,
   });
 
   final String? fromPlaylistId;
@@ -66,6 +69,7 @@ class _TrackMenu extends StatefulWidget {
   final ValueChanged<String>? onOpenArtist;
   final ValueChanged<String>? onOpenAlbum;
   final bool splitArtistNames;
+  final String artistSeparatorSpec;
   final Track track;
   final LibraryController library;
   final PlaybackController playback;
@@ -115,7 +119,11 @@ class _TrackMenuState extends State<_TrackMenu> {
     if (widget.onOpenArtist == null || widget.track.artist.trim().isEmpty) {
       return const [];
     }
-    return splitArtists(widget.track.artist, enabled: widget.splitArtistNames);
+    return splitArtists(
+      widget.track.artist,
+      enabled: widget.splitArtistNames,
+      separators: widget.artistSeparatorSpec,
+    );
   }
 
   String? get _albumName {

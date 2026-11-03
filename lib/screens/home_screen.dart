@@ -269,6 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
       onOpenArtist: _openArtist,
       onOpenAlbum: _openAlbum,
       splitArtistNames: AppSettingsScope.of(context).splitArtists,
+      artistSeparatorSpec: AppSettingsScope.of(
+        context,
+      ).valueOf(artistSeparators),
     );
   }
 
@@ -349,6 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (splitArtists(
             t.artist,
             enabled: settings.splitArtists,
+            separators: settings.valueOf(artistSeparators),
           ).contains(artistId))
             t,
       ];
@@ -539,6 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return ArtistLinkScope(
       onOpen: _openArtist,
       split: settings.splitArtists,
+      separators: settings.valueOf(artistSeparators),
       child: AlbumLinkScope(
         onOpen: _openAlbum,
         child: PopScope(
