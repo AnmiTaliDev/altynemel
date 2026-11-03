@@ -118,6 +118,24 @@ class Strings {
   static const selected = 'Selected';
   static const minimize = 'Minimize';
   static const maximize = 'Maximize';
+  static const advancedSettings = 'Advanced settings';
+  static const advancedSettingsHint =
+      'Fine tuning of playback, sound, appearance, layout and the library.';
+  static const openAdvancedSettings = 'Open advanced settings';
+  static const resetSetting = 'Reset';
+  static String resetSettingLabel(String title) => 'Reset $title';
+  static const resetAllSettings = 'Reset all';
+  static const resetAllQuestion = 'Reset all advanced settings?';
+  static const resetAllHint = 'Every value goes back to its default.';
+  static const searchSettings = 'Search settings';
+  static const noSettingsFound = 'No settings match';
+  static const noSettingsFoundHint = 'Try another word.';
+  static const modifiedMark = 'Changed';
+  static const copySettings = 'Copy settings';
+  static const pasteSettings = 'Paste settings';
+  static const settingsCopied = 'Copied to the clipboard.';
+  static const settingsPasted = 'Settings applied.';
+  static const settingsPasteFailed = 'The clipboard has no valid settings.';
   static const restore = 'Restore';
   static const closeWindow = 'Close';
   static const nothingPlaying = 'Nothing playing';
