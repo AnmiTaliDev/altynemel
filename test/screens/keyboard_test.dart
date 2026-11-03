@@ -33,6 +33,17 @@ void main() {
     expect(lib.playback.position.value - before, const Duration(seconds: 12));
   });
 
+  testWidgets('shift with the arrows makes the long seek step', (tester) async {
+    final lib = await pumpHome(tester);
+    await startPlaylist(tester);
+    final before = lib.playback.position.value;
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.shiftLeft);
+    await tester.pump();
+    expect(lib.playback.position.value - before, const Duration(seconds: 30));
+  });
+
   testWidgets('transport buttons show their shortcuts in tooltips', (
     tester,
   ) async {

@@ -569,7 +569,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       Duration(
                         seconds:
                             intent.direction *
-                            settings.valueOf(seekStepSeconds),
+                            settings.valueOf(
+                              intent.long
+                                  ? seekStepLongSeconds
+                                  : seekStepSeconds,
+                            ),
                       ),
                     );
                     return null;
