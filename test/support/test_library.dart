@@ -10,6 +10,7 @@ import 'package:media_kit/media_kit.dart' hide Track;
 import 'fake_player.dart';
 import 'package:altynemel/settings/app_settings.dart';
 import 'package:altynemel/settings/app_settings_scope.dart';
+import 'package:altynemel/settings/choices.dart';
 import 'package:altynemel/storage/library_database.dart';
 import 'package:altynemel/theme/themes.dart';
 
@@ -92,7 +93,11 @@ class TestLibrary {
     database.close();
   }
 
-  Widget wrap(Widget home, {AltynemelThemeId theme = AltynemelThemeId.night}) {
+  Widget wrap(
+    Widget home, {
+    AltynemelThemeId theme = AltynemelThemeId.night,
+    DesignStyle style = DesignStyle.altynemel,
+  }) {
     return AppSettingsScope(
       settings: settings,
       child: LibraryScope(
@@ -101,7 +106,7 @@ class TestLibrary {
           playback: playback,
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
-            theme: buildTheme(theme),
+            theme: buildTheme(theme, style: style),
             home: Scaffold(body: home),
           ),
         ),
