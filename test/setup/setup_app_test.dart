@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:altynemel/components/sidebar.dart';
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/setup/setup_wizard.dart';
 import 'package:altynemel/settings/catalog.dart';
@@ -82,5 +83,28 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text(Strings.setupAppearanceTitle), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('settings can run the setup again', (tester) async {
+    final lib = await pumpApp(tester, setUp: true, size: const Size(1100, 900));
+    await tester.tap(
+      find.descendant(
+        of: find.byType(Sidebar),
+        matching: find.bySemanticsLabel('Settings'),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text(Strings.setupRunAgain),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.ensureVisible(find.text(Strings.setupRunAgain));
+    await tester.pump();
+    await tester.tap(find.text(Strings.setupRunAgain));
+    await tester.pumpAndSettle();
+    expect(lib.settings.setupCompleted, isFalse);
+    expect(find.byType(SetupWizard), findsOneWidget);
+    expect(find.text(Strings.setupWelcomeTitle), findsOneWidget);
   });
 }

@@ -204,6 +204,7 @@ class Strings {
   static const setupFinish = 'Start listening';
   static const setupStepsLabel = 'Setup progress';
   static String setupStepOf(int step, int total) => 'Step $step of $total';
+  static const setupSection = 'First run setup';
   static const setupRunAgain = 'Run the setup again';
   static const setupRunAgainHint =
       'Walk through the first run choices once more.';

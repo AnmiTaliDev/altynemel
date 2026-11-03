@@ -483,6 +483,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() => _settingsPage = _SettingsPage.about),
             onOpenAdvanced: () =>
                 setState(() => _settingsPage = _SettingsPage.advanced),
+            onRunSetup: () => settings.setSetupCompleted(false),
           ),
         };
       case SidebarDestination.nowPlaying:
