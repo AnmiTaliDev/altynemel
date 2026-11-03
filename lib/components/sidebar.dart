@@ -4,6 +4,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'icon.dart';
 import 'icon_data.dart';
@@ -17,6 +18,19 @@ class SidebarPlaylist {
 
   final String id;
   final String name;
+}
+
+BoxDecoration _panelDecoration(BuildContext context) {
+  final colors = AltynemelColors.of(context);
+  final style = AltynemelStyle.of(context);
+  if (style.material) {
+    return BoxDecoration(color: style.scheme!.surfaceContainerLow);
+  }
+  return BoxDecoration(
+    border: Border(
+      right: BorderSide(color: colors.surfaceEdge, width: borderWidth),
+    ),
+  );
 }
 
 class Sidebar extends StatelessWidget {
@@ -50,17 +64,12 @@ class Sidebar extends StatelessWidget {
   Widget _wrapDrag(Widget child) => dragArea == null ? child : dragArea!(child);
 
   Widget _rail(BuildContext context) {
-    final colors = AltynemelColors.of(context);
     return Semantics(
       container: true,
       explicitChildNodes: true,
       label: Strings.mainNavigation,
       child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            right: BorderSide(color: colors.surfaceEdge, width: borderWidth),
-          ),
-        ),
+        decoration: _panelDecoration(context),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: space5),
           child: Column(
@@ -128,11 +137,7 @@ class Sidebar extends StatelessWidget {
       explicitChildNodes: true,
       label: Strings.mainNavigation,
       child: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            right: BorderSide(color: colors.surfaceEdge, width: borderWidth),
-          ),
-        ),
+        decoration: _panelDecoration(context),
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
             vertical: space5,
@@ -217,10 +222,63 @@ class _NavItem extends StatelessWidget {
   final VoidCallback onPressed;
   final IconId? icon;
 
+  Widget _materialItem(
+    BuildContext context,
+    ColorScheme scheme,
+    AltynemelTextStyles text,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Pressable(
+        onPressed: onPressed,
+        radius: 28,
+        semanticLabel: label,
+        selected: current,
+        builder: (context, state) {
+          final foreground = current
+              ? scheme.onSecondaryContainer
+              : scheme.onSurfaceVariant;
+          final base = current ? scheme.secondaryContainer : Colors.transparent;
+          final layer = state.pressed
+              ? 0.12
+              : (state.hovered || state.focused)
+              ? 0.08
+              : 0.0;
+          return Container(
+            constraints: const BoxConstraints(minHeight: 56),
+            padding: const EdgeInsets.symmetric(horizontal: space4),
+            decoration: BoxDecoration(
+              color: layer == 0
+                  ? base
+                  : Color.alphaBlend(foreground.withValues(alpha: layer), base),
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Row(
+              children: [
+                if (icon != null) ...[
+                  AltynemelIcon(icon!, size: 24, color: foreground),
+                  const SizedBox(width: space3),
+                ],
+                Expanded(
+                  child: Text(
+                    label,
+                    style: text.bodyStrong.copyWith(color: foreground),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
+    final style = AltynemelStyle.of(context);
+    if (style.material) return _materialItem(context, style.scheme!, text);
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Pressable(
@@ -281,6 +339,8 @@ class _RailItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final text = AltynemelTextStyles.of(context);
+    final style = AltynemelStyle.of(context);
+    final scheme = style.scheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Tooltip(
@@ -292,6 +352,49 @@ class _RailItem extends StatelessWidget {
           semanticLabel: label,
           selected: current,
           builder: (context, state) {
+            if (style.material) {
+              final foreground = current
+                  ? scheme!.onSecondaryContainer
+                  : scheme!.onSurfaceVariant;
+              final base = current
+                  ? scheme.secondaryContainer
+                  : Colors.transparent;
+              final layer = state.pressed
+                  ? 0.12
+                  : (state.hovered || state.focused)
+                  ? 0.08
+                  : 0.0;
+              return SizedBox(
+                width: 56,
+                height: targetMin,
+                child: Center(
+                  child: Container(
+                    width: 56,
+                    height: 32,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: layer == 0
+                          ? base
+                          : Color.alphaBlend(
+                              foreground.withValues(alpha: layer),
+                              base,
+                            ),
+                      borderRadius: borderRadiusPill,
+                    ),
+                    child: icon != null
+                        ? AltynemelIcon(icon!, size: 24, color: foreground)
+                        : Text(
+                            label.isEmpty
+                                ? ''
+                                : String.fromCharCode(
+                                    label.runes.first,
+                                  ).toUpperCase(),
+                            style: text.bodyStrong.copyWith(color: foreground),
+                          ),
+                  ),
+                ),
+              );
+            }
             final highlighted = current || state.hovered;
             final color = highlighted ? colors.ink : colors.inkMuted;
             return Container(
