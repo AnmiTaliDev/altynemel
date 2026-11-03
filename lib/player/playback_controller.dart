@@ -54,7 +54,7 @@ class PlaybackController extends ChangeNotifier {
   Timer? _fadeTimer;
   Timer? _saveTimer;
   bool _fading = false;
-  late (double, bool, ReplayGainMode) _appliedTuning;
+  late (double, bool, ReplayGainMode, double) _appliedTuning;
   bool _gapless = true;
   bool _crossfade = false;
   bool _playing = false;
@@ -92,10 +92,11 @@ class PlaybackController extends ChangeNotifier {
     _applyTuning(player);
   }
 
-  (double, bool, ReplayGainMode) get _tuning => (
+  (double, bool, ReplayGainMode, double) get _tuning => (
     _settings.valueOf(playbackSpeed),
     _settings.valueOf(pitchCorrection),
     _settings.valueOf(replayGain),
+    _settings.valueOf(audioBufferSeconds),
   );
 
   void _applyTuning(Player player) {
@@ -107,6 +108,10 @@ class PlaybackController extends ChangeNotifier {
         _settings.valueOf(pitchCorrection) ? 'yes' : 'no',
       );
       platform.setProperty('replaygain', _settings.valueOf(replayGain).name);
+      platform.setProperty(
+        'audio-buffer',
+        _settings.valueOf(audioBufferSeconds).toString(),
+      );
     }
   }
 

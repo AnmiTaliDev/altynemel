@@ -128,6 +128,19 @@ const replayGain = EnumSetting<ReplayGainMode>(
   labels: replayGainLabels,
 );
 
+const audioBufferSeconds = DoubleSetting(
+  key: 'audioBufferSeconds',
+  group: SettingGroup.sound,
+  label: 'Audio buffer',
+  hint: 'Length of the output buffer. Raise it if the sound crackles.',
+  defaultValue: 0.2,
+  min: 0.05,
+  max: 2,
+  step: 0.05,
+  decimals: 2,
+  unit: 's',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -141,4 +154,5 @@ const List<SettingDef<Object>> allSettings = [
   playbackSpeed,
   pitchCorrection,
   replayGain,
+  audioBufferSeconds,
 ];

@@ -66,4 +66,26 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 50));
     expect(await rig.property('replaygain'), 'track');
   });
+
+  test('the audio buffer follows the setting', () async {
+    rig = MpvRig(preset: (s) => s.setValue(audioBufferSeconds, 0.5));
+    expect(
+      double.parse(await rig.property('audio-buffer')),
+      closeTo(0.5, 0.001),
+    );
+    rig.settings.setValue(audioBufferSeconds, 1.0);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    expect(
+      double.parse(await rig.property('audio-buffer')),
+      closeTo(1.0, 0.001),
+    );
+  });
+
+  test('the audio buffer keeps the mpv default of 0.2 seconds', () async {
+    rig = MpvRig();
+    expect(
+      double.parse(await rig.property('audio-buffer')),
+      closeTo(0.2, 0.001),
+    );
+  });
 }
