@@ -188,6 +188,16 @@ const animationSpeedPercent = IntSetting(
   unit: '%',
 );
 
+const accentColor = EnumSetting<AccentChoice>(
+  key: 'accentColor',
+  group: SettingGroup.appearance,
+  label: 'Accent color',
+  hint: 'Color of the current track marker, focus ring and primary buttons.',
+  defaultValue: AccentChoice.theme,
+  values: AccentChoice.values,
+  labels: accentLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -206,4 +216,5 @@ const List<SettingDef<Object>> allSettings = [
   seekStepLongSeconds,
   textScalePercent,
   animationSpeedPercent,
+  accentColor,
 ];

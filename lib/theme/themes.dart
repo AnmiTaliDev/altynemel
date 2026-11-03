@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../settings/choices.dart';
+import 'accents.dart';
 import 'colors.dart';
 import 'text_styles.dart';
 
@@ -16,8 +18,15 @@ AltynemelColors colorsFor(AltynemelThemeId id) {
   }
 }
 
-ThemeData buildTheme(AltynemelThemeId id) {
-  final colors = colorsFor(id);
+ThemeData buildTheme(
+  AltynemelThemeId id, {
+  AccentChoice accent = AccentChoice.theme,
+}) {
+  final pair = accentPair(accent, id);
+  final base = colorsFor(id);
+  final colors = pair == null
+      ? base
+      : base.copyWith(accent: pair.$1, onAccent: pair.$2);
   final text = AltynemelTextStyles.from(colors);
   final brightness = id == AltynemelThemeId.day
       ? Brightness.light
