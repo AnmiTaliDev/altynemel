@@ -153,4 +153,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getSize(find.byType(PlayerBar)).height, base);
   });
+
+  testWidgets('the album column appears when enough space is free', (
+    tester,
+  ) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    expect(find.text('Album'), findsOneWidget);
+    lib.settings.setValue(albumColumnMinWidth, 900);
+    await tester.pumpAndSettle();
+    expect(find.text('Album'), findsNothing);
+    lib.settings.setValue(albumColumnMinWidth, 300);
+    await tester.pumpAndSettle();
+    expect(find.text('Album'), findsOneWidget);
+  });
 }

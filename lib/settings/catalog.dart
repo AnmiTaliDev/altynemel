@@ -328,6 +328,19 @@ const compactPlayerBarBelow = IntSetting(
   unit: 'px',
 );
 
+const albumColumnMinWidth = IntSetting(
+  key: 'albumColumnMinWidth',
+  group: SettingGroup.layout,
+  label: 'Album column needs',
+  hint:
+      'Width of free space the track lists need before they show an album column.',
+  defaultValue: 700,
+  min: 300,
+  max: 1400,
+  step: 10,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -358,4 +371,5 @@ const List<SettingDef<Object>> allSettings = [
   phoneLayoutBelow,
   compactSidebarBelow,
   compactPlayerBarBelow,
+  albumColumnMinWidth,
 ];
