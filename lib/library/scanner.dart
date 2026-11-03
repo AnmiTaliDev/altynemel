@@ -8,8 +8,6 @@ import 'scan_options.dart';
 
 const unknownArtist = 'Unknown artist';
 
-const folderCoverNames = ['cover.jpg', 'cover.png', 'folder.jpg'];
-
 class KnownFile {
   const KnownFile({required this.mtimeMs, required this.size});
 
@@ -106,7 +104,11 @@ List<File> findAudioFiles(
   return files;
 }
 
-String? findFolderCover(String directory, Map<String, String?> cache) {
+String? findFolderCover(
+  String directory,
+  Map<String, String?> cache, [
+  List<String> names = defaultCoverNames,
+]) {
   if (cache.containsKey(directory)) return cache[directory];
   String? found;
   final List<FileSystemEntity> entries;
@@ -116,7 +118,7 @@ String? findFolderCover(String directory, Map<String, String?> cache) {
     cache[directory] = null;
     return null;
   }
-  for (final name in folderCoverNames) {
+  for (final name in names) {
     for (final entry in entries) {
       if (entry is File && fileNameOf(entry.path).toLowerCase() == name) {
         found = entry.path;
@@ -218,8 +220,9 @@ ScannedTrack readTrack(
   File file,
   FileStat stat,
   String coversDirectory,
-  Map<String, String?> folderCovers,
-) {
+  Map<String, String?> folderCovers, [
+  List<String> coverNames = defaultCoverNames,
+]) {
   final tags = _readTags(file);
   String? embedded;
   if (tags != null) {
@@ -230,7 +233,8 @@ ScannedTrack readTrack(
     }
   }
   final cover =
-      embedded ?? findFolderCover(directoryOf(file.path), folderCovers);
+      embedded ??
+      findFolderCover(directoryOf(file.path), folderCovers, coverNames);
   final artist = _blankToNull(tags?.artist) ?? _blankToNull(tags?.albumArtist);
   return ScannedTrack(
     path: file.path,
@@ -265,7 +269,15 @@ ScanResult scanLibrary(ScanRequest request) {
     if (known != null && known.mtimeMs == mtimeMs && known.size == stat.size) {
       continue;
     }
-    changed.add(readTrack(file, stat, request.coversDirectory, folderCovers));
+    changed.add(
+      readTrack(
+        file,
+        stat,
+        request.coversDirectory,
+        folderCovers,
+        request.options.coverNames,
+      ),
+    );
   }
   return ScanResult(changed: changed, seen: seen);
 }

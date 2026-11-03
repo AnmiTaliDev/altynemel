@@ -99,4 +99,27 @@ void main() {
     ).map((f) => fileNameOf(f.path));
     expect(names, ['a.mp3', 'd.mp3']);
   });
+
+  test('cover names are ordered, lower cased and never empty', () {
+    expect(parseCoverNames('Front.PNG, cover.jpg;front.png'), [
+      'front.png',
+      'cover.jpg',
+    ]);
+    expect(parseCoverNames(' '), defaultCoverNames);
+  });
+
+  test('a folder cover is found by the configured names in order', () {
+    final root = Directory.systemTemp.createTempSync('altynemel_cover_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final music = Directory('${root.path}/music')..createSync();
+    writeFile(music, 'cover.jpg', pngBytes);
+    writeFile(music, 'front.png', pngBytes);
+    final cache = <String, String?>{};
+    expect(findFolderCover(music.path, cache), endsWith('cover.jpg'));
+    expect(
+      findFolderCover(music.path, {}, ['front.png', 'cover.jpg']),
+      endsWith('front.png'),
+    );
+    expect(findFolderCover(music.path, {}, ['back.png']), isNull);
+  });
 }

@@ -422,6 +422,15 @@ const excludedFolders = TextSetting(
   defaultValue: '',
 );
 
+const coverFileNames = TextSetting(
+  key: 'coverFileNames',
+  group: SettingGroup.library,
+  label: 'Cover file names',
+  hint:
+      'Picture files used as a cover when a track has none embedded, in order of preference.',
+  defaultValue: 'cover.jpg, cover.png, folder.jpg',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -462,4 +471,5 @@ const List<SettingDef<Object>> allSettings = [
   skipHiddenFolders,
   followSymlinks,
   excludedFolders,
+  coverFileNames,
 ];

@@ -92,6 +92,7 @@ class LibraryController extends ChangeNotifier {
     _settings.valueOf(skipHiddenFolders),
     _settings.valueOf(followSymlinks),
     _settings.valueOf(excludedFolders),
+    _settings.valueOf(coverFileNames),
   ].join('\u0000');
 
   ScanOptions _scanOptions() => ScanOptions(
@@ -99,6 +100,7 @@ class LibraryController extends ChangeNotifier {
     skipHidden: _settings.valueOf(skipHiddenFolders),
     followLinks: _settings.valueOf(followSymlinks),
     excluded: parseFolderNames(_settings.valueOf(excludedFolders)),
+    coverNames: parseCoverNames(_settings.valueOf(coverFileNames)),
   );
 
   void _reload() {
