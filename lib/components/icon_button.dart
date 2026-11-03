@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'icon.dart';
 import 'icon_data.dart';
@@ -36,6 +37,8 @@ class AltynemelIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final size = compact ? targetPointer : targetMin;
+    final style = AltynemelStyle.of(context);
+    final material = style.material;
     final button = Pressable(
       onPressed: onPressed,
       radius: size / 2,
@@ -43,20 +46,48 @@ class AltynemelIconButton extends StatelessWidget {
       toggled: pressed,
       builder: (context, state) {
         final Color foreground;
-        if (!state.enabled) {
-          foreground = colors.inkDisabled;
-        } else if (pressed == false) {
-          foreground = colors.inkMuted;
+        Color fill = Colors.transparent;
+        if (material) {
+          final scheme = style.scheme!;
+          final Color base;
+          if (!state.enabled) {
+            foreground = scheme.onSurface.withValues(alpha: 0.38);
+            base = Colors.transparent;
+          } else if (filled) {
+            foreground = scheme.onPrimary;
+            base = scheme.primary;
+          } else if (pressed == true) {
+            foreground = scheme.primary;
+            base = Colors.transparent;
+          } else {
+            foreground = scheme.onSurfaceVariant;
+            base = Colors.transparent;
+          }
+          final layer = !state.enabled
+              ? 0.0
+              : state.pressed
+              ? 0.12
+              : (state.hovered || state.focused)
+              ? 0.08
+              : 0.0;
+          fill = layer == 0
+              ? base
+              : Color.alphaBlend(foreground.withValues(alpha: layer), base);
         } else {
-          foreground = colors.ink;
+          if (!state.enabled) {
+            foreground = colors.inkDisabled;
+          } else if (pressed == false) {
+            foreground = colors.inkMuted;
+          } else {
+            foreground = colors.ink;
+          }
+          if (state.hovered && state.enabled) fill = colors.surfaceHigh;
         }
         return Container(
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: state.hovered && state.enabled
-                ? colors.surfaceHigh
-                : Colors.transparent,
+            color: fill,
             borderRadius: borderRadiusPill,
           ),
           child: Stack(
