@@ -114,7 +114,7 @@ class _PhoneNavItem extends StatelessWidget {
               ? 0.08
               : 0.0;
           return Container(
-            height: 80,
+            constraints: const BoxConstraints(minHeight: 80),
             padding: const EdgeInsets.only(top: space3, bottom: space4),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

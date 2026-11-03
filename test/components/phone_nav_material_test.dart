@@ -70,4 +70,21 @@ void main() {
     await pumpNav(tester, style: DesignStyle.altynemel);
     expect(tester.getSize(find.byType(PhoneNav)).height, lessThan(80));
   });
+
+  testWidgets('the bar grows instead of overflowing with large text', (
+    tester,
+  ) async {
+    await pumpThemed(
+      tester,
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: PhoneNav(selected: PhoneTab.queue, onSelected: (_) {}),
+      ),
+      size: const Size(360, 700),
+      textScale: 2,
+      style: DesignStyle.material,
+    );
+    expect(tester.takeException(), isNull);
+    expect(tester.getSize(find.byType(PhoneNav)).height, greaterThan(80));
+  });
 }
