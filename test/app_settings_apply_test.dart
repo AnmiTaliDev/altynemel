@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/settings/catalog.dart';
+import 'package:altynemel/settings/choices.dart';
+import 'package:altynemel/theme/colors.dart';
 
 import 'support/test_library.dart';
 
@@ -32,5 +34,19 @@ void main() {
     lib.settings.setValue(textScalePercent, 150);
     await tester.pumpAndSettle();
     expect(MediaQuery.textScalerOf(homeContext(tester)).scale(10), 15);
+  });
+
+  testWidgets('the accent color reaches the running theme', (tester) async {
+    final lib = await pumpApp(tester);
+    final before = Theme.of(homeContext(tester)).extension<AltynemelColors>()!;
+    lib.settings.setValue(accentColor, AccentChoice.violet);
+    await tester.pumpAndSettle();
+    final after = Theme.of(homeContext(tester)).extension<AltynemelColors>()!;
+    expect(after.accent, isNot(before.accent));
+    expect(after.ground, before.ground);
+    lib.settings.reset(accentColor);
+    await tester.pumpAndSettle();
+    final back = Theme.of(homeContext(tester)).extension<AltynemelColors>()!;
+    expect(back.accent, before.accent);
   });
 }
