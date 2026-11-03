@@ -40,6 +40,8 @@ class TrackTableHeader extends StatelessWidget {
     if (isPhone(context)) return const SizedBox.shrink();
     final numbers =
         AppSettingsScope.maybeOf(context)?.valueOf(showTrackNumbers) ?? true;
+    final durations =
+        AppSettingsScope.maybeOf(context)?.valueOf(showTrackDurations) ?? true;
     final colors = AltynemelColors.of(context);
     final style = AltynemelTextStyles.of(
       context,
@@ -70,15 +72,17 @@ class TrackTableHeader extends StatelessWidget {
             const SizedBox(width: space4),
             Expanded(flex: 3, child: Text(Strings.columnAlbum, style: style)),
           ],
-          const SizedBox(width: space4),
-          SizedBox(
-            width: _timeColumn,
-            child: Text(
-              Strings.columnTime,
-              textAlign: TextAlign.right,
-              style: style,
+          if (durations) ...[
+            const SizedBox(width: space4),
+            SizedBox(
+              width: _timeColumn,
+              child: Text(
+                Strings.columnTime,
+                textAlign: TextAlign.right,
+                style: style,
+              ),
             ),
-          ),
+          ],
           const SizedBox(width: space4 + targetPointer),
           if (showRemove) const SizedBox(width: targetPointer),
         ],
@@ -186,6 +190,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
     final phone = isPhone(context);
     final settings = AppSettingsScope.maybeOf(context);
     final numbers = settings?.valueOf(showTrackNumbers) ?? true;
+    final durations = settings?.valueOf(showTrackDurations) ?? true;
     final rowHeight = settings == null
         ? rowDensityHeights[RowDensity.comfortable]!
         : rowDensityHeights[settings.valueOf(rowDensity)]!;
@@ -337,7 +342,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
                                 ),
                               ),
                             ],
-                            if (!phone) ...[
+                            if (!phone && durations) ...[
                               const SizedBox(width: space4),
                               SizedBox(
                                 width: _timeColumn,

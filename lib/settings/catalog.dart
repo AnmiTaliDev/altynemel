@@ -361,6 +361,14 @@ const showTrackNumbers = BoolSetting(
   defaultValue: true,
 );
 
+const showTrackDurations = BoolSetting(
+  key: 'showTrackDurations',
+  group: SettingGroup.layout,
+  label: 'Show track durations',
+  hint: 'Time column at the right of track lists on a desktop layout.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -394,4 +402,5 @@ const List<SettingDef<Object>> allSettings = [
   albumColumnMinWidth,
   nowPlayingWideFrom,
   showTrackNumbers,
+  showTrackDurations,
 ];

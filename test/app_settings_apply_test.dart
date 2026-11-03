@@ -5,6 +5,7 @@ import 'package:altynemel/components/cover_art.dart';
 import 'package:altynemel/components/media_tile.dart';
 import 'package:altynemel/components/player_bar.dart';
 import 'package:altynemel/components/screen_header.dart';
+import 'package:altynemel/components/time_label.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/settings/catalog.dart';
@@ -180,6 +181,22 @@ void main() {
       find.descendant(
         of: find.byType(TrackTableRow).first,
         matching: find.text('1'),
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets('track durations can be hidden', (tester) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    expect(find.text('Time'), findsOneWidget);
+    lib.settings.setValue(showTrackDurations, false);
+    await tester.pumpAndSettle();
+    expect(find.text('Time'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(TrackTableRow).first,
+        matching: find.byType(TimeLabel),
       ),
       findsNothing,
     );
