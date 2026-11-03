@@ -57,6 +57,9 @@ class SettingsPersistence {
       _enumByName(AlbumOrder.values, stored['albumOrder'], defaults.albumOrder),
     );
     _settings.setLibraryFolder(stored['libraryFolder']);
+    _settings.setSetupCompleted(
+      _bool(stored['setupCompleted'], stored.isNotEmpty),
+    );
     for (final def in definitions) {
       final raw = stored['$definitionKeyPrefix${def.key}'];
       if (raw == null) continue;
@@ -79,6 +82,7 @@ class SettingsPersistence {
     _database.setSetting('rescanInterval', _settings.rescanInterval.name);
     _database.setSetting('splitArtists', '${_settings.splitArtists}');
     _database.setSetting('albumOrder', _settings.albumOrder.name);
+    _database.setSetting('setupCompleted', '${_settings.setupCompleted}');
     final folder = _settings.libraryFolder;
     if (folder != null) _database.setSetting('libraryFolder', folder);
     for (final def in definitions) {

@@ -18,6 +18,7 @@ class AppSettings extends ChangeNotifier {
   bool _splitArtists = true;
   AlbumOrder _albumOrder = AlbumOrder.discAndTrack;
   String? _libraryFolder;
+  bool _setupCompleted = true;
   final Map<String, Object> _values = {};
 
   ThemeChoice get theme => _theme;
@@ -29,6 +30,7 @@ class AppSettings extends ChangeNotifier {
   bool get splitArtists => _splitArtists;
   AlbumOrder get albumOrder => _albumOrder;
   String? get libraryFolder => _libraryFolder;
+  bool get setupCompleted => _setupCompleted;
 
   void setTheme(ThemeChoice value) => _update(() => _theme = value);
   void setReduceMotion(bool value) => _update(() => _reduceMotion = value);
@@ -40,6 +42,7 @@ class AppSettings extends ChangeNotifier {
   void setSplitArtists(bool value) => _update(() => _splitArtists = value);
   void setAlbumOrder(AlbumOrder value) => _update(() => _albumOrder = value);
   void setLibraryFolder(String? value) => _update(() => _libraryFolder = value);
+  void setSetupCompleted(bool value) => _update(() => _setupCompleted = value);
 
   T valueOf<T extends Object>(SettingDef<T> def) {
     return (_values[def.key] as T?) ?? def.defaultValue;
