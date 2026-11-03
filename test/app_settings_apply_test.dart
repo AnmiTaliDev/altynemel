@@ -124,4 +124,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getSize(cover).width, 220);
   });
+
+  testWidgets('the phone album tile size follows its own setting', (
+    tester,
+  ) async {
+    final lib = await pumpApp(tester, size: const Size(360, 720));
+    final cover = find.descendant(
+      of: find.byType(MediaTile).first,
+      matching: find.byType(CoverArt),
+    );
+    expect(tester.getSize(cover).width, 140);
+    lib.settings.setValue(tileCoverSizePhone, 100);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(cover).width, 100);
+    lib.settings.setValue(tileCoverSize, 220);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(cover).width, 100);
+  });
 }

@@ -10,13 +10,10 @@ import 'cover_art.dart';
 import 'layout_mode.dart';
 import 'pressable.dart';
 
-const double mediaTileCoverPhone = 140;
-
 double mediaTileCoverOf(BuildContext context) {
-  if (isPhone(context)) return mediaTileCoverPhone;
+  final def = isPhone(context) ? tileCoverSizePhone : tileCoverSize;
   final settings = AppSettingsScope.maybeOf(context);
-  return (settings?.valueOf(tileCoverSize) ?? tileCoverSize.defaultValue)
-      .toDouble();
+  return (settings?.valueOf(def) ?? def.defaultValue).toDouble();
 }
 
 double mediaTileWidthOf(BuildContext context) =>
