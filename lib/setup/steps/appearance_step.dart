@@ -4,10 +4,12 @@ import '../../settings/app_settings.dart';
 import '../../settings/catalog.dart';
 import '../../settings/choices.dart';
 import '../../strings.dart';
-import '../../theme/colors.dart';
 import '../../theme/spacing.dart';
 import '../../theme/text_styles.dart';
 import '../../theme/themes.dart';
+import '../../components/choice_row.dart';
+import '../../components/pill_tabs.dart';
+import 'accent_swatches.dart';
 import 'style_card.dart';
 
 class AppearanceStep extends StatelessWidget {
@@ -28,7 +30,6 @@ class AppearanceStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AltynemelColors.of(context);
     final platform = MediaQuery.platformBrightnessOf(context);
     return ListenableBuilder(
       listenable: settings,
@@ -87,9 +88,32 @@ class AppearanceStep extends StatelessWidget {
                 },
               ),
             ),
-            ColoredBox(
-              color: colors.ground,
-              child: const SizedBox(height: space2),
+            const SizedBox(height: space5),
+            ChoiceRow<ThemeChoice>(
+              title: Strings.setupThemeLabel,
+              description: Strings.themeHint,
+              selected: settings.theme,
+              onSelected: settings.setTheme,
+              options: const [
+                PillOption(
+                  value: ThemeChoice.system,
+                  label: Strings.themeSystem,
+                ),
+                PillOption(value: ThemeChoice.night, label: Strings.themeNight),
+                PillOption(value: ThemeChoice.day, label: Strings.themeDay),
+                PillOption(
+                  value: ThemeChoice.contrast,
+                  label: Strings.themeContrast,
+                ),
+              ],
+            ),
+            const SizedBox(height: space4),
+            _label(context, Strings.setupAccentLabel),
+            AccentSwatches(
+              selected: accent,
+              theme: themeId,
+              design: current,
+              onSelected: (choice) => settings.setValue(accentColor, choice),
             ),
           ],
         );

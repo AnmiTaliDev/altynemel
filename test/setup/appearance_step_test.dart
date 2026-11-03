@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:altynemel/setup/steps/accent_swatches.dart';
 import 'package:altynemel/setup/steps/appearance_step.dart';
 import 'package:altynemel/setup/steps/style_card.dart';
 import 'package:altynemel/settings/app_settings.dart';
@@ -8,7 +9,10 @@ import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/settings/choices.dart';
 import 'package:altynemel/strings.dart';
 import 'package:altynemel/theme/colors.dart';
+import 'package:altynemel/theme/accents.dart';
+import 'package:altynemel/theme/material_palette.dart';
 import 'package:altynemel/theme/style.dart';
+import 'package:altynemel/theme/themes.dart';
 
 import '../support/pump.dart';
 
@@ -110,6 +114,94 @@ void main() {
         '${Strings.setupStyleMaterial}. ${Strings.setupStyleMaterialHint}',
       ),
       findsOneWidget,
+    );
+  });
+
+  testWidgets('the theme row changes the theme', (tester) async {
+    final settings = await pumpStep(tester);
+    await tester.tap(find.text(Strings.themeDay));
+    await tester.pump();
+    expect(settings.theme, ThemeChoice.day);
+    await tester.tap(find.text(Strings.themeContrast));
+    await tester.pump();
+    expect(settings.theme, ThemeChoice.contrast);
+  });
+
+  testWidgets('every accent has a swatch and tapping one selects it', (
+    tester,
+  ) async {
+    final settings = await pumpStep(tester);
+    for (final choice in AccentChoice.values) {
+      expect(find.text(accentLabels[choice]!), findsOneWidget);
+    }
+    await tester.tap(find.text(accentLabels[AccentChoice.rose]!));
+    await tester.pump();
+    expect(settings.valueOf(accentColor), AccentChoice.rose);
+  });
+
+  testWidgets('a theme choice recolors the previews', (tester) async {
+    final settings = await pumpStep(tester);
+    Color preview() => AltynemelColors.of(
+      tester.element(
+        find.descendant(
+          of: find.byType(StylePreview).first,
+          matching: find.text(Strings.setupPreviewTrack),
+        ),
+      ),
+    ).ground;
+    settings.setTheme(ThemeChoice.night);
+    await tester.pump();
+    final night = preview();
+    settings.setTheme(ThemeChoice.day);
+    await tester.pump();
+    expect(preview(), isNot(night));
+  });
+
+  test('swatch colors follow the design style', () {
+    final original = swatchColors(
+      AccentChoice.rose,
+      AltynemelThemeId.night,
+      DesignStyle.altynemel,
+    );
+    final material = swatchColors(
+      AccentChoice.rose,
+      AltynemelThemeId.night,
+      DesignStyle.material,
+    );
+    expect(
+      original.accent,
+      accentPair(AccentChoice.rose, AltynemelThemeId.night)!.$1,
+    );
+    expect(
+      material.accent,
+      materialScheme(AltynemelThemeId.night, AccentChoice.rose).primary,
+    );
+    expect(original.accent, isNot(material.accent));
+  });
+
+  test('the theme default swatch shows the style default', () {
+    final original = swatchColors(
+      AccentChoice.theme,
+      AltynemelThemeId.day,
+      DesignStyle.altynemel,
+    );
+    expect(original.accent, colorsFor(AltynemelThemeId.day).accent);
+  });
+
+  testWidgets('the selected swatch shows a check', (tester) async {
+    final settings = await pumpStep(tester);
+    settings.setValue(accentColor, AccentChoice.sky);
+    await tester.pump();
+    expect(
+      find.bySemanticsLabel(accentLabels[AccentChoice.sky]!),
+      findsOneWidget,
+    );
+    expect(
+      tester
+          .widgetList<AccentSwatches>(find.byType(AccentSwatches))
+          .single
+          .selected,
+      AccentChoice.sky,
     );
   });
 }
