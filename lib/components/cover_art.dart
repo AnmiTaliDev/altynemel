@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
@@ -14,26 +16,30 @@ class CoverArt extends StatelessWidget {
     this.image,
     this.albumName,
     this.shape = CoverShape.square,
-    this.radius = radiusArt,
+    this.radius,
   });
 
   final double size;
   final ImageProvider? image;
   final String? albumName;
   final CoverShape shape;
-  final double radius;
+  final double? radius;
 
   @override
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final width = size;
+    final cornerRadius =
+        radius ??
+        AppSettingsScope.maybeOf(context)?.valueOf(coverRadius).toDouble() ??
+        radiusArt;
     final height = shape == CoverShape.arch ? size * 1.25 : size;
     final borderRadius = switch (shape) {
       CoverShape.arch => const BorderRadius.vertical(
         top: Radius.circular(radiusPill),
       ),
       CoverShape.circle => BorderRadius.circular(size),
-      CoverShape.square => BorderRadius.circular(radius),
+      CoverShape.square => BorderRadius.circular(cornerRadius),
     };
     final placeholder = CustomPaint(
       size: Size(width, height),

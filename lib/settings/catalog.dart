@@ -379,6 +379,17 @@ const nowPlayingCover = EnumSetting<CoverStyle>(
   labels: coverStyleLabels,
 );
 
+const coverRadius = IntSetting(
+  key: 'coverRadius',
+  group: SettingGroup.appearance,
+  label: 'Cover corner radius',
+  hint: 'Rounding of square covers in lists, tiles and the player bar.',
+  defaultValue: 12,
+  min: 0,
+  max: 40,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -414,4 +425,5 @@ const List<SettingDef<Object>> allSettings = [
   showTrackNumbers,
   showTrackDurations,
   nowPlayingCover,
+  coverRadius,
 ];
