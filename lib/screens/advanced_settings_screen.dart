@@ -51,6 +51,21 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
     setState(() => _status = Strings.settingsCopied);
   }
 
+  Future<void> _paste() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (!mounted) return;
+    final applied = importSettings(
+      settings,
+      widget.definitions,
+      data?.text ?? '',
+    );
+    setState(
+      () => _status = applied == null
+          ? Strings.settingsPasteFailed
+          : Strings.settingsPasted,
+    );
+  }
+
   Future<void> _resetAll() async {
     final confirmed = await confirmAction(
       context,
@@ -159,6 +174,10 @@ class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 AltynemelButton(label: Strings.copySettings, onPressed: _copy),
+                AltynemelButton(
+                  label: Strings.pasteSettings,
+                  onPressed: _paste,
+                ),
                 if (_status != null)
                   Semantics(
                     liveRegion: true,

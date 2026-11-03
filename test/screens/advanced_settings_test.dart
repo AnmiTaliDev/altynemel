@@ -223,4 +223,31 @@ void main() {
     expect(copied, contains('"mode": "loud"'));
     expect(find.text('Copied to the clipboard.'), findsOneWidget);
   });
+
+  testWidgets('paste applies settings from the clipboard', (tester) async {
+    var clipboard = '{"version": 1, "values": {"mode": "loud"}}';
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.getData') return {'text': clipboard};
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final settings = await pumpAdvanced(tester);
+    await tester.tap(find.text('Paste settings'));
+    await tester.pump();
+    expect(settings.valueOf(enumDef), Mode.loud);
+    expect(find.text('Settings applied.'), findsOneWidget);
+    clipboard = 'garbage';
+    await tester.tap(find.text('Paste settings'));
+    await tester.pump();
+    expect(find.text('The clipboard has no valid settings.'), findsOneWidget);
+    expect(settings.valueOf(enumDef), Mode.loud);
+  });
 }
