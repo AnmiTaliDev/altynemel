@@ -177,4 +177,18 @@ void main() {
       expect(fresh.tracks, isEmpty);
     },
   );
+
+  test('a timer runs for a periodic interval and stops for never', () {
+    settings.setLibraryFolder(music.path);
+    expect(controller.rescanScheduled, isTrue);
+    settings.setRescanInterval(RescanInterval.off);
+    expect(controller.rescanScheduled, isFalse);
+    settings.setRescanInterval(RescanInterval.hours6);
+    expect(controller.rescanScheduled, isTrue);
+  });
+
+  test('the new intervals survive a restart', () {
+    expect(rescanDurations[RescanInterval.hours6], const Duration(hours: 6));
+    expect(rescanDurations.containsKey(RescanInterval.off), isFalse);
+  });
 }

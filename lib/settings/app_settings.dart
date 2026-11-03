@@ -4,7 +4,7 @@ import 'setting_def.dart';
 
 enum ThemeChoice { system, night, day, contrast }
 
-enum RescanInterval { minutes5, minutes15, hour1 }
+enum RescanInterval { minutes5, minutes15, hour1, hours6, off }
 
 enum AlbumOrder { discAndTrack, fileName }
 

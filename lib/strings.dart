@@ -108,6 +108,8 @@ class Strings {
   static const minutes5 = '5 minutes';
   static const minutes15 = '15 minutes';
   static const hour1 = '1 hour';
+  static const hours6 = '6 hours';
+  static const rescanOff = 'Never';
   static const splitArtists = 'Split artists';
   static const splitArtistsHint =
       'Treat commas, semicolons and feat. as separators.';

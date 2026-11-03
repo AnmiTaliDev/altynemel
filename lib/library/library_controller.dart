@@ -20,6 +20,7 @@ const Map<RescanInterval, Duration> rescanDurations = {
   RescanInterval.minutes5: Duration(minutes: 5),
   RescanInterval.minutes15: Duration(minutes: 15),
   RescanInterval.hour1: Duration(hours: 1),
+  RescanInterval.hours6: Duration(hours: 6),
 };
 
 class LibraryController extends ChangeNotifier {
@@ -71,6 +72,7 @@ class LibraryController extends ChangeNotifier {
   List<Artist> get artists => _artists;
   List<StoredPlaylist> get playlists => _playlists;
   bool get scanning => _scanning;
+  bool get rescanScheduled => _timer != null;
   String? get error => _error;
   bool isLiked(String trackId) => _liked.contains(trackId);
   List<Track> get likedTracks => [
@@ -162,8 +164,9 @@ class LibraryController extends ChangeNotifier {
   void _restartTimer() {
     _timer?.cancel();
     _timer = null;
-    if (_folder == null) return;
-    _timer = Timer.periodic(rescanDurations[_interval]!, (_) => scan());
+    final period = rescanDurations[_interval];
+    if (_folder == null || period == null) return;
+    _timer = Timer.periodic(period, (_) => scan());
   }
 
   Future<void> scan() async {

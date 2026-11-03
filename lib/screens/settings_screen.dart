@@ -142,6 +142,8 @@ class SettingsScreen extends StatelessWidget {
                   label: Strings.minutes15,
                 ),
                 PillOption(value: RescanInterval.hour1, label: Strings.hour1),
+                PillOption(value: RescanInterval.hours6, label: Strings.hours6),
+                PillOption(value: RescanInterval.off, label: Strings.rescanOff),
               ],
             ),
             Toggle(
