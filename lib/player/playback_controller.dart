@@ -7,11 +7,11 @@ import 'package:media_kit/media_kit.dart' hide Track;
 
 import '../library/track.dart';
 import '../settings/app_settings.dart';
+import '../settings/catalog.dart';
 import 'play_queue.dart';
 import 'playback_persistence.dart';
 import 'repeat_setting.dart';
 
-const Duration crossfadeDuration = Duration(seconds: 4);
 const Duration restartThreshold = Duration(seconds: 3);
 const Duration saveInterval = Duration(seconds: 5);
 
@@ -113,6 +113,9 @@ class PlaybackController extends ChangeNotifier {
       unawaited(_refreshNext());
     }
   }
+
+  Duration get _crossfadeLength =>
+      Duration(seconds: _settings.valueOf(crossfadeSeconds));
 
   bool get _preload => _gapless && !_crossfade;
 
@@ -284,8 +287,9 @@ class PlaybackController extends ChangeNotifier {
 
   void _maybeStartFade(Duration value) {
     final total = _duration;
-    if (total <= crossfadeDuration * 2) return;
-    if (total - value > crossfadeDuration) return;
+    final length = _crossfadeLength;
+    if (total <= length * 2) return;
+    if (total - value > length) return;
     if (_queue.repeat == RepeatSetting.one) return;
     final next = _queue.peekNext(auto: true);
     if (next == null || next.path == null || !_exists(next)) return;
@@ -300,9 +304,12 @@ class PlaybackController extends ChangeNotifier {
     await incoming.open(Media(next.path!), play: true);
     final watch = Stopwatch()..start();
     final target = _volume.toDouble();
+    final length = _crossfadeLength;
     _fadeTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      final t = (watch.elapsedMilliseconds / crossfadeDuration.inMilliseconds)
-          .clamp(0.0, 1.0);
+      final t = (watch.elapsedMilliseconds / length.inMilliseconds).clamp(
+        0.0,
+        1.0,
+      );
       _primary.setVolume(target * math.cos(t * math.pi / 2));
       incoming.setVolume(target * math.sin(t * math.pi / 2));
       if (t >= 1) {

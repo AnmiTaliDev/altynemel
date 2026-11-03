@@ -34,7 +34,9 @@ class FakePlatformPlayer extends PlatformPlayer {
   @override
   Future<void> open(Playable playable, {bool play = true}) async {
     log.add('open');
-    final playlist = playable as Playlist;
+    final playlist = playable is Playlist
+        ? playable
+        : Playlist([playable as Media]);
     state = state.copyWith(playlist: playlist, completed: false);
     completedController.add(false);
     _emitPlaylist();
