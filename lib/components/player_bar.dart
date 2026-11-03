@@ -10,6 +10,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'artist_text.dart';
 import 'cover_art.dart';
@@ -290,9 +291,14 @@ class PlayerBar extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: colors.surface,
-          border: Border(
-            top: BorderSide(color: colors.surfaceEdge, width: borderWidth),
-          ),
+          border: AltynemelStyle.of(context).material
+              ? null
+              : Border(
+                  top: BorderSide(
+                    color: colors.surfaceEdge,
+                    width: borderWidth,
+                  ),
+                ),
         ),
         child: compact
             ? _compactBar(context)
