@@ -10,6 +10,7 @@ import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
 import 'setup_progress.dart';
 import 'setup_step.dart';
+import 'steps/welcome_step.dart';
 
 const double setupWideFrom = 840;
 const double setupContentWidth = 680;
@@ -70,7 +71,10 @@ class _SetupWizardState extends State<SetupWizard> {
 
   void _skipAll() => widget.settings.setSetupCompleted(true);
 
-  Widget _body(SetupStep step) => const SizedBox.shrink();
+  Widget _body(SetupStep step) => switch (step) {
+    SetupStep.welcome => const WelcomeStep(),
+    _ => const SizedBox.shrink(),
+  };
 
   Widget _sidePanel(BuildContext context) {
     final colors = AltynemelColors.of(context);
