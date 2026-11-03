@@ -78,11 +78,16 @@ List<File> findAudioFiles(
 ]) {
   final files = <File>[];
   final pending = <Directory>[root];
+  final visited = <String>{};
   while (pending.isNotEmpty) {
     final directory = pending.removeLast();
     final List<FileSystemEntity> entries;
     try {
-      entries = directory.listSync(followLinks: false);
+      if (options.followLinks &&
+          !visited.add(directory.resolveSymbolicLinksSync())) {
+        continue;
+      }
+      entries = directory.listSync(followLinks: options.followLinks);
     } on FileSystemException {
       continue;
     }

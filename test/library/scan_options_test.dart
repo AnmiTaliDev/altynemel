@@ -58,4 +58,21 @@ void main() {
     ).map((f) => fileNameOf(f.path));
     expect(names, ['a.mp3', 'd.mp3']);
   });
+
+  test('links are followed only on request and loops end', () {
+    final root = Directory.systemTemp.createTempSync('altynemel_links_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final music = Directory('${root.path}/music')..createSync();
+    final other = Directory('${root.path}/other')..createSync();
+    writeFile(music, 'a.mp3', mp3Bytes(title: 'A'));
+    writeFile(other, 'b.mp3', mp3Bytes(title: 'B'));
+    Link('${music.path}/linked').createSync(other.path);
+    Link('${other.path}/back').createSync(music.path);
+    expect(findAudioFiles(music).map((f) => fileNameOf(f.path)), ['a.mp3']);
+    final names = findAudioFiles(
+      music,
+      const ScanOptions(followLinks: true),
+    ).map((f) => fileNameOf(f.path)).toSet();
+    expect(names, {'a.mp3', 'b.mp3'});
+  });
 }

@@ -406,6 +406,14 @@ const skipHiddenFolders = BoolSetting(
   defaultValue: false,
 );
 
+const followSymlinks = BoolSetting(
+  key: 'followSymlinks',
+  group: SettingGroup.library,
+  label: 'Follow symbolic links',
+  hint: 'Scan folders that are reached through links. Loops are detected.',
+  defaultValue: false,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -444,4 +452,5 @@ const List<SettingDef<Object>> allSettings = [
   coverRadius,
   scanExtensions,
   skipHiddenFolders,
+  followSymlinks,
 ];
