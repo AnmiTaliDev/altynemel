@@ -10,6 +10,7 @@ import 'screens/home_screen.dart';
 import 'settings/app_settings.dart';
 import 'settings/catalog.dart';
 import 'settings/app_settings_scope.dart';
+import 'setup/setup_host.dart';
 import 'strings.dart';
 import 'theme/themes.dart';
 
@@ -93,7 +94,9 @@ class _AltynemelAppState extends State<AltynemelApp> {
                   );
                 },
                 home: Scaffold(
-                  body: widget.window == null
+                  body: !_settings.setupCompleted
+                      ? SetupHost(settings: _settings, window: widget.window)
+                      : widget.window == null
                       ? const HomeScreen()
                       : WindowScope(
                           service: widget.window!,
