@@ -56,13 +56,16 @@ class _AltynemelAppState extends State<AltynemelApp> {
             builder: (context, _) {
               final fixed = _fixedTheme();
               final accent = _settings.valueOf(accentColor);
+              final style = _settings.valueOf(designStyle);
               final light = buildTheme(
                 fixed ?? AltynemelThemeId.day,
                 accent: accent,
+                style: style,
               );
               final dark = buildTheme(
                 fixed ?? AltynemelThemeId.night,
                 accent: accent,
+                style: style,
               );
               return MaterialApp(
                 title: Strings.appName,

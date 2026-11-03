@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../settings/choices.dart';
 import 'accents.dart';
 import 'colors.dart';
+import 'material_palette.dart';
+import 'style.dart';
 import 'text_styles.dart';
 
 enum AltynemelThemeId { night, day, contrast }
@@ -21,7 +23,9 @@ AltynemelColors colorsFor(AltynemelThemeId id) {
 ThemeData buildTheme(
   AltynemelThemeId id, {
   AccentChoice accent = AccentChoice.theme,
+  DesignStyle style = DesignStyle.altynemel,
 }) {
+  if (style == DesignStyle.material) return _buildMaterialTheme(id, accent);
   final pair = accentPair(accent, id);
   final base = colorsFor(id);
   final colors = pair == null
@@ -66,6 +70,40 @@ ThemeData buildTheme(
       headlineMedium: text.displayLg,
       displayLarge: text.displayXl,
     ),
-    extensions: [colors, text],
+    extensions: [colors, text, AltynemelStyle.original],
+  );
+}
+
+ThemeData _buildMaterialTheme(AltynemelThemeId id, AccentChoice accent) {
+  final scheme = materialScheme(id, accent);
+  final colors = materialColors(scheme);
+  final text = AltynemelTextStyles.material(colors);
+  return ThemeData(
+    useMaterial3: true,
+    brightness: scheme.brightness,
+    colorScheme: scheme,
+    scaffoldBackgroundColor: colors.ground,
+    canvasColor: colors.ground,
+    fontFamily: AltynemelTextStyles.family,
+    focusColor: colors.accent,
+    hoverColor: colors.ink.withValues(alpha: 0.08),
+    splashFactory: NoSplash.splashFactory,
+    dividerColor: colors.line,
+    textTheme: TextTheme(
+      bodyLarge: text.bodyLg,
+      bodyMedium: text.body,
+      bodySmall: text.caption,
+      labelLarge: text.bodyStrong,
+      labelMedium: text.label,
+      labelSmall: text.label,
+      titleLarge: text.displayMd,
+      headlineMedium: text.displayLg,
+      displayLarge: text.displayXl,
+    ),
+    extensions: [
+      colors,
+      text,
+      AltynemelStyle(design: DesignStyle.material, scheme: scheme),
+    ],
   );
 }
