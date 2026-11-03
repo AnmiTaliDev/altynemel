@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 import '../settings/app_settings.dart';
 import '../settings/catalog.dart';
+import '../settings/choices.dart';
 import '../storage/library_database.dart';
 import '../strings.dart';
 import 'album.dart';
@@ -35,6 +36,7 @@ class LibraryController extends ChangeNotifier {
     _scanKey = _scanSettingsKey();
     _shortest = settings.valueOf(minimumTrackSeconds);
     _separators = settings.valueOf(artistSeparators);
+    _artistSort = settings.valueOf(artistSort);
     _settings.addListener(_onSettings);
     _reload();
   }
@@ -51,6 +53,7 @@ class LibraryController extends ChangeNotifier {
   String _scanKey = '';
   int _shortest = 0;
   String _separators = '';
+  ArtistSort _artistSort = ArtistSort.name;
   bool _scanning = false;
   bool _disposed = false;
   String? _error;
@@ -119,6 +122,7 @@ class LibraryController extends ChangeNotifier {
       _tracks,
       split: _split,
       separators: _settings.valueOf(artistSeparators),
+      sort: _settings.valueOf(artistSort),
     );
     _liked = _database.likedIds();
     _playlists = _database.playlists();
@@ -131,7 +135,9 @@ class LibraryController extends ChangeNotifier {
         _settings.splitArtists != _split ||
         _settings.albumOrder != _order ||
         shortest != _shortest ||
-        _settings.valueOf(artistSeparators) != _separators;
+        _settings.valueOf(artistSeparators) != _separators ||
+        _settings.valueOf(artistSort) != _artistSort;
+    _artistSort = _settings.valueOf(artistSort);
     _separators = _settings.valueOf(artistSeparators);
     _shortest = shortest;
     final intervalChanged = _settings.rescanInterval != _interval;

@@ -453,6 +453,16 @@ const artistSeparators = TextSetting(
   defaultValue: ', | ; | feat. | ft. | featuring',
 );
 
+const artistSort = EnumSetting<ArtistSort>(
+  key: 'artistSort',
+  group: SettingGroup.library,
+  label: 'Artist order',
+  hint: 'How the artists tab is sorted.',
+  defaultValue: ArtistSort.name,
+  values: ArtistSort.values,
+  labels: artistSortLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -496,4 +506,5 @@ const List<SettingDef<Object>> allSettings = [
   coverFileNames,
   minimumTrackSeconds,
   artistSeparators,
+  artistSort,
 ];

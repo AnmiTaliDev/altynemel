@@ -1,4 +1,5 @@
 import '../settings/app_settings.dart';
+import '../settings/choices.dart';
 import 'album.dart';
 import 'artist.dart';
 import 'audio_file.dart';
@@ -139,6 +140,7 @@ List<Artist> buildArtists(
   List<Track> tracks, {
   required bool split,
   String separators = defaultArtistSeparators,
+  ArtistSort sort = ArtistSort.name,
 }) {
   final counts = <String, int>{};
   for (final track in tracks) {
@@ -154,7 +156,13 @@ List<Artist> buildArtists(
     for (final entry in counts.entries)
       Artist(id: entry.key, name: entry.key, trackCount: entry.value),
   ];
-  artists.sort((a, b) => _compareText(a.name, b.name));
+  artists.sort((a, b) {
+    if (sort == ArtistSort.trackCount) {
+      final byCount = b.trackCount.compareTo(a.trackCount);
+      if (byCount != 0) return byCount;
+    }
+    return _compareText(a.name, b.name);
+  });
   return artists;
 }
 

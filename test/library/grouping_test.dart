@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/library/grouping.dart';
 import 'package:altynemel/settings/catalog.dart';
+import 'package:altynemel/settings/choices.dart';
 import 'package:altynemel/library/track.dart';
 import 'package:altynemel/settings/app_settings.dart';
 
@@ -29,6 +30,7 @@ Track t(
 
 void main() {
   artistSeparatorTests();
+  artistSortTests();
   group('splitArtists', () {
     test('splits on comma, semicolon and feat. variants', () {
       expect(splitArtists('june lu, sløwmind', enabled: true), [
@@ -177,6 +179,44 @@ void artistSeparatorTests() {
         separators: '&',
       ).map((a) => a.name);
       expect(names, ['X', 'Y']);
+    });
+  });
+}
+
+void artistSortTests() {
+  group('artist order', () {
+    final tracks = [
+      for (final (id, artist) in [
+        ('1', 'Zed'),
+        ('2', 'Zed'),
+        ('3', 'Amy'),
+        ('4', 'Bob'),
+        ('5', 'Bob'),
+        ('6', 'Bob'),
+      ])
+        Track(
+          id: id,
+          title: 't$id',
+          artist: artist,
+          duration: const Duration(seconds: 5),
+        ),
+    ];
+
+    test('by name is alphabetical', () {
+      expect(buildArtists(tracks, split: false).map((a) => a.name), [
+        'Amy',
+        'Bob',
+        'Zed',
+      ]);
+    });
+
+    test('by track count puts the largest first and ties by name', () {
+      final names = buildArtists(
+        tracks,
+        split: false,
+        sort: ArtistSort.trackCount,
+      ).map((a) => a.name);
+      expect(names, ['Bob', 'Zed', 'Amy']);
     });
   });
 }

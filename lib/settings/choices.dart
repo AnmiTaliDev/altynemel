@@ -45,3 +45,10 @@ const coverStyleLabels = {
   CoverStyle.square: 'Square',
   CoverStyle.circle: 'Circle',
 };
+
+enum ArtistSort { name, trackCount }
+
+const artistSortLabels = {
+  ArtistSort.name: 'Name',
+  ArtistSort.trackCount: 'Most tracks first',
+};

@@ -218,4 +218,18 @@ void main() {
     await tester.pumpAndSettle();
     expect(lib.library.tracks.length, 4);
   });
+
+  testWidgets('the artist order follows the setting', (tester) async {
+    final lib = await pumpApp(tester);
+    final byName = lib.library.artists.map((a) => a.name).toList();
+    expect(
+      byName,
+      [...byName]..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase())),
+    );
+    lib.settings.setValue(artistSort, ArtistSort.trackCount);
+    await tester.pumpAndSettle();
+    final counts = lib.library.artists.map((a) => a.trackCount).toList();
+    expect(counts, [...counts]..sort((a, b) => b.compareTo(a)));
+    expect(counts.first, greaterThan(counts.last));
+  });
 }
