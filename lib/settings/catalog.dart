@@ -232,6 +232,18 @@ const pageMargin = IntSetting(
   unit: 'px',
 );
 
+const pageMarginPhone = IntSetting(
+  key: 'pageMarginPhone',
+  group: SettingGroup.layout,
+  label: 'Page margin on a phone',
+  hint: 'Space on the left and right of every screen on a phone layout.',
+  defaultValue: 16,
+  min: 4,
+  max: 32,
+  step: 2,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -254,4 +266,5 @@ const List<SettingDef<Object>> allSettings = [
   rowDensity,
   rowCoverSize,
   pageMargin,
+  pageMarginPhone,
 ];

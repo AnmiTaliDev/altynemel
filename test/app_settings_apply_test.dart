@@ -101,4 +101,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(headerLeft(tester), 232 + 64);
   });
+
+  testWidgets('the phone page margin moves the content on a phone layout', (
+    tester,
+  ) async {
+    final lib = await pumpApp(tester, size: const Size(360, 720));
+    expect(headerLeft(tester), 16);
+    lib.settings.setValue(pageMarginPhone, 24);
+    await tester.pumpAndSettle();
+    expect(headerLeft(tester), 24);
+  });
 }

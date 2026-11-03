@@ -12,8 +12,8 @@ bool isPhone(BuildContext context) =>
     isPhoneWidth(MediaQuery.sizeOf(context).width);
 
 double pageGutter(BuildContext context) {
-  if (isPhone(context)) return space4;
+  final phone = isPhone(context);
   final settings = AppSettingsScope.maybeOf(context);
-  if (settings == null) return space6;
-  return settings.valueOf(pageMargin).toDouble();
+  if (settings == null) return phone ? space4 : space6;
+  return settings.valueOf(phone ? pageMarginPhone : pageMargin).toDouble();
 }
