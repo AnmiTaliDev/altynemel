@@ -268,6 +268,18 @@ const tileCoverSizePhone = IntSetting(
   unit: 'px',
 );
 
+const sidebarExpandedWidth = IntSetting(
+  key: 'sidebarExpandedWidth',
+  group: SettingGroup.layout,
+  label: 'Sidebar width',
+  hint: 'Width of the full sidebar on wide windows.',
+  defaultValue: 232,
+  min: 160,
+  max: 360,
+  step: 4,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -293,4 +305,5 @@ const List<SettingDef<Object>> allSettings = [
   pageMarginPhone,
   tileCoverSize,
   tileCoverSizePhone,
+  sidebarExpandedWidth,
 ];

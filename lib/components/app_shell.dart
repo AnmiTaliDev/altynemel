@@ -1,12 +1,25 @@
 import 'package:flutter/widgets.dart';
 
+import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 
 bool sidebarCompactFor(double windowWidth) => windowWidth < sidebarCompactBelow;
 
-double sidebarSlotWidth(double windowWidth) =>
-    sidebarCompactFor(windowWidth) ? sidebarRailWidth : sidebarWidth;
+double sidebarWidthOf(BuildContext context) {
+  final settings = AppSettingsScope.maybeOf(context);
+  return (settings?.valueOf(sidebarExpandedWidth) ??
+          sidebarExpandedWidth.defaultValue)
+      .toDouble();
+}
+
+double sidebarSlotWidth(BuildContext context) {
+  final windowWidth = MediaQuery.sizeOf(context).width;
+  return sidebarCompactFor(windowWidth)
+      ? sidebarRailWidth
+      : sidebarWidthOf(context);
+}
 
 class AppShell extends StatelessWidget {
   const AppShell({
@@ -31,7 +44,8 @@ class AppShell extends StatelessWidget {
     final colors = AltynemelColors.of(context);
     final windowWidth = MediaQuery.sizeOf(context).width;
     final compact = sidebarCompactFor(windowWidth);
-    final slot = sidebarSlotWidth(windowWidth);
+    final expandedWidth = sidebarWidthOf(context);
+    final slot = sidebarSlotWidth(context);
     final overlay = compact && expanded;
     return ColoredBox(
       color: colors.ground,
@@ -51,7 +65,7 @@ class AppShell extends StatelessWidget {
                 ),
                 if (overlay)
                   Positioned.fill(
-                    left: sidebarWidth,
+                    left: expandedWidth,
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: onDismiss,
@@ -64,7 +78,7 @@ class AppShell extends StatelessWidget {
                   left: 0,
                   top: 0,
                   bottom: 0,
-                  width: overlay ? sidebarWidth : slot,
+                  width: overlay ? expandedWidth : slot,
                   child: ColoredBox(color: colors.ground, child: sidebar),
                 ),
               ],

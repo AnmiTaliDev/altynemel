@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:altynemel/components/sidebar.dart';
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/screens/playlist_screen.dart';
+import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/theme/spacing.dart';
 
 import '../support/test_library.dart';
@@ -124,5 +125,19 @@ void main() {
     tester.view.physicalSize = const Size(700, 600);
     await tester.pumpAndSettle();
     expect(sidebarWidthNow(tester), sidebarRailWidth);
+  });
+
+  testWidgets('the sidebar width follows the setting', (tester) async {
+    tester.view.physicalSize = const Size(1100, 700);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final lib = TestLibrary();
+    addTearDown(lib.dispose);
+    await tester.pumpWidget(lib.wrap(const HomeScreen()));
+    await tester.pumpAndSettle();
+    expect(sidebarWidthNow(tester), 232);
+    lib.settings.setValue(sidebarExpandedWidth, 300);
+    await tester.pumpAndSettle();
+    expect(sidebarWidthNow(tester), 300);
   });
 }

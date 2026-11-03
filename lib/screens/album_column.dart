@@ -6,5 +6,5 @@ const double albumColumnMinContentWidth = 700;
 
 bool showAlbumColumn(BuildContext context) {
   final width = MediaQuery.sizeOf(context).width;
-  return width - sidebarSlotWidth(width) >= albumColumnMinContentWidth;
+  return width - sidebarSlotWidth(context) >= albumColumnMinContentWidth;
 }
