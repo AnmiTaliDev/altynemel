@@ -36,6 +36,7 @@ class PlaybackController extends ChangeNotifier {
     _listen();
     _gapless = settings.gapless;
     _crossfade = settings.crossfade;
+    _appliedSpeed = settings.valueOf(playbackSpeed);
     _volume = settings.valueOf(defaultVolume);
     _volumeBeforeMute = _volume == 0 ? 70 : _volume;
     _settings.addListener(_onSettings);
@@ -53,6 +54,7 @@ class PlaybackController extends ChangeNotifier {
   Timer? _fadeTimer;
   Timer? _saveTimer;
   bool _fading = false;
+  double _appliedSpeed = 1;
   bool _gapless = true;
   bool _crossfade = false;
   bool _playing = false;
@@ -87,6 +89,11 @@ class PlaybackController extends ChangeNotifier {
     if (platform is NativePlayer) {
       platform.setProperty('gapless-audio', 'yes');
     }
+    _applyTuning(player);
+  }
+
+  void _applyTuning(Player player) {
+    unawaited(player.setRate(_settings.valueOf(playbackSpeed)));
   }
 
   void _listen() {
@@ -104,6 +111,13 @@ class PlaybackController extends ChangeNotifier {
   }
 
   void _onSettings() {
+    final speed = _settings.valueOf(playbackSpeed);
+    if (speed != _appliedSpeed) {
+      _appliedSpeed = speed;
+      _applyTuning(_primary);
+      final secondary = _secondary;
+      if (secondary != null) _applyTuning(secondary);
+    }
     final gaplessChanged = _gapless != _settings.gapless;
     final crossfadeChanged = _crossfade != _settings.crossfade;
     _gapless = _settings.gapless;

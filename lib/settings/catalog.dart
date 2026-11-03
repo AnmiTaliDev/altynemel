@@ -97,6 +97,19 @@ const resumeOnLaunch = BoolSetting(
   defaultValue: false,
 );
 
+const playbackSpeed = DoubleSetting(
+  key: 'playbackSpeed',
+  group: SettingGroup.sound,
+  label: 'Playback speed',
+  hint: 'Speed of every track. One is the original speed.',
+  defaultValue: 1,
+  min: 0.5,
+  max: 2,
+  step: 0.05,
+  decimals: 2,
+  unit: 'x',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -107,4 +120,5 @@ const List<SettingDef<Object>> allSettings = [
   defaultVolume,
   maximumVolume,
   resumeOnLaunch,
+  playbackSpeed,
 ];

@@ -284,4 +284,26 @@ void main() {
   test('a restored queue plays when resuming on launch is on', () async {
     await savedRig(resume: true);
   });
+
+  test('the speed is applied when the player is created', () {
+    rig = Rig(preset: (settings) => settings.setValue(playbackSpeed, 1.5));
+    expect(rig.primary.state.rate, 1.5);
+  });
+
+  test('changing the speed reaches the running player', () async {
+    rig = Rig();
+    await rig.start();
+    expect(rig.primary.state.rate, 1);
+    rig.settings.setValue(playbackSpeed, 0.75);
+    await rig.settle();
+    expect(rig.primary.state.rate, 0.75);
+  });
+
+  test('the fade player gets the same speed', () async {
+    rig = Rig(preset: (settings) => settings.setValue(playbackSpeed, 1.25));
+    rig.settings.setCrossfade(true);
+    await rig.start();
+    await rig.positionAt(97);
+    expect(rig.fakes[1].state.rate, 1.25);
+  });
 }

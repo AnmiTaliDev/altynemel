@@ -88,6 +88,11 @@ class FakePlatformPlayer extends PlatformPlayer {
   }
 
   @override
+  Future<void> setRate(double rate) async {
+    state = state.copyWith(rate: rate);
+  }
+
+  @override
   Future<void> setPlaylistMode(PlaylistMode playlistMode) async {
     state = state.copyWith(playlistMode: playlistMode);
   }
