@@ -292,6 +292,18 @@ const playerBarMinHeight = IntSetting(
   unit: 'px',
 );
 
+const phoneLayoutBelow = IntSetting(
+  key: 'phoneLayoutBelow',
+  group: SettingGroup.layout,
+  label: 'Phone layout below',
+  hint: 'Windows narrower than this switch to the layout with bottom tabs.',
+  defaultValue: 600,
+  min: 300,
+  max: 900,
+  step: 10,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -319,4 +331,5 @@ const List<SettingDef<Object>> allSettings = [
   tileCoverSizePhone,
   sidebarExpandedWidth,
   playerBarMinHeight,
+  phoneLayoutBelow,
 ];

@@ -529,7 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final window = WindowScope.maybeOf(context);
     final width = MediaQuery.sizeOf(context).width;
     final compact = sidebarCompactFor(width);
-    final phone = isPhoneWidth(width);
+    final phone = isPhoneWidth(context, width);
     if (!compact) _railExpanded = false;
     final playlists = [
       const SidebarPlaylist(id: likedContext, name: Strings.liked),

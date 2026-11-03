@@ -11,6 +11,7 @@ import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/screens/now_playing_screen.dart';
 import 'package:altynemel/screens/playlist_screen.dart';
 import 'package:altynemel/screens/playlists_screen.dart';
+import 'package:altynemel/settings/catalog.dart';
 
 import '../support/test_library.dart';
 
@@ -146,5 +147,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(NowPlayingScreen), findsNothing);
     expect(find.byType(PlaylistsScreen), findsOneWidget);
+  });
+
+  test('the default threshold setting matches the layout constant', () {
+    expect(phoneLayoutBelow.defaultValue, phoneBelow);
+  });
+
+  testWidgets('the phone threshold follows the setting', (tester) async {
+    final lib = await pumpPhone(tester, size: const Size(700, 700));
+    expect(find.byType(PhoneNav), findsNothing);
+    lib.settings.setValue(phoneLayoutBelow, 800);
+    await tester.pumpAndSettle();
+    expect(find.byType(PhoneNav), findsOneWidget);
+    lib.settings.setValue(phoneLayoutBelow, 300);
+    await tester.pumpAndSettle();
+    expect(find.byType(PhoneNav), findsNothing);
   });
 }

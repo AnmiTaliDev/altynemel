@@ -201,7 +201,7 @@ class NowPlayingScreen extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= nowPlayingWideFrom;
-          final phone = isPhoneWidth(constraints.maxWidth);
+          final phone = isPhoneWidth(context, constraints.maxWidth);
           final coverSize = wide
               ? 320.0
               : phone

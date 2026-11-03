@@ -6,10 +6,16 @@ import '../theme/spacing.dart';
 
 const double phoneBelow = 600;
 
-bool isPhoneWidth(double windowWidth) => windowWidth < phoneBelow;
+double phoneThreshold(BuildContext context) {
+  final settings = AppSettingsScope.maybeOf(context);
+  return (settings?.valueOf(phoneLayoutBelow) ?? phoneBelow).toDouble();
+}
+
+bool isPhoneWidth(BuildContext context, double width) =>
+    width < phoneThreshold(context);
 
 bool isPhone(BuildContext context) =>
-    isPhoneWidth(MediaQuery.sizeOf(context).width);
+    isPhoneWidth(context, MediaQuery.sizeOf(context).width);
 
 double pageGutter(BuildContext context) {
   final phone = isPhone(context);
