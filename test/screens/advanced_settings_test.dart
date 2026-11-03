@@ -137,8 +137,25 @@ void main() {
 
   testWidgets('typing changes a text setting', (tester) async {
     final settings = await pumpAdvanced(tester);
-    await tester.enterText(find.byType(TextField), 'mp3, flac');
+    await tester.enterText(find.byType(TextField).last, 'mp3, flac');
     await tester.pump();
     expect(settings.valueOf(textDef), 'mp3, flac');
+  });
+
+  testWidgets('search narrows the rows and shows an empty state', (
+    tester,
+  ) async {
+    await pumpAdvanced(tester);
+    await tester.enterText(find.byType(TextField).first, 'speed');
+    await tester.pump();
+    expect(find.text('Speed'), findsOneWidget);
+    expect(find.text('Fade length'), findsNothing);
+    expect(find.text('Playback'), findsNothing);
+    await tester.enterText(find.byType(TextField).first, 'nothing here');
+    await tester.pump();
+    expect(find.text('No settings match'), findsOneWidget);
+    await tester.enterText(find.byType(TextField).first, '');
+    await tester.pump();
+    expect(find.text('Fade length'), findsOneWidget);
   });
 }

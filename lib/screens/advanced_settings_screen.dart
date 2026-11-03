@@ -5,6 +5,7 @@ import '../components/choice_row.dart';
 import '../components/layout_mode.dart';
 import '../components/pill_tabs.dart';
 import '../components/screen_header.dart';
+import '../components/search_field.dart';
 import '../components/setting_rows.dart';
 import '../components/toggle.dart';
 import '../settings/app_settings.dart';
@@ -14,8 +15,9 @@ import '../settings/setting_search.dart';
 import '../strings.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
+import 'empty_state.dart';
 
-class AdvancedSettingsScreen extends StatelessWidget {
+class AdvancedSettingsScreen extends StatefulWidget {
   const AdvancedSettingsScreen({
     super.key,
     required this.settings,
@@ -26,6 +28,15 @@ class AdvancedSettingsScreen extends StatelessWidget {
   final AppSettings settings;
   final VoidCallback onBack;
   final List<SettingDef<Object>> definitions;
+
+  @override
+  State<AdvancedSettingsScreen> createState() => _AdvancedSettingsScreenState();
+}
+
+class _AdvancedSettingsScreenState extends State<AdvancedSettingsScreen> {
+  String _query = '';
+
+  AppSettings get settings => widget.settings;
 
   Widget _row(SettingDef<Object> def) {
     return switch (def) {
@@ -84,7 +95,8 @@ class AdvancedSettingsScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: settings,
       builder: (context, _) {
-        final groups = groupDefinitions(definitions);
+        final matches = searchDefinitions(widget.definitions, _query);
+        final groups = groupDefinitions(matches);
         return ListView(
           padding: EdgeInsets.fromLTRB(
             pageGutter(context),
@@ -98,7 +110,7 @@ class AdvancedSettingsScreen extends StatelessWidget {
               child: AltynemelButton(
                 label: Strings.back,
                 kind: ButtonKind.text,
-                onPressed: onBack,
+                onPressed: widget.onBack,
               ),
             ),
             const SizedBox(height: space3),
@@ -106,6 +118,19 @@ class AdvancedSettingsScreen extends StatelessWidget {
               title: Strings.advancedSettings,
               caption: Strings.advancedSettingsHint,
             ),
+            const SizedBox(height: space4),
+            SearchField(
+              label: Strings.searchSettings,
+              onChanged: (value) => setState(() => _query = value),
+            ),
+            if (matches.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: space5),
+                child: EmptyState(
+                  title: Strings.noSettingsFound,
+                  hint: Strings.noSettingsFoundHint,
+                ),
+              ),
             for (final entry in groups.entries) ...[
               Padding(
                 padding: const EdgeInsets.only(top: space6, bottom: space2),

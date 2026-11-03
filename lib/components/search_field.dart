@@ -15,11 +15,13 @@ class SearchField extends StatefulWidget {
     this.controller,
     this.focusNode,
     this.onChanged,
+    this.label = Strings.search,
   });
 
   final TextEditingController? controller;
   final FocusNode? focusNode;
   final ValueChanged<String>? onChanged;
+  final String label;
 
   @override
   State<SearchField> createState() => _SearchFieldState();
@@ -40,7 +42,7 @@ class _SearchFieldState extends State<SearchField> {
         onFocusChange: (value) => setState(() => _focused = value),
         child: Semantics(
           textField: true,
-          label: Strings.search,
+          label: widget.label,
           excludeSemantics: false,
           child: Container(
             constraints: const BoxConstraints(minHeight: targetPointer),
@@ -64,7 +66,7 @@ class _SearchFieldState extends State<SearchField> {
                     decoration: InputDecoration(
                       isCollapsed: true,
                       border: InputBorder.none,
-                      hintText: Strings.search,
+                      hintText: widget.label,
                       hintStyle: text.body.copyWith(color: colors.inkMuted),
                     ),
                   ),
