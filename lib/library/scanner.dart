@@ -93,9 +93,9 @@ List<File> findAudioFiles(
     }
     for (final entry in entries) {
       if (entry is Directory) {
-        if (options.skipHidden && fileNameOf(entry.path).startsWith('.')) {
-          continue;
-        }
+        final name = fileNameOf(entry.path);
+        if (options.skipHidden && name.startsWith('.')) continue;
+        if (options.excluded.contains(name.toLowerCase())) continue;
         pending.add(entry);
       } else if (entry is File && isAudioFile(entry.path, options.extensions)) {
         files.add(entry);

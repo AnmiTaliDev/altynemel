@@ -414,6 +414,14 @@ const followSymlinks = BoolSetting(
   defaultValue: false,
 );
 
+const excludedFolders = TextSetting(
+  key: 'excludedFolders',
+  group: SettingGroup.library,
+  label: 'Folders to ignore',
+  hint: 'Folder names the scanner skips everywhere, separated by commas.',
+  defaultValue: '',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -453,4 +461,5 @@ const List<SettingDef<Object>> allSettings = [
   scanExtensions,
   skipHiddenFolders,
   followSymlinks,
+  excludedFolders,
 ];

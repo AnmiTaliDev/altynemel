@@ -75,4 +75,28 @@ void main() {
     ).map((f) => fileNameOf(f.path)).toSet();
     expect(names, {'a.mp3', 'b.mp3'});
   });
+
+  test('folder names are split, trimmed and lower cased', () {
+    expect(parseFolderNames(' @eaDir, .stfolder;Cache ,, '), {
+      '@eadir',
+      '.stfolder',
+      'cache',
+    });
+    expect(parseFolderNames(''), isEmpty);
+  });
+
+  test('excluded folders are skipped at any depth', () {
+    final root = Directory.systemTemp.createTempSync('altynemel_excl_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final music = Directory('${root.path}/music')..createSync();
+    writeFile(music, 'a.mp3', mp3Bytes(title: 'A'));
+    writeFile(music, '@eaDir/b.mp3', mp3Bytes(title: 'B'));
+    writeFile(music, 'album/@EADIR/c.mp3', mp3Bytes(title: 'C'));
+    writeFile(music, 'album/d.mp3', mp3Bytes(title: 'D'));
+    final names = findAudioFiles(
+      music,
+      ScanOptions(excluded: parseFolderNames('@eadir')),
+    ).map((f) => fileNameOf(f.path));
+    expect(names, ['a.mp3', 'd.mp3']);
+  });
 }
