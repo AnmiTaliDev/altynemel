@@ -19,11 +19,13 @@ class SettingsScreen extends StatelessWidget {
     required this.settings,
     this.onChooseFolder,
     this.onOpenAbout,
+    this.onOpenAdvanced,
   });
 
   final AppSettings settings;
   final VoidCallback? onChooseFolder;
   final VoidCallback? onOpenAbout;
+  final VoidCallback? onOpenAdvanced;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +165,16 @@ class SettingsScreen extends StatelessWidget {
                   label: Strings.orderFileName,
                 ),
               ],
+            ),
+            section(Strings.advancedSettings),
+            Container(
+              constraints: const BoxConstraints(minHeight: 64),
+              padding: const EdgeInsets.symmetric(vertical: space3),
+              alignment: Alignment.centerLeft,
+              child: AltynemelButton(
+                label: Strings.openAdvancedSettings,
+                onPressed: onOpenAdvanced,
+              ),
             ),
             section(Strings.about),
             Container(

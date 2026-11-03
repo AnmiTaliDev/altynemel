@@ -32,6 +32,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
 import 'about_screen.dart';
+import 'advanced_settings_screen.dart';
 import 'now_playing_screen.dart';
 import 'confirm_dialog.dart';
 import 'home_shortcuts.dart';
@@ -46,7 +47,7 @@ const String likedContext = 'liked';
 
 const Duration seekStep = Duration(seconds: 5);
 
-enum _SettingsPage { about, freeSoftware }
+enum _SettingsPage { about, freeSoftware, advanced }
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.initialDestination});
@@ -461,6 +462,10 @@ class _HomeScreenState extends State<HomeScreen> {
             onOpenFreeSoftware: () =>
                 setState(() => _settingsPage = _SettingsPage.freeSoftware),
           ),
+          _SettingsPage.advanced => AdvancedSettingsScreen(
+            settings: settings,
+            onBack: () => setState(() => _settingsPage = null),
+          ),
           _SettingsPage.freeSoftware => FreeSoftwareScreen(
             onBack: () => setState(() => _settingsPage = _SettingsPage.about),
           ),
@@ -469,6 +474,8 @@ class _HomeScreenState extends State<HomeScreen> {
             onChooseFolder: () => _chooseFolder(settings),
             onOpenAbout: () =>
                 setState(() => _settingsPage = _SettingsPage.about),
+            onOpenAdvanced: () =>
+                setState(() => _settingsPage = _SettingsPage.advanced),
           ),
         };
       case SidebarDestination.nowPlaying:

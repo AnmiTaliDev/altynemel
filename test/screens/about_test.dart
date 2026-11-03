@@ -24,6 +24,8 @@ void main() {
         matching: find.byType(Scrollable),
       ),
     );
+    await tester.ensureVisible(aboutButton);
+    await tester.pump();
     await tester.tap(aboutButton);
     await tester.pumpAndSettle();
     expect(find.text('0.1.0'), findsOneWidget);
