@@ -264,4 +264,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TrackTableRow), findsNothing);
   });
+
+  testWidgets('the search can skip track titles', (tester) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    await tester.enterText(find.byType(TextField).first, 'Natt over');
+    await tester.pumpAndSettle();
+    expect(find.byType(TrackTableRow), findsWidgets);
+    lib.settings.setValue(searchInTitle, false);
+    await tester.pumpAndSettle();
+    expect(find.byType(TrackTableRow), findsNothing);
+  });
 }

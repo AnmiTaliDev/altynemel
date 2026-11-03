@@ -497,6 +497,14 @@ const searchInArtist = BoolSetting(
   defaultValue: true,
 );
 
+const searchInTitle = BoolSetting(
+  key: 'searchInTitle',
+  group: SettingGroup.search,
+  label: 'Search track titles',
+  hint: 'Match the search text against track titles.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -545,4 +553,5 @@ const List<SettingDef<Object>> allSettings = [
   rescanOnStart,
   searchInAlbum,
   searchInArtist,
+  searchInTitle,
 ];

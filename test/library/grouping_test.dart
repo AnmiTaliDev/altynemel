@@ -135,6 +135,13 @@ void main() {
       expect(filterTracks(tracks, 'zzz'), isEmpty);
     });
 
+    test('can leave titles out of the search', () {
+      const off = SearchOptions(title: false);
+      expect(filterTracks(tracks, 'балбырауын', off), isEmpty);
+      expect(filterTracks(tracks, 'ødeg', off).length, 1);
+      expect(filterTracks(tracks, 'балбырауын').length, 1);
+    });
+
     test('can leave artist names out of the search', () {
       const off = SearchOptions(artist: false);
       expect(filterTracks(tracks, 'ødeg', off), isEmpty);

@@ -198,7 +198,7 @@ List<Track> filterTracks(
   if (q.isEmpty) return tracks;
   return [
     for (final t in tracks)
-      if (_matches(t.title, q) ||
+      if ((options.title && _matches(t.title, q)) ||
           (options.artist && _matches(t.artist, q)) ||
           (options.album && _matches(t.album, q)))
         t,
