@@ -307,7 +307,8 @@ class PlaybackController extends ChangeNotifier {
     final target = _volume.toDouble();
     final length = _crossfadeLength;
     final curve = _settings.valueOf(crossfadeCurve);
-    _fadeTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
+    final step = Duration(milliseconds: _settings.valueOf(crossfadeStepMs));
+    _fadeTimer = Timer.periodic(step, (timer) {
       final t = (watch.elapsedMilliseconds / length.inMilliseconds).clamp(
         0.0,
         1.0,

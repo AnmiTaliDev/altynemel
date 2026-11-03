@@ -169,4 +169,24 @@ void main() {
     final incoming = rig.fakes[1].state.volume;
     expect(outgoing * outgoing + incoming * incoming, closeTo(70 * 70, 400));
   });
+
+  test('a coarse crossfade step delays the first volume update', () async {
+    rig = Rig();
+    rig.settings.setCrossfade(true);
+    rig.settings.setValue(crossfadeStepMs, 200);
+    await rig.start();
+    await rig.positionAt(97);
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    expect(rig.fakes[1].state.volume, 0);
+  });
+
+  test('a fine crossfade step updates the volume right away', () async {
+    rig = Rig();
+    rig.settings.setCrossfade(true);
+    rig.settings.setValue(crossfadeStepMs, 10);
+    await rig.start();
+    await rig.positionAt(97);
+    await Future<void>.delayed(const Duration(milliseconds: 120));
+    expect(rig.fakes[1].state.volume, greaterThan(0));
+  });
 }

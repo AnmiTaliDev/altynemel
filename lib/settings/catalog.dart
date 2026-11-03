@@ -45,9 +45,22 @@ const crossfadeCurve = EnumSetting<CrossfadeCurve>(
   labels: crossfadeCurveLabels,
 );
 
+const crossfadeStepMs = IntSetting(
+  key: 'crossfadeStepMs',
+  group: SettingGroup.playback,
+  label: 'Crossfade update step',
+  hint: 'Time between volume updates during a crossfade. Smaller is smoother.',
+  defaultValue: 50,
+  min: 10,
+  max: 200,
+  step: 10,
+  unit: 'ms',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
   positionSaveSeconds,
   crossfadeCurve,
+  crossfadeStepMs,
 ];
