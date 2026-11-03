@@ -65,6 +65,18 @@ const skipUnavailableTracks = BoolSetting(
   defaultValue: true,
 );
 
+const defaultVolume = IntSetting(
+  key: 'defaultVolume',
+  group: SettingGroup.sound,
+  label: 'Starting volume',
+  hint: 'Volume used when there is no saved playback state.',
+  defaultValue: 70,
+  min: 0,
+  max: 100,
+  step: 5,
+  unit: '%',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -72,4 +84,5 @@ const List<SettingDef<Object>> allSettings = [
   crossfadeCurve,
   crossfadeStepMs,
   skipUnavailableTracks,
+  defaultVolume,
 ];

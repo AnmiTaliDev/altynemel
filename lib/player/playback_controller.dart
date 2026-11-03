@@ -36,6 +36,8 @@ class PlaybackController extends ChangeNotifier {
     _listen();
     _gapless = settings.gapless;
     _crossfade = settings.crossfade;
+    _volume = settings.valueOf(defaultVolume);
+    _volumeBeforeMute = _volume == 0 ? 70 : _volume;
     _settings.addListener(_onSettings);
   }
 

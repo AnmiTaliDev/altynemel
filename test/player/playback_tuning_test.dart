@@ -12,8 +12,14 @@ import 'package:altynemel/storage/library_database.dart';
 import '../support/fake_player.dart';
 
 class Rig {
-  Rig({this.seconds = 100, this.count = 3, this.withDatabase = false}) {
+  Rig({
+    this.seconds = 100,
+    this.count = 3,
+    this.withDatabase = false,
+    void Function(AppSettings settings)? preset,
+  }) {
     settings = AppSettings();
+    preset?.call(settings);
     if (withDatabase) database = LibraryDatabase.inMemory();
     controller = PlaybackController(
       settings: settings,
@@ -210,5 +216,17 @@ void main() {
     await rig.settle();
     expect(rig.controller.current!.id, '1');
     expect(rig.controller.isPlaying, isFalse);
+  });
+
+  test('the starting volume comes from the setting', () {
+    rig = Rig(preset: (settings) => settings.setValue(defaultVolume, 35));
+    expect(rig.controller.volume, 35);
+  });
+
+  test('a starting volume of zero unmutes to a sane level', () async {
+    rig = Rig(preset: (settings) => settings.setValue(defaultVolume, 0));
+    expect(rig.controller.volume, 0);
+    await rig.controller.toggleMute();
+    expect(rig.controller.volume, 70);
   });
 }
