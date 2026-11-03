@@ -152,6 +152,7 @@ class StylePreview extends StatelessWidget {
           final colors = AltynemelColors.of(context);
           final text = AltynemelTextStyles.of(context);
           return Container(
+            constraints: const BoxConstraints(minHeight: 156),
             padding: const EdgeInsets.all(space3),
             decoration: BoxDecoration(
               color: colors.ground,

@@ -4,6 +4,7 @@ import '../../components/icon.dart';
 import '../../components/icon_data.dart';
 import '../../components/pressable.dart';
 import '../../settings/choices.dart';
+import '../../strings.dart';
 import '../../theme/accents.dart';
 import '../../theme/colors.dart';
 import '../../theme/material_palette.dart';
@@ -58,6 +59,9 @@ class AccentSwatches extends StatelessWidget {
               builder: (context) {
                 final paint = swatchColors(choice, theme, design);
                 final isSelected = choice == selected;
+                final caption = choice == AccentChoice.theme
+                    ? Strings.setupAccentDefault
+                    : accentLabels[choice]!;
                 return SizedBox(
                   width: 72,
                   child: Pressable(
@@ -98,7 +102,7 @@ class AccentSwatches extends StatelessWidget {
                           ),
                           const SizedBox(height: space1),
                           Text(
-                            accentLabels[choice]!,
+                            caption,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             textAlign: TextAlign.center,

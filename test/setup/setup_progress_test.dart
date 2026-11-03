@@ -43,16 +43,35 @@ void main() {
     expect(find.textContaining(SetupStep.appearance.label), findsWidgets);
   });
 
-  testWidgets('finished steps show a check and the current one is marked', (
+  testWidgets('the current step is marked as selected and the rest are not', (
     tester,
   ) async {
     await pumpWizard(tester, const Size(1100, 800));
     await tester.tap(find.text(Strings.setupNext));
-    await tester.tap(find.text(Strings.setupNext).first, warnIfMissed: false);
+    await tester.pumpAndSettle();
+    for (var i = 0; i < SetupStep.values.length; i++) {
+      final node = tester.getSemantics(
+        find.bySemanticsLabel(
+          RegExp('Step ${i + 1} of 5, ${SetupStep.values[i].label}'),
+        ),
+      );
+      expect(
+        node.flagsCollection.isSelected.name,
+        i == 1 ? 'isTrue' : isNot('isTrue'),
+        reason: SetupStep.values[i].label,
+      );
+    }
+  });
+
+  testWidgets('finished steps replace their number with a check', (
+    tester,
+  ) async {
+    await pumpWizard(tester, const Size(1100, 800));
+    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text(Strings.setupNext));
     await tester.pumpAndSettle();
     expect(find.text('1'), findsNothing);
-    final current = find.bySemanticsLabel(RegExp('Step 2 of 5, Look'));
-    expect(current, findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
   });
 
   testWidgets('every stepper row has a spoken label', (tester) async {

@@ -131,7 +131,7 @@ void main() {
     tester,
   ) async {
     final settings = await pumpStep(tester);
-    for (final choice in AccentChoice.values) {
+    for (final choice in AccentChoice.values.skip(1)) {
       expect(find.text(accentLabels[choice]!), findsOneWidget);
     }
     await tester.tap(find.text(accentLabels[AccentChoice.rose]!));
@@ -203,5 +203,20 @@ void main() {
           .selected,
       AccentChoice.sky,
     );
+  });
+
+  testWidgets('the default swatch has a short caption', (tester) async {
+    await pumpStep(tester);
+    expect(find.text(Strings.setupAccentDefault), findsOneWidget);
+    expect(find.text(accentLabels[AccentChoice.theme]!), findsNothing);
+  });
+
+  testWidgets('both style previews have the same height', (tester) async {
+    await pumpStep(tester);
+    final heights = [
+      for (final element in tester.elementList(find.byType(StylePreview)))
+        tester.getSize(find.byWidget(element.widget)).height,
+    ];
+    expect(heights.toSet().length, 1);
   });
 }

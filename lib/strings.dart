@@ -156,6 +156,7 @@ class Strings {
       'Google design system with tonal colors, rounded shapes and state layers.';
   static const setupThemeLabel = 'Theme';
   static const setupAccentLabel = 'Accent color';
+  static const setupAccentDefault = 'Default';
   static const setupPreviewLabel = 'Preview';
   static const setupPreviewTrack = 'Fading memories';
   static const setupPreviewArtist = 'June Lu';
