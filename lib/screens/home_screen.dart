@@ -396,14 +396,11 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (_destination) {
       case SidebarDestination.library:
       case null:
-        final tracks = filterTracks(
-          library.tracks,
-          _query,
-          searchOptionsOf(settings),
-        );
+        final search = searchOptionsOf(settings);
+        final tracks = filterTracks(library.tracks, _query, search);
         return LibraryScreen(
-          albums: filterAlbums(library.albums, _query),
-          artists: filterArtists(library.artists, _query),
+          albums: filterAlbums(library.albums, _query, search),
+          artists: filterArtists(library.artists, _query, search),
           tracks: tracks,
           libraryEmpty: library.tracks.isEmpty,
           scanning: library.scanning,

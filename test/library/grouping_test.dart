@@ -140,6 +140,16 @@ void main() {
       expect(filterTracks(tracks, 'zzz'), isEmpty);
     });
 
+    test('can ignore accents in tracks, albums and artists', () {
+      const on = SearchOptions(ignoreAccents: true);
+      expect(filterTracks(tracks, 'odegard').length, 0);
+      expect(filterTracks(tracks, 'odegard', on).length, 1);
+      expect(filterTracks(tracks, 'ØDEGÅRD', on).length, 1);
+      final artists = buildArtists(tracks, split: false);
+      expect(filterArtists(artists, 'bjork').length, 0);
+      expect(filterArtists(artists, 'bjork', on).length, 1);
+    });
+
     test('can include file names in the search', () {
       const on = SearchOptions(fileName: true);
       expect(filterTracks(withPaths, 'rip.flac').length, 0);

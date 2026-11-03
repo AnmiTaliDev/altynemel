@@ -513,6 +513,14 @@ const searchInFileName = BoolSetting(
   defaultValue: false,
 );
 
+const searchIgnoreAccents = BoolSetting(
+  key: 'searchIgnoreAccents',
+  group: SettingGroup.search,
+  label: 'Ignore accents in search',
+  hint: 'Let e match é and o match ø, in every search.',
+  defaultValue: false,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -563,4 +571,5 @@ const List<SettingDef<Object>> allSettings = [
   searchInArtist,
   searchInTitle,
   searchInFileName,
+  searchIgnoreAccents,
 ];

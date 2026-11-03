@@ -7,12 +7,14 @@ class SearchOptions {
     this.album = true,
     this.artist = true,
     this.fileName = false,
+    this.ignoreAccents = false,
   });
 
   final bool title;
   final bool album;
   final bool artist;
   final bool fileName;
+  final bool ignoreAccents;
 }
 
 SearchOptions searchOptionsOf(AppSettings settings) {
@@ -21,5 +23,6 @@ SearchOptions searchOptionsOf(AppSettings settings) {
     album: settings.valueOf(searchInAlbum),
     artist: settings.valueOf(searchInArtist),
     fileName: settings.valueOf(searchInFileName),
+    ignoreAccents: settings.valueOf(searchIgnoreAccents),
   );
 }

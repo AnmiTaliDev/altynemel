@@ -4,6 +4,7 @@ import 'album.dart';
 import 'artist.dart';
 import 'audio_file.dart';
 import 'search_options.dart';
+import 'text_fold.dart';
 import 'track.dart';
 
 const unknownAlbum = 'Unknown album';
@@ -185,8 +186,11 @@ List<Artist> buildArtists(
   return artists;
 }
 
-bool _matches(String? value, String query) {
-  return value != null && value.toLowerCase().contains(query);
+String _prepare(String value, SearchOptions options) =>
+    options.ignoreAccents ? foldAccents(value) : value.toLowerCase();
+
+bool _matches(String? value, String query, SearchOptions options) {
+  return value != null && _prepare(value, options).contains(query);
 }
 
 List<Track> filterTracks(
@@ -194,32 +198,40 @@ List<Track> filterTracks(
   String query, [
   SearchOptions options = const SearchOptions(),
 ]) {
-  final q = query.trim().toLowerCase();
+  final q = _prepare(query.trim(), options);
   if (q.isEmpty) return tracks;
   return [
     for (final t in tracks)
-      if ((options.title && _matches(t.title, q)) ||
-          (options.artist && _matches(t.artist, q)) ||
-          (options.album && _matches(t.album, q)) ||
-          (options.fileName && _matches(fileNameOf(t.path ?? ''), q)))
+      if ((options.title && _matches(t.title, q, options)) ||
+          (options.artist && _matches(t.artist, q, options)) ||
+          (options.album && _matches(t.album, q, options)) ||
+          (options.fileName && _matches(fileNameOf(t.path ?? ''), q, options)))
         t,
   ];
 }
 
-List<Album> filterAlbums(List<Album> albums, String query) {
-  final q = query.trim().toLowerCase();
+List<Album> filterAlbums(
+  List<Album> albums,
+  String query, [
+  SearchOptions options = const SearchOptions(),
+]) {
+  final q = _prepare(query.trim(), options);
   if (q.isEmpty) return albums;
   return [
     for (final a in albums)
-      if (_matches(a.title, q) || _matches(a.artist, q)) a,
+      if (_matches(a.title, q, options) || _matches(a.artist, q, options)) a,
   ];
 }
 
-List<Artist> filterArtists(List<Artist> artists, String query) {
-  final q = query.trim().toLowerCase();
+List<Artist> filterArtists(
+  List<Artist> artists,
+  String query, [
+  SearchOptions options = const SearchOptions(),
+]) {
+  final q = _prepare(query.trim(), options);
   if (q.isEmpty) return artists;
   return [
     for (final a in artists)
-      if (_matches(a.name, q)) a,
+      if (_matches(a.name, q, options)) a,
   ];
 }
