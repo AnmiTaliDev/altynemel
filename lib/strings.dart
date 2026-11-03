@@ -192,6 +192,12 @@ class Strings {
   static const setupSummaryLibrary = 'Music folder';
   static const setupSummaryPlayback = 'Playback';
   static const setupSummaryNoFolder = 'Not chosen';
+  static const setupSummaryGaplessOn = 'Gapless';
+  static const setupSummaryGaplessOff = 'Gaps between tracks';
+  static String setupSummaryCrossfade(int seconds) => 'Crossfade $seconds s';
+  static const setupSummaryNoCrossfade = 'No crossfade';
+  static String setupSummaryNormalization(String mode) =>
+      'Normalization: $mode';
   static const setupNext = 'Next';
   static const setupBack = 'Back';
   static const setupSkip = 'Skip';
