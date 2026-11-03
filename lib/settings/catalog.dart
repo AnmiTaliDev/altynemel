@@ -244,6 +244,18 @@ const pageMarginPhone = IntSetting(
   unit: 'px',
 );
 
+const tileCoverSize = IntSetting(
+  key: 'tileCoverSize',
+  group: SettingGroup.layout,
+  label: 'Album tile size',
+  hint: 'Cover size of the tiles in the album and artist grids.',
+  defaultValue: 160,
+  min: 100,
+  max: 300,
+  step: 10,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -267,4 +279,5 @@ const List<SettingDef<Object>> allSettings = [
   rowCoverSize,
   pageMargin,
   pageMarginPhone,
+  tileCoverSize,
 ];

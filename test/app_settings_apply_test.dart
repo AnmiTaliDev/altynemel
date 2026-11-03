@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/components/cover_art.dart';
+import 'package:altynemel/components/media_tile.dart';
 import 'package:altynemel/components/screen_header.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
@@ -110,5 +111,17 @@ void main() {
     lib.settings.setValue(pageMarginPhone, 24);
     await tester.pumpAndSettle();
     expect(headerLeft(tester), 24);
+  });
+
+  testWidgets('the album tile size follows the setting', (tester) async {
+    final lib = await pumpApp(tester);
+    final cover = find.descendant(
+      of: find.byType(MediaTile).first,
+      matching: find.byType(CoverArt),
+    );
+    expect(tester.getSize(cover).width, 160);
+    lib.settings.setValue(tileCoverSize, 220);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(cover).width, 220);
   });
 }

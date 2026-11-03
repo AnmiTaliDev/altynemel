@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
@@ -8,13 +10,17 @@ import 'cover_art.dart';
 import 'layout_mode.dart';
 import 'pressable.dart';
 
-const double mediaTileCover = 160;
-const double mediaTileWidth = mediaTileCover + 2 * space2;
 const double mediaTileCoverPhone = 140;
-const double mediaTileWidthPhone = mediaTileCoverPhone + 2 * space2;
+
+double mediaTileCoverOf(BuildContext context) {
+  if (isPhone(context)) return mediaTileCoverPhone;
+  final settings = AppSettingsScope.maybeOf(context);
+  return (settings?.valueOf(tileCoverSize) ?? tileCoverSize.defaultValue)
+      .toDouble();
+}
 
 double mediaTileWidthOf(BuildContext context) =>
-    isPhone(context) ? mediaTileWidthPhone : mediaTileWidth;
+    mediaTileCoverOf(context) + 2 * space2;
 
 class MediaTile extends StatelessWidget {
   const MediaTile({
@@ -53,7 +59,7 @@ class MediaTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CoverArt(
-                  size: isPhone(context) ? mediaTileCoverPhone : mediaTileCover,
+                  size: mediaTileCoverOf(context),
                   image: image,
                   albumName: title,
                 ),
