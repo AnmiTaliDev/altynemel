@@ -21,12 +21,14 @@ class MiniPlayer extends StatelessWidget {
     required this.onPlayPause,
     this.image,
     this.albumName,
+    this.error,
   });
 
   final String title;
   final String artist;
   final ImageProvider? image;
   final String? albumName;
+  final String? error;
   final bool isPlaying;
   final double progress;
   final VoidCallback? onOpen;
@@ -65,9 +67,15 @@ class MiniPlayer extends StatelessWidget {
                             children: [
                               Text(title, style: text.bodyStrong),
                               Text(
-                                artist,
+                                error ?? artist,
+                                maxLines: error == null ? null : 2,
+                                overflow: error == null
+                                    ? null
+                                    : TextOverflow.ellipsis,
                                 style: text.caption.copyWith(
-                                  color: colors.inkMuted,
+                                  color: error == null
+                                      ? colors.inkMuted
+                                      : colors.alert,
                                 ),
                               ),
                             ],

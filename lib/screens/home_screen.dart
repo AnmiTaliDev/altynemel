@@ -712,6 +712,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: 112,
                                       ),
                                       albumName: current.album,
+                                      error: playback.error,
                                       isPlaying: playback.isPlaying,
                                       progress: total <= 0
                                           ? 0
@@ -770,6 +771,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               artist: current?.artist,
                               image: coverImage(current?.coverPath, width: 112),
                               albumName: current?.album,
+                              error: playback.error,
                               liked:
                                   current != null &&
                                   library.isLiked(current.id),

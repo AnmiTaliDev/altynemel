@@ -46,6 +46,7 @@ class PlayerBar extends StatelessWidget {
     required this.onVolume,
     required this.onQueue,
     this.volumeStep = 5,
+    this.error,
     this.onOpenNowPlaying,
     this.image,
     this.albumName,
@@ -72,6 +73,7 @@ class PlayerBar extends StatelessWidget {
   final ValueChanged<int>? onVolume;
   final VoidCallback? onQueue;
   final int volumeStep;
+  final String? error;
   final VoidCallback? onOpenNowPlaying;
 
   Widget _trackInfo(BuildContext context, double coverSize, bool ellipsize) {
@@ -103,10 +105,18 @@ class PlayerBar extends StatelessWidget {
                     maxLines: ellipsize ? 1 : null,
                     overflow: ellipsize ? TextOverflow.ellipsis : null,
                   ),
-                  ArtistText(
-                    artist ?? '',
-                    style: text.caption.copyWith(color: colors.inkMuted),
-                  ),
+                  if (error != null)
+                    Text(
+                      error!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: text.caption.copyWith(color: colors.alert),
+                    )
+                  else
+                    ArtistText(
+                      artist ?? '',
+                      style: text.caption.copyWith(color: colors.inkMuted),
+                    ),
                 ],
               ],
             ),
