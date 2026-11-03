@@ -8,6 +8,7 @@ import '../theme/colors.dart';
 import '../theme/motion.dart';
 import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
+import 'setup_progress.dart';
 import 'setup_step.dart';
 
 const double setupWideFrom = 840;
@@ -70,6 +71,27 @@ class _SetupWizardState extends State<SetupWizard> {
   void _skipAll() => widget.settings.setSetupCompleted(true);
 
   Widget _body(SetupStep step) => const SizedBox.shrink();
+
+  Widget _sidePanel(BuildContext context) {
+    final colors = AltynemelColors.of(context);
+    final text = AltynemelTextStyles.of(context);
+    return Container(
+      width: 280,
+      color: colors.surface,
+      padding: const EdgeInsets.fromLTRB(space5, space6, space5, space5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(Strings.appName, style: text.displayMd),
+          ),
+          const SizedBox(height: space6),
+          SetupStepper(current: _step),
+        ],
+      ),
+    );
+  }
 
   Widget _header(BuildContext context, SetupStep step) {
     final colors = AltynemelColors.of(context);
@@ -215,12 +237,30 @@ class _SetupWizardState extends State<SetupWizard> {
               Expanded(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final wide = constraints.maxWidth >= setupWideFrom;
+                    if (constraints.maxWidth >= setupWideFrom) {
+                      return Row(
+                        children: [
+                          _sidePanel(context),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: space6,
+                              ),
+                              child: _content(context),
+                            ),
+                          ),
+                        ],
+                      );
+                    }
                     return Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: wide ? space6 : space4,
+                      padding: const EdgeInsets.symmetric(horizontal: space4),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: space4),
+                          SetupSegments(current: _step),
+                          Expanded(child: _content(context)),
+                        ],
                       ),
-                      child: _content(context),
                     );
                   },
                 ),
