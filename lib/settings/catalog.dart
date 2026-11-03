@@ -208,6 +208,18 @@ const rowDensity = EnumSetting<RowDensity>(
   labels: rowDensityLabels,
 );
 
+const rowCoverSize = IntSetting(
+  key: 'rowCoverSize',
+  group: SettingGroup.layout,
+  label: 'Track row cover size',
+  hint: 'Size of the cover thumbnail in track lists.',
+  defaultValue: 40,
+  min: 24,
+  max: 72,
+  step: 4,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -228,4 +240,5 @@ const List<SettingDef<Object>> allSettings = [
   animationSpeedPercent,
   accentColor,
   rowDensity,
+  rowCoverSize,
 ];

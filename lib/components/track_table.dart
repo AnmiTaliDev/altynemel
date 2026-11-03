@@ -22,7 +22,6 @@ import 'pressable.dart';
 import 'time_label.dart';
 import 'track_row.dart';
 
-const double _rowCover = 40;
 const double _numberColumn = 40;
 const double _timeColumn = 72;
 
@@ -185,6 +184,9 @@ class _TrackTableRowState extends State<TrackTableRow> {
     final rowHeight = settings == null
         ? rowDensityHeights[RowDensity.comfortable]!
         : rowDensityHeights[settings.valueOf(rowDensity)]!;
+    final coverSize = settings == null
+        ? rowCoverSize.defaultValue.toDouble()
+        : settings.valueOf(rowCoverSize).toDouble();
     final showMore = phone || _hovered || _hasFocus || widget.isSelected;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
@@ -269,7 +271,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
                               flex: 4,
                               child: Padding(
                                 padding: EdgeInsets.symmetric(
-                                  vertical: ((rowHeight - _rowCover) / 2).clamp(
+                                  vertical: ((rowHeight - coverSize) / 2).clamp(
                                     2,
                                     double.infinity,
                                   ),
@@ -277,7 +279,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
                                 child: Row(
                                   children: [
                                     CoverArt(
-                                      size: _rowCover,
+                                      size: coverSize,
                                       image: widget.image,
                                     ),
                                     const SizedBox(width: space3),

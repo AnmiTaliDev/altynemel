@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:altynemel/components/cover_art.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/settings/catalog.dart';
@@ -66,5 +67,19 @@ void main() {
     lib.settings.setValue(rowDensity, RowDensity.spacious);
     await tester.pumpAndSettle();
     expect(tester.getSize(find.byType(TrackTableRow).first).height, 72);
+  });
+
+  testWidgets('the row cover size follows the setting', (tester) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    final cover = find.descendant(
+      of: find.byType(TrackTableRow).first,
+      matching: find.byType(CoverArt),
+    );
+    expect(tester.getSize(cover).width, 40);
+    lib.settings.setValue(rowCoverSize, 64);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(cover).width, 64);
+    expect(tester.getSize(find.byType(TrackTableRow).first).height, 68);
   });
 }
