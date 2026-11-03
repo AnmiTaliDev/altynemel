@@ -12,6 +12,7 @@ import 'setup_progress.dart';
 import 'setup_step.dart';
 import 'steps/appearance_step.dart';
 import 'steps/library_step.dart';
+import 'steps/playback_step.dart';
 import 'steps/welcome_step.dart';
 
 const double setupWideFrom = 840;
@@ -80,6 +81,7 @@ class _SetupWizardState extends State<SetupWizard> {
   Widget _body(SetupStep step) => switch (step) {
     SetupStep.welcome => const WelcomeStep(),
     SetupStep.appearance => AppearanceStep(settings: widget.settings),
+    SetupStep.playback => PlaybackStep(settings: widget.settings),
     SetupStep.library => LibraryStep(
       settings: widget.settings,
       onChooseFolder: widget.onChooseFolder,
