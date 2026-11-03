@@ -89,6 +89,14 @@ const maximumVolume = IntSetting(
   unit: '%',
 );
 
+const resumeOnLaunch = BoolSetting(
+  key: 'resumeOnLaunch',
+  group: SettingGroup.playback,
+  label: 'Resume playback on launch',
+  hint: 'Start playing the restored track right after the app opens.',
+  defaultValue: false,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -98,4 +106,5 @@ const List<SettingDef<Object>> allSettings = [
   skipUnavailableTracks,
   defaultVolume,
   maximumVolume,
+  resumeOnLaunch,
 ];

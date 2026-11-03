@@ -243,4 +243,45 @@ void main() {
     await rig.controller.setVolume(100);
     expect(rig.controller.volume, 100);
   });
+
+  Future<Rig> savedRig({required bool resume}) async {
+    final first = Rig(withDatabase: true);
+    await first.start(1);
+    first.controller.persist();
+    final second = Rig(
+      preset: (settings) => settings.setValue(resumeOnLaunch, resume),
+    );
+    second.database = first.database;
+    final restored = PlaybackController(
+      settings: second.settings,
+      persistence: PlaybackPersistence(first.database!),
+      fileExists: (_) => true,
+      playerFactory: () {
+        final fake = FakePlatformPlayer();
+        second.fakes.add(fake);
+        return Player(platformPlayer: fake);
+      },
+    );
+    await restored.restore((id) => first.tracks[int.parse(id)]);
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+    expect(restored.current!.id, '1');
+    final playing = restored.isPlaying;
+    restored.dispose();
+    second.settings.dispose();
+    second.controller.dispose();
+    first.controller.dispose();
+    first.settings.dispose();
+    first.database!.close();
+    rig = Rig();
+    expect(playing, resume);
+    return rig;
+  }
+
+  test('a restored queue stays paused by default', () async {
+    await savedRig(resume: false);
+  });
+
+  test('a restored queue plays when resuming on launch is on', () async {
+    await savedRig(resume: true);
+  });
 }

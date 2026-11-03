@@ -507,7 +507,7 @@ class PlaybackController extends ChangeNotifier {
       return;
     }
     await _startCurrent(
-      play: false,
+      play: _settings.valueOf(resumeOnLaunch),
       startAt: Duration(milliseconds: saved.positionMs),
     );
   }
