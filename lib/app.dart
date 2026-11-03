@@ -8,6 +8,7 @@ import 'player/playback_controller.dart';
 import 'player/playback_scope.dart';
 import 'screens/home_screen.dart';
 import 'settings/app_settings.dart';
+import 'settings/catalog.dart';
 import 'settings/app_settings_scope.dart';
 import 'strings.dart';
 import 'theme/themes.dart';
@@ -72,6 +73,11 @@ class _AltynemelAppState extends State<AltynemelApp> {
                     data: media.copyWith(
                       disableAnimations:
                           media.disableAnimations || _settings.reduceMotion,
+                      textScaler: TextScaler.linear(
+                        media.textScaler.scale(1) *
+                            _settings.valueOf(textScalePercent) /
+                            100,
+                      ),
                     ),
                     child: child!,
                   );

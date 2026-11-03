@@ -164,6 +164,18 @@ const seekStepLongSeconds = IntSetting(
   unit: 's',
 );
 
+const textScalePercent = IntSetting(
+  key: 'textScalePercent',
+  group: SettingGroup.appearance,
+  label: 'Text size',
+  hint: 'Scales all text on top of the system text size.',
+  defaultValue: 100,
+  min: 70,
+  max: 200,
+  step: 5,
+  unit: '%',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -180,4 +192,5 @@ const List<SettingDef<Object>> allSettings = [
   audioBufferSeconds,
   seekStepSeconds,
   seekStepLongSeconds,
+  textScalePercent,
 ];
