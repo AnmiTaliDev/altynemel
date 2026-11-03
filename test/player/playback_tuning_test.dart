@@ -6,6 +6,7 @@ import 'package:altynemel/player/playback_controller.dart';
 import 'package:altynemel/settings/app_settings.dart';
 import 'package:altynemel/player/playback_persistence.dart';
 import 'package:altynemel/settings/catalog.dart';
+import 'package:altynemel/settings/choices.dart';
 import 'package:altynemel/storage/library_database.dart';
 
 import '../support/fake_player.dart';
@@ -142,5 +143,30 @@ void main() {
     await rig.positionAt(30);
     await Future<void>.delayed(const Duration(milliseconds: 1300));
     expect(PlaybackPersistence(rig.database!).load()!.positionMs, 0);
+  });
+
+  test('a linear crossfade ramps both players straight', () async {
+    rig = Rig();
+    rig.settings.setCrossfade(true);
+    rig.settings.setValue(crossfadeCurve, CrossfadeCurve.linear);
+    rig.settings.setValue(crossfadeSeconds, 1);
+    await rig.start();
+    await rig.positionAt(99);
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    final outgoing = rig.fakes.first.state.volume;
+    final incoming = rig.fakes[1].state.volume;
+    expect(outgoing + incoming, closeTo(70, 5));
+  });
+
+  test('an equal power crossfade keeps the combined power steady', () async {
+    rig = Rig();
+    rig.settings.setCrossfade(true);
+    rig.settings.setValue(crossfadeSeconds, 1);
+    await rig.start();
+    await rig.positionAt(99);
+    await Future<void>.delayed(const Duration(milliseconds: 500));
+    final outgoing = rig.fakes.first.state.volume;
+    final incoming = rig.fakes[1].state.volume;
+    expect(outgoing * outgoing + incoming * incoming, closeTo(70 * 70, 400));
   });
 }

@@ -1,3 +1,4 @@
+import 'choices.dart';
 import 'setting_def.dart';
 
 const crossfadeSeconds = IntSetting(
@@ -34,8 +35,19 @@ const positionSaveSeconds = IntSetting(
   unit: 's',
 );
 
+const crossfadeCurve = EnumSetting<CrossfadeCurve>(
+  key: 'crossfadeCurve',
+  group: SettingGroup.playback,
+  label: 'Crossfade curve',
+  hint: 'Equal power keeps the loudness steady, linear is a straight ramp.',
+  defaultValue: CrossfadeCurve.equalPower,
+  values: CrossfadeCurve.values,
+  labels: crossfadeCurveLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
   positionSaveSeconds,
+  crossfadeCurve,
 ];

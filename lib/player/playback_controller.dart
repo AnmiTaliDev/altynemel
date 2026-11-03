@@ -8,6 +8,7 @@ import 'package:media_kit/media_kit.dart' hide Track;
 import '../library/track.dart';
 import '../settings/app_settings.dart';
 import '../settings/catalog.dart';
+import '../settings/choices.dart';
 import 'play_queue.dart';
 import 'playback_persistence.dart';
 import 'repeat_setting.dart';
@@ -305,13 +306,21 @@ class PlaybackController extends ChangeNotifier {
     final watch = Stopwatch()..start();
     final target = _volume.toDouble();
     final length = _crossfadeLength;
+    final curve = _settings.valueOf(crossfadeCurve);
     _fadeTimer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       final t = (watch.elapsedMilliseconds / length.inMilliseconds).clamp(
         0.0,
         1.0,
       );
-      _primary.setVolume(target * math.cos(t * math.pi / 2));
-      incoming.setVolume(target * math.sin(t * math.pi / 2));
+      final (outgoingGain, incomingGain) = switch (curve) {
+        CrossfadeCurve.equalPower => (
+          math.cos(t * math.pi / 2),
+          math.sin(t * math.pi / 2),
+        ),
+        CrossfadeCurve.linear => (1 - t, t),
+      };
+      _primary.setVolume(target * outgoingGain);
+      incoming.setVolume(target * incomingGain);
       if (t >= 1) {
         timer.cancel();
         _fadeTimer = null;
