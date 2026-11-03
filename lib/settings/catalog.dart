@@ -141,6 +141,17 @@ const audioBufferSeconds = DoubleSetting(
   unit: 's',
 );
 
+const seekStepSeconds = IntSetting(
+  key: 'seekStepSeconds',
+  group: SettingGroup.playback,
+  label: 'Seek step',
+  hint: 'Jump made by the left and right arrow keys.',
+  defaultValue: 5,
+  min: 1,
+  max: 60,
+  unit: 's',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -155,4 +166,5 @@ const List<SettingDef<Object>> allSettings = [
   pitchCorrection,
   replayGain,
   audioBufferSeconds,
+  seekStepSeconds,
 ];

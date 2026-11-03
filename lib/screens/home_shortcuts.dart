@@ -14,9 +14,9 @@ class NextIntent extends Intent {
 }
 
 class SeekIntent extends Intent {
-  const SeekIntent(this.seconds);
+  const SeekIntent(this.direction);
 
-  final int seconds;
+  final int direction;
 }
 
 class CollapseIntent extends Intent {
@@ -52,8 +52,8 @@ const Map<ShortcutActivator, Intent> homeShortcuts = {
   SingleActivator(LogicalKeyboardKey.arrowLeft, control: true):
       PreviousIntent(),
   SingleActivator(LogicalKeyboardKey.arrowRight, control: true): NextIntent(),
-  SingleActivator(LogicalKeyboardKey.arrowLeft): SeekIntent(-5),
-  SingleActivator(LogicalKeyboardKey.arrowRight): SeekIntent(5),
+  SingleActivator(LogicalKeyboardKey.arrowLeft): SeekIntent(-1),
+  SingleActivator(LogicalKeyboardKey.arrowRight): SeekIntent(1),
   SingleActivator(LogicalKeyboardKey.escape): CollapseIntent(),
   SingleActivator(LogicalKeyboardKey.keyM): MuteIntent(),
   SingleActivator(LogicalKeyboardKey.keyF, control: true): FocusSearchIntent(),

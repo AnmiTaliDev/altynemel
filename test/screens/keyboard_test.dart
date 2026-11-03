@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:altynemel/components/pressable.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
+import 'package:altynemel/settings/catalog.dart';
 
 import '../support/test_library.dart';
 import 'home_playback_test.dart' show pumpHome, startPlaylist;
@@ -20,6 +21,16 @@ void main() {
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowLeft);
     await tester.pump();
     expect(lib.playback.position.value, before);
+  });
+
+  testWidgets('the seek step comes from the setting', (tester) async {
+    final lib = await pumpHome(tester);
+    lib.settings.setValue(seekStepSeconds, 12);
+    await startPlaylist(tester);
+    final before = lib.playback.position.value;
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(lib.playback.position.value - before, const Duration(seconds: 12));
   });
 
   testWidgets('transport buttons show their shortcuts in tooltips', (

@@ -28,6 +28,7 @@ import '../player/playback_scope.dart';
 import '../player/repeat_setting.dart';
 import '../settings/app_settings.dart';
 import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/spacing.dart';
@@ -564,7 +565,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 SeekIntent: CallbackAction<SeekIntent>(
                   onInvoke: (intent) {
                     if (controlFocused()) return null;
-                    playback.seekBy(Duration(seconds: intent.seconds));
+                    playback.seekBy(
+                      Duration(
+                        seconds:
+                            intent.direction *
+                            settings.valueOf(seekStepSeconds),
+                      ),
+                    );
                     return null;
                   },
                 ),
