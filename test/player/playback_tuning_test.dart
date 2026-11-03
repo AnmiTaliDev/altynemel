@@ -89,4 +89,34 @@ void main() {
       expect(rig.fakes.length, 2);
     },
   );
+
+  test('previous restarts only after the configured point', () async {
+    rig = Rig();
+    rig.settings.setValue(previousRestartSeconds, 8);
+    await rig.start(1);
+    await rig.positionAt(6);
+    await rig.controller.previous();
+    await rig.settle();
+    expect(rig.controller.current!.id, '0');
+  });
+
+  test('previous restarts the track once past the point', () async {
+    rig = Rig();
+    rig.settings.setValue(previousRestartSeconds, 8);
+    await rig.start(1);
+    await rig.positionAt(9);
+    await rig.controller.previous();
+    await rig.settle();
+    expect(rig.controller.current!.id, '1');
+  });
+
+  test('a zero point always goes back a track', () async {
+    rig = Rig();
+    rig.settings.setValue(previousRestartSeconds, 0);
+    await rig.start(1);
+    await rig.positionAt(0);
+    await rig.controller.previous();
+    await rig.settle();
+    expect(rig.controller.current!.id, '0');
+  });
 }

@@ -11,4 +11,19 @@ const crossfadeSeconds = IntSetting(
   unit: 's',
 );
 
-const List<SettingDef<Object>> allSettings = [crossfadeSeconds];
+const previousRestartSeconds = IntSetting(
+  key: 'previousRestartSeconds',
+  group: SettingGroup.playback,
+  label: 'Previous button restart point',
+  hint:
+      'Past this many seconds the previous button restarts the track instead of going back. Zero always goes back.',
+  defaultValue: 3,
+  min: 0,
+  max: 10,
+  unit: 's',
+);
+
+const List<SettingDef<Object>> allSettings = [
+  crossfadeSeconds,
+  previousRestartSeconds,
+];

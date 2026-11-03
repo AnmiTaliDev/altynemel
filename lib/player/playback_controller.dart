@@ -12,7 +12,6 @@ import 'play_queue.dart';
 import 'playback_persistence.dart';
 import 'repeat_setting.dart';
 
-const Duration restartThreshold = Duration(seconds: 3);
 const Duration saveInterval = Duration(seconds: 5);
 
 bool _defaultFileExists(String path) => File(path).existsSync();
@@ -384,7 +383,10 @@ class PlaybackController extends ChangeNotifier {
 
   Future<void> previous() async {
     if (_queue.current == null) return;
-    if (position.value > restartThreshold) {
+    final restart = Duration(
+      seconds: _settings.valueOf(previousRestartSeconds),
+    );
+    if (position.value > restart) {
       await seek(Duration.zero);
       return;
     }
