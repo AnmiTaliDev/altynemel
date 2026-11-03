@@ -9,6 +9,7 @@ import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import '../theme/text_styles.dart';
 import 'album_text.dart';
 import 'artist_text.dart';
@@ -223,7 +224,10 @@ class _TrackTableRowState extends State<TrackTableRow> {
                 builder: (context, state) {
                   final Color background;
                   if (widget.isCurrent) {
-                    background = colors.surface;
+                    final style = AltynemelStyle.of(context);
+                    background = style.material
+                        ? style.scheme!.secondaryContainer
+                        : colors.surface;
                   } else if (widget.isSelected || state.hovered) {
                     background = colors.surfaceHigh;
                   } else {
