@@ -167,4 +167,21 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Album'), findsOneWidget);
   });
+
+  testWidgets('track numbers can be hidden', (tester) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    expect(find.text('#'), findsOneWidget);
+    expect(find.text('1'), findsWidgets);
+    lib.settings.setValue(showTrackNumbers, false);
+    await tester.pumpAndSettle();
+    expect(find.text('#'), findsNothing);
+    expect(
+      find.descendant(
+        of: find.byType(TrackTableRow).first,
+        matching: find.text('1'),
+      ),
+      findsNothing,
+    );
+  });
 }

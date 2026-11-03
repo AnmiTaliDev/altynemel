@@ -353,6 +353,14 @@ const nowPlayingWideFrom = IntSetting(
   unit: 'px',
 );
 
+const showTrackNumbers = BoolSetting(
+  key: 'showTrackNumbers',
+  group: SettingGroup.layout,
+  label: 'Show track numbers',
+  hint: 'Number column at the left of track lists on a desktop layout.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -385,4 +393,5 @@ const List<SettingDef<Object>> allSettings = [
   compactPlayerBarBelow,
   albumColumnMinWidth,
   nowPlayingWideFrom,
+  showTrackNumbers,
 ];

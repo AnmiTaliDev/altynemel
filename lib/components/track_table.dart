@@ -38,6 +38,8 @@ class TrackTableHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isPhone(context)) return const SizedBox.shrink();
+    final numbers =
+        AppSettingsScope.maybeOf(context)?.valueOf(showTrackNumbers) ?? true;
     final colors = AltynemelColors.of(context);
     final style = AltynemelTextStyles.of(
       context,
@@ -52,15 +54,17 @@ class TrackTableHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          SizedBox(
-            width: _numberColumn,
-            child: Text(
-              Strings.columnNumber,
-              textAlign: TextAlign.center,
-              style: style,
+          if (numbers) ...[
+            SizedBox(
+              width: _numberColumn,
+              child: Text(
+                Strings.columnNumber,
+                textAlign: TextAlign.center,
+                style: style,
+              ),
             ),
-          ),
-          const SizedBox(width: space4),
+            const SizedBox(width: space4),
+          ],
           Expanded(flex: 4, child: Text(Strings.columnTitle, style: style)),
           if (showAlbum) ...[
             const SizedBox(width: space4),
@@ -181,6 +185,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
         widget.availability == TrackAvailability.unavailableOffline;
     final phone = isPhone(context);
     final settings = AppSettingsScope.maybeOf(context);
+    final numbers = settings?.valueOf(showTrackNumbers) ?? true;
     final rowHeight = settings == null
         ? rowDensityHeights[RowDensity.comfortable]!
         : rowDensityHeights[settings.valueOf(rowDensity)]!;
@@ -245,7 +250,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
                           ),
                         Row(
                           children: [
-                            if (!phone) ...[
+                            if (!phone && numbers) ...[
                               SizedBox(
                                 width: _numberColumn,
                                 child: Center(
