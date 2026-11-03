@@ -23,3 +23,17 @@ const accentLabels = {
   AccentChoice.rose: 'Rose',
   AccentChoice.violet: 'Violet',
 };
+
+enum RowDensity { compact, comfortable, spacious }
+
+const rowDensityLabels = {
+  RowDensity.compact: 'Compact',
+  RowDensity.comfortable: 'Comfortable',
+  RowDensity.spacious: 'Spacious',
+};
+
+const rowDensityHeights = {
+  RowDensity.compact: 44.0,
+  RowDensity.comfortable: 56.0,
+  RowDensity.spacious: 72.0,
+};

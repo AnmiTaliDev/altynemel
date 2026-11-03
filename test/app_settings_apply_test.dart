@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
 import 'package:altynemel/settings/catalog.dart';
 import 'package:altynemel/settings/choices.dart';
@@ -48,5 +49,22 @@ void main() {
     await tester.pumpAndSettle();
     final back = Theme.of(homeContext(tester)).extension<AltynemelColors>()!;
     expect(back.accent, before.accent);
+  });
+
+  Future<double> firstRowHeight(WidgetTester tester) async {
+    await tester.tap(find.bySemanticsLabel('Tracks').first);
+    await tester.pumpAndSettle();
+    return tester.getSize(find.byType(TrackTableRow).first).height;
+  }
+
+  testWidgets('row density changes the height of track rows', (tester) async {
+    final lib = await pumpApp(tester);
+    expect(await firstRowHeight(tester), 56);
+    lib.settings.setValue(rowDensity, RowDensity.compact);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(TrackTableRow).first).height, 44);
+    lib.settings.setValue(rowDensity, RowDensity.spacious);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(TrackTableRow).first).height, 72);
   });
 }

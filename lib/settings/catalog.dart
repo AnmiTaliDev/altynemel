@@ -198,6 +198,16 @@ const accentColor = EnumSetting<AccentChoice>(
   labels: accentLabels,
 );
 
+const rowDensity = EnumSetting<RowDensity>(
+  key: 'rowDensity',
+  group: SettingGroup.layout,
+  label: 'Track row height',
+  hint: 'How much room each row in track lists takes.',
+  defaultValue: RowDensity.comfortable,
+  values: RowDensity.values,
+  labels: rowDensityLabels,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -217,4 +227,5 @@ const List<SettingDef<Object>> allSettings = [
   textScalePercent,
   animationSpeedPercent,
   accentColor,
+  rowDensity,
 ];

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../format/time_format.dart';
+import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
+import '../settings/choices.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
@@ -19,6 +22,7 @@ import 'pressable.dart';
 import 'time_label.dart';
 import 'track_row.dart';
 
+const double _rowCover = 40;
 const double _numberColumn = 40;
 const double _timeColumn = 72;
 
@@ -177,6 +181,10 @@ class _TrackTableRowState extends State<TrackTableRow> {
     final unavailable =
         widget.availability == TrackAvailability.unavailableOffline;
     final phone = isPhone(context);
+    final settings = AppSettingsScope.maybeOf(context);
+    final rowHeight = settings == null
+        ? rowDensityHeights[RowDensity.comfortable]!
+        : rowDensityHeights[settings.valueOf(rowDensity)]!;
     final showMore = phone || _hovered || _hasFocus || widget.isSelected;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
@@ -210,7 +218,7 @@ class _TrackTableRowState extends State<TrackTableRow> {
                     background = Colors.transparent;
                   }
                   return Container(
-                    constraints: const BoxConstraints(minHeight: 56),
+                    constraints: BoxConstraints(minHeight: rowHeight),
                     padding: const EdgeInsets.symmetric(horizontal: space3),
                     decoration: BoxDecoration(
                       color: background,
@@ -260,12 +268,18 @@ class _TrackTableRowState extends State<TrackTableRow> {
                             Expanded(
                               flex: 4,
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: space2,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: ((rowHeight - _rowCover) / 2).clamp(
+                                    2,
+                                    double.infinity,
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
-                                    CoverArt(size: 40, image: widget.image),
+                                    CoverArt(
+                                      size: _rowCover,
+                                      image: widget.image,
+                                    ),
                                     const SizedBox(width: space3),
                                     Expanded(
                                       child: Column(
