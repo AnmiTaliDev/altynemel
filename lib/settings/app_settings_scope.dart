@@ -14,4 +14,10 @@ class AppSettingsScope extends InheritedNotifier<AppSettings> {
         .dependOnInheritedWidgetOfExactType<AppSettingsScope>()!
         .notifier!;
   }
+
+  static AppSettings? maybeOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<AppSettingsScope>()
+        ?.notifier;
+  }
 }

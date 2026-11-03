@@ -176,6 +176,18 @@ const textScalePercent = IntSetting(
   unit: '%',
 );
 
+const animationSpeedPercent = IntSetting(
+  key: 'animationSpeedPercent',
+  group: SettingGroup.appearance,
+  label: 'Animation speed',
+  hint: 'Higher is faster. Has no effect when reduce motion is on.',
+  defaultValue: 100,
+  min: 25,
+  max: 400,
+  step: 25,
+  unit: '%',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -193,4 +205,5 @@ const List<SettingDef<Object>> allSettings = [
   seekStepSeconds,
   seekStepLongSeconds,
   textScalePercent,
+  animationSpeedPercent,
 ];
