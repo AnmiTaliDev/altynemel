@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
 import '../theme/spacing.dart';
+import '../theme/style.dart';
 import 'focus_ring.dart';
 
 class _StepIntent extends Intent {
@@ -54,6 +55,20 @@ class _ProgressBarState extends State<ProgressBar> {
   Widget build(BuildContext context) {
     final colors = AltynemelColors.of(context);
     final enabled = widget.onChanged != null && widget.max > 0;
+    final style = AltynemelStyle.of(context);
+    final scheme = style.scheme;
+    final inactive = style.material
+        ? (enabled
+              ? scheme!.secondaryContainer
+              : scheme!.onSurface.withValues(alpha: 0.12))
+        : colors.line;
+    final active = style.material
+        ? (enabled
+              ? scheme!.primary
+              : scheme!.onSurface.withValues(alpha: 0.38))
+        : colors.ink;
+    final handleSize = style.material ? 20.0 : 22.0;
+    final handleRing = style.material ? 0.0 : 3.0;
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -127,7 +142,7 @@ class _ProgressBarState extends State<ProgressBar> {
                         height: 4,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: colors.line,
+                            color: inactive,
                             borderRadius: borderRadiusPill,
                           ),
                         ),
@@ -139,24 +154,26 @@ class _ProgressBarState extends State<ProgressBar> {
                         height: 4,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: colors.ink,
+                            color: active,
                             borderRadius: borderRadiusPill,
                           ),
                         ),
                       ),
                       Positioned(
-                        left: x - 11,
-                        top: (widget.height - 22) / 2,
-                        width: 22,
-                        height: 22,
+                        left: x - handleSize / 2,
+                        top: (widget.height - handleSize) / 2,
+                        width: handleSize,
+                        height: handleSize,
                         child: DecoratedBox(
                           decoration: BoxDecoration(
-                            color: colors.ink,
+                            color: active,
                             shape: BoxShape.circle,
-                            border: Border.all(
-                              color: widget.gapColor ?? colors.ground,
-                              width: 3,
-                            ),
+                            border: handleRing == 0
+                                ? null
+                                : Border.all(
+                                    color: widget.gapColor ?? colors.ground,
+                                    width: handleRing,
+                                  ),
                           ),
                         ),
                       ),
