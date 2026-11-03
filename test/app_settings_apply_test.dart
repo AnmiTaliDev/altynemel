@@ -253,4 +253,15 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(TrackTableRow), findsNothing);
   });
+
+  testWidgets('the search can skip artist names', (tester) async {
+    final lib = await pumpApp(tester);
+    await firstRowHeight(tester);
+    await tester.enterText(find.byType(TextField).first, 'sløwmind');
+    await tester.pumpAndSettle();
+    expect(find.byType(TrackTableRow), findsWidgets);
+    lib.settings.setValue(searchInArtist, false);
+    await tester.pumpAndSettle();
+    expect(find.byType(TrackTableRow), findsNothing);
+  });
 }

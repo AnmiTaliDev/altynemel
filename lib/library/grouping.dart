@@ -199,7 +199,7 @@ List<Track> filterTracks(
   return [
     for (final t in tracks)
       if (_matches(t.title, q) ||
-          _matches(t.artist, q) ||
+          (options.artist && _matches(t.artist, q)) ||
           (options.album && _matches(t.album, q)))
         t,
   ];
