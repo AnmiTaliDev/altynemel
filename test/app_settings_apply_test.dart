@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:altynemel/components/cover_art.dart';
 import 'package:altynemel/components/media_tile.dart';
+import 'package:altynemel/components/player_bar.dart';
 import 'package:altynemel/components/screen_header.dart';
 import 'package:altynemel/components/track_table.dart';
 import 'package:altynemel/screens/home_screen.dart';
@@ -140,5 +141,16 @@ void main() {
     lib.settings.setValue(tileCoverSize, 220);
     await tester.pumpAndSettle();
     expect(tester.getSize(cover).width, 100);
+  });
+
+  testWidgets('the player bar height follows the setting', (tester) async {
+    final lib = await pumpApp(tester);
+    final base = tester.getSize(find.byType(PlayerBar)).height;
+    lib.settings.setValue(playerBarMinHeight, 150);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(PlayerBar)).height, 150);
+    lib.settings.reset(playerBarMinHeight);
+    await tester.pumpAndSettle();
+    expect(tester.getSize(find.byType(PlayerBar)).height, base);
   });
 }

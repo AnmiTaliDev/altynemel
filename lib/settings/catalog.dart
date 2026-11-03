@@ -280,6 +280,18 @@ const sidebarExpandedWidth = IntSetting(
   unit: 'px',
 );
 
+const playerBarMinHeight = IntSetting(
+  key: 'playerBarMinHeight',
+  group: SettingGroup.layout,
+  label: 'Player bar height',
+  hint: 'Minimum height of the bar at the bottom of the window.',
+  defaultValue: 88,
+  min: 64,
+  max: 160,
+  step: 4,
+  unit: 'px',
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -306,4 +318,5 @@ const List<SettingDef<Object>> allSettings = [
   tileCoverSize,
   tileCoverSizePhone,
   sidebarExpandedWidth,
+  playerBarMinHeight,
 ];

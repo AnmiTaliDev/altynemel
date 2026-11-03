@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../format/time_format.dart';
 import '../player/repeat_setting.dart';
+import '../settings/app_settings_scope.dart';
+import '../settings/catalog.dart';
 import '../strings.dart';
 import '../theme/colors.dart';
 import '../theme/radii.dart';
@@ -273,7 +275,12 @@ class PlayerBar extends StatelessWidget {
       explicitChildNodes: true,
       label: Strings.player,
       child: Container(
-        constraints: const BoxConstraints(minHeight: playerBarHeight),
+        constraints: BoxConstraints(
+          minHeight:
+              (AppSettingsScope.maybeOf(context)?.valueOf(playerBarMinHeight) ??
+                      playerBarMinHeight.defaultValue)
+                  .toDouble(),
+        ),
         padding: const EdgeInsets.symmetric(
           horizontal: space5,
           vertical: space3,
