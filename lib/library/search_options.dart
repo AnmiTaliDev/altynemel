@@ -6,11 +6,13 @@ class SearchOptions {
     this.title = true,
     this.album = true,
     this.artist = true,
+    this.fileName = false,
   });
 
   final bool title;
   final bool album;
   final bool artist;
+  final bool fileName;
 }
 
 SearchOptions searchOptionsOf(AppSettings settings) {
@@ -18,5 +20,6 @@ SearchOptions searchOptionsOf(AppSettings settings) {
     title: settings.valueOf(searchInTitle),
     album: settings.valueOf(searchInAlbum),
     artist: settings.valueOf(searchInArtist),
+    fileName: settings.valueOf(searchInFileName),
   );
 }

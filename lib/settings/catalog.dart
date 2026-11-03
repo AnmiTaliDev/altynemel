@@ -505,6 +505,14 @@ const searchInTitle = BoolSetting(
   defaultValue: true,
 );
 
+const searchInFileName = BoolSetting(
+  key: 'searchInFileName',
+  group: SettingGroup.search,
+  label: 'Search file names',
+  hint: 'Also match the search text against the name of the audio file.',
+  defaultValue: false,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -554,4 +562,5 @@ const List<SettingDef<Object>> allSettings = [
   searchInAlbum,
   searchInArtist,
   searchInTitle,
+  searchInFileName,
 ];

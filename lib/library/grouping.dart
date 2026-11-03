@@ -200,7 +200,8 @@ List<Track> filterTracks(
     for (final t in tracks)
       if ((options.title && _matches(t.title, q)) ||
           (options.artist && _matches(t.artist, q)) ||
-          (options.album && _matches(t.album, q)))
+          (options.album && _matches(t.album, q)) ||
+          (options.fileName && _matches(fileNameOf(t.path ?? ''), q)))
         t,
   ];
 }

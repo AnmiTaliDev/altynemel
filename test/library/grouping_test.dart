@@ -127,12 +127,24 @@ void main() {
       t('Natt', artist: 'Bjørk Ødegård'),
     ];
 
+    final withPaths = [
+      t('one', path: '/music/one-rip.flac'),
+      t('two', path: '/music/two-rip.flac'),
+    ];
+
     test('is case insensitive and matches title, artist and album', () {
       expect(filterTracks(tracks, 'ØDEG').length, 1);
       expect(filterTracks(tracks, 'сарыарқа').length, 1);
       expect(filterTracks(tracks, 'natt').length, 1);
       expect(filterTracks(tracks, '  ').length, 2);
       expect(filterTracks(tracks, 'zzz'), isEmpty);
+    });
+
+    test('can include file names in the search', () {
+      const on = SearchOptions(fileName: true);
+      expect(filterTracks(withPaths, 'rip.flac').length, 0);
+      expect(filterTracks(withPaths, 'rip.flac', on).length, 2);
+      expect(filterTracks(withPaths, '-rip', on).length, 2);
     });
 
     test('can leave titles out of the search', () {
