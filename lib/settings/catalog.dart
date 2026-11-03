@@ -110,6 +110,14 @@ const playbackSpeed = DoubleSetting(
   unit: 'x',
 );
 
+const pitchCorrection = BoolSetting(
+  key: 'pitchCorrection',
+  group: SettingGroup.sound,
+  label: 'Keep pitch at other speeds',
+  hint: 'Correct the pitch when the playback speed is not one.',
+  defaultValue: true,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -121,4 +129,5 @@ const List<SettingDef<Object>> allSettings = [
   maximumVolume,
   resumeOnLaunch,
   playbackSpeed,
+  pitchCorrection,
 ];

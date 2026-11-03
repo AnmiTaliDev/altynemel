@@ -37,6 +37,7 @@ class PlaybackController extends ChangeNotifier {
     _gapless = settings.gapless;
     _crossfade = settings.crossfade;
     _appliedSpeed = settings.valueOf(playbackSpeed);
+    _appliedPitch = settings.valueOf(pitchCorrection);
     _volume = settings.valueOf(defaultVolume);
     _volumeBeforeMute = _volume == 0 ? 70 : _volume;
     _settings.addListener(_onSettings);
@@ -55,6 +56,7 @@ class PlaybackController extends ChangeNotifier {
   Timer? _saveTimer;
   bool _fading = false;
   double _appliedSpeed = 1;
+  bool _appliedPitch = true;
   bool _gapless = true;
   bool _crossfade = false;
   bool _playing = false;
@@ -94,6 +96,13 @@ class PlaybackController extends ChangeNotifier {
 
   void _applyTuning(Player player) {
     unawaited(player.setRate(_settings.valueOf(playbackSpeed)));
+    final platform = player.platform;
+    if (platform is NativePlayer) {
+      platform.setProperty(
+        'audio-pitch-correction',
+        _settings.valueOf(pitchCorrection) ? 'yes' : 'no',
+      );
+    }
   }
 
   void _listen() {
@@ -112,8 +121,10 @@ class PlaybackController extends ChangeNotifier {
 
   void _onSettings() {
     final speed = _settings.valueOf(playbackSpeed);
-    if (speed != _appliedSpeed) {
+    final pitch = _settings.valueOf(pitchCorrection);
+    if (speed != _appliedSpeed || pitch != _appliedPitch) {
       _appliedSpeed = speed;
+      _appliedPitch = pitch;
       _applyTuning(_primary);
       final secondary = _secondary;
       if (secondary != null) _applyTuning(secondary);
