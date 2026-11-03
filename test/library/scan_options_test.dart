@@ -42,4 +42,20 @@ void main() {
     expect(files.map((f) => fileNameOf(f.path)), ['b.ogg']);
     expect(findAudioFiles(music).length, 2);
   });
+
+  test('hidden folders are skipped only on request', () {
+    final root = Directory.systemTemp.createTempSync('altynemel_hidden_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    final music = Directory('${root.path}/music')..createSync();
+    writeFile(music, 'a.mp3', mp3Bytes(title: 'A'));
+    writeFile(music, '.trash/b.mp3', mp3Bytes(title: 'B'));
+    writeFile(music, 'sub/.cache/c.mp3', mp3Bytes(title: 'C'));
+    writeFile(music, 'sub/d.mp3', mp3Bytes(title: 'D'));
+    expect(findAudioFiles(music).length, 4);
+    final names = findAudioFiles(
+      music,
+      const ScanOptions(skipHidden: true),
+    ).map((f) => fileNameOf(f.path));
+    expect(names, ['a.mp3', 'd.mp3']);
+  });
 }

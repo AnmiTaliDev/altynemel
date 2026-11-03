@@ -32,7 +32,7 @@ class LibraryController extends ChangeNotifier {
     _interval = settings.rescanInterval;
     _split = settings.splitArtists;
     _order = settings.albumOrder;
-    _extensions = settings.valueOf(scanExtensions);
+    _scanKey = _scanSettingsKey();
     _settings.addListener(_onSettings);
     _reload();
   }
@@ -46,7 +46,7 @@ class LibraryController extends ChangeNotifier {
   RescanInterval _interval = RescanInterval.minutes15;
   bool _split = true;
   AlbumOrder _order = AlbumOrder.discAndTrack;
-  String _extensions = '';
+  String _scanKey = '';
   bool _scanning = false;
   bool _disposed = false;
   String? _error;
@@ -87,6 +87,16 @@ class LibraryController extends ChangeNotifier {
     if (_folder != null) scan();
   }
 
+  String _scanSettingsKey() => [
+    _settings.valueOf(scanExtensions),
+    _settings.valueOf(skipHiddenFolders),
+  ].join('\u0000');
+
+  ScanOptions _scanOptions() => ScanOptions(
+    extensions: parseExtensions(_settings.valueOf(scanExtensions)),
+    skipHidden: _settings.valueOf(skipHiddenFolders),
+  );
+
   void _reload() {
     _tracks = sortLibraryTracks(_database.tracks(), _order);
     _albums = buildAlbums(_tracks);
@@ -100,8 +110,8 @@ class LibraryController extends ChangeNotifier {
     final regroup =
         _settings.splitArtists != _split || _settings.albumOrder != _order;
     final intervalChanged = _settings.rescanInterval != _interval;
-    final extensionsChanged = _settings.valueOf(scanExtensions) != _extensions;
-    _extensions = _settings.valueOf(scanExtensions);
+    final scanChanged = _scanSettingsKey() != _scanKey;
+    _scanKey = _scanSettingsKey();
     _folder = _settings.libraryFolder;
     _split = _settings.splitArtists;
     _order = _settings.albumOrder;
@@ -111,7 +121,7 @@ class LibraryController extends ChangeNotifier {
       notifyListeners();
     }
     if (intervalChanged || folderChanged) _restartTimer();
-    if ((folderChanged || extensionsChanged) && _folder != null) scan();
+    if ((folderChanged || scanChanged) && _folder != null) scan();
   }
 
   void _restartTimer() {
@@ -137,9 +147,7 @@ class LibraryController extends ChangeNotifier {
         root: folder,
         coversDirectory: coversDirectory,
         known: _database.knownFiles(),
-        options: ScanOptions(
-          extensions: parseExtensions(_settings.valueOf(scanExtensions)),
-        ),
+        options: _scanOptions(),
       );
       final result = await Isolate.run(() => scanLibrary(request));
       if (_disposed) return;

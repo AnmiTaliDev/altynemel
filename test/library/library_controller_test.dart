@@ -136,4 +136,13 @@ void main() {
     settings.reset(scanExtensions);
     await until(() => controller.tracks.length == 2);
   });
+
+  test('skipping hidden folders rescans the library', () async {
+    writeFile(music, 'a.mp3', mp3Bytes(title: 'A', album: 'X'));
+    writeFile(music, '.hidden/b.mp3', mp3Bytes(title: 'B', album: 'X'));
+    settings.setLibraryFolder(music.path);
+    await until(() => controller.tracks.length == 2);
+    settings.setValue(skipHiddenFolders, true);
+    await until(() => controller.tracks.length == 1);
+  });
 }

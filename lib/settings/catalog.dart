@@ -398,6 +398,14 @@ const scanExtensions = TextSetting(
   defaultValue: 'mp3, flac, m4a, aac, ogg, opus, wav',
 );
 
+const skipHiddenFolders = BoolSetting(
+  key: 'skipHiddenFolders',
+  group: SettingGroup.library,
+  label: 'Skip hidden folders',
+  hint: 'Ignore folders whose name starts with a dot.',
+  defaultValue: false,
+);
+
 const List<SettingDef<Object>> allSettings = [
   crossfadeSeconds,
   previousRestartSeconds,
@@ -435,4 +443,5 @@ const List<SettingDef<Object>> allSettings = [
   nowPlayingCover,
   coverRadius,
   scanExtensions,
+  skipHiddenFolders,
 ];
