@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../settings/app_settings.dart';
 import '../settings/choices.dart';
 import 'accents.dart';
 import 'colors.dart';
@@ -18,6 +19,18 @@ AltynemelColors colorsFor(AltynemelThemeId id) {
     case AltynemelThemeId.contrast:
       return AltynemelColors.contrast;
   }
+}
+
+AltynemelThemeId resolveThemeId(ThemeChoice choice, Brightness platform) {
+  return switch (choice) {
+    ThemeChoice.night => AltynemelThemeId.night,
+    ThemeChoice.day => AltynemelThemeId.day,
+    ThemeChoice.contrast => AltynemelThemeId.contrast,
+    ThemeChoice.system =>
+      platform == Brightness.dark
+          ? AltynemelThemeId.night
+          : AltynemelThemeId.day,
+  };
 }
 
 ThemeData buildTheme(

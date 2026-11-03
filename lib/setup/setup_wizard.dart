@@ -10,6 +10,7 @@ import '../theme/spacing.dart';
 import '../theme/text_styles.dart';
 import 'setup_progress.dart';
 import 'setup_step.dart';
+import 'steps/appearance_step.dart';
 import 'steps/welcome_step.dart';
 
 const double setupWideFrom = 840;
@@ -73,6 +74,7 @@ class _SetupWizardState extends State<SetupWizard> {
 
   Widget _body(SetupStep step) => switch (step) {
     SetupStep.welcome => const WelcomeStep(),
+    SetupStep.appearance => AppearanceStep(settings: widget.settings),
     _ => const SizedBox.shrink(),
   };
 
